@@ -1,4 +1,8 @@
 {
+  "name": "Sorteia Aí",
+  "short_name": "Sorteia Aí",
+  "description": "Sorteia Aí é uma aplicação web para realizar sorteios de forma simples e rápida.",
+  "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#027be3",

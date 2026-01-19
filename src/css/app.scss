@@ -1,1 +1,21 @@
 // app global css in SCSS form
+.header--light {
+  color: $dark;
+  background-color: white;
+}
+.header--dark {
+  background-color: $dark;
+}
+
+.q-router-link--active {
+  color: $primary !important;
+  background: rgba(37, 99, 235, 0.1);
+  border: solid 1px rgb(219, 234, 254);
+  .q-icon {
+    color: $primary !important;
+  }
+}
+.q-router-link--active:hover {
+  background: rgba(37, 99, 235, 0.1);
+  border: solid 1px $blue-3;
+}

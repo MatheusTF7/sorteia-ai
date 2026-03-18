@@ -4,6 +4,13 @@
 import { defineConfig } from '#q-app/wrappers';
 
 export default defineConfig((/* ctx */) => {
+  const isResizeObserverRuntimeError = (error: Error) => {
+    return (
+      error.message.includes('ResizeObserver loop completed with undelivered notifications.') ||
+      error.message.includes('ResizeObserver loop limit exceeded')
+    );
+  };
+
   return {
     eslint: {
       // fix: true,
@@ -21,7 +28,7 @@ export default defineConfig((/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
-    boot: ['i18n'],
+    boot: ['i18n', 'resizeObserverGuard'],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-file#css
     css: ['app.scss'],
@@ -81,6 +88,11 @@ export default defineConfig((/* ctx */) => {
         type: 'http',
       },
       open: true, // opens browser window automatically
+      client: {
+        overlay: {
+          runtimeErrors: (error: Error) => !isResizeObserverRuntimeError(error),
+        },
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-file#framework

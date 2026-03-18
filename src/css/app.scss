@@ -727,6 +727,13 @@ a {
   padding-bottom: 10px;
 }
 
+.app-field.q-field--dense.q-field--focused {
+  .q-field__control::after {
+    height: 100%;
+    border: 1px solid var(--sa-primary);
+  }
+}
+
 .app-field.q-field--dense .q-field__label {
   top: 16px;
 }

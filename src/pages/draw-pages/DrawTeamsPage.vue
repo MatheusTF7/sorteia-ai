@@ -225,7 +225,7 @@
               v-for="list in savedLists"
               :key="list.id"
               flat
-              class="col-12 cursor-pointer q-pa-md br-20 row items-center justify-between"
+              class="col-12 cursor-pointer q-mb-md q-pa-md br-20 row items-center justify-between"
               :class="
                 $q.dark.isActive
                   ? 'bg-slate-800 hover-bg-slate-700'

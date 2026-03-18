@@ -1,26 +1,29 @@
 <template>
-  <q-page class="q-pa-lg">
-    <div class="text-h5 text-weight-bold q-mb-sm">{{ t('numbers.pageTitle') }}</div>
-    <div class="text-subtitle2 text-grey-7 q-mb-lg">
-      {{ t('numbers.pageSubtitle') }}
+  <q-page class="q-pa-lg text-center" style="max-width: 1200px; margin: 0 auto">
+    <div class="q-mb-xl">
+      <div class="text-h4 text-weight-bold q-mb-md text-gradient" style="letter-spacing: -1px">
+        {{ t('numbers.pageTitle') }}
+      </div>
+      <div class="text-h6 text-weight-regular text-grey-6">
+        {{ t('numbers.pageSubtitle') }}
+      </div>
     </div>
 
-    <div class="row q-col-gutter-lg">
+    <div class="row q-col-gutter-xl text-left">
       <!-- Configurações -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">
+        <q-card flat class="card shadow-modern">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-lg">
               {{ t('numbers.configTitle') }}
             </div>
 
-            <div class="row q-col-gutter-md">
+            <div class="row q-col-gutter-md q-mb-md">
               <div class="col-6">
                 <q-input
                   v-model.number="min"
                   type="number"
                   outlined
-                  dense
                   :label="t('numbers.minLabel')"
                 />
               </div>
@@ -30,7 +33,6 @@
                   v-model.number="max"
                   type="number"
                   outlined
-                  dense
                   :label="t('numbers.maxLabel')"
                 />
               </div>
@@ -40,28 +42,33 @@
               v-model.number="quantidade"
               type="number"
               outlined
-              dense
+              class="q-mb-md"
               :label="t('numbers.config.quantity')"
-              class="q-mt-md"
               :min="2"
               :max="intervalo"
             />
 
-            <q-checkbox
-              v-model="permitirRepetidos"
-              :label="t('numbers.allowRepeats')"
-              class="q-mt-sm"
-            />
-
-            <q-checkbox
-              v-model="ordenarResultado"
-              :label="t('numbers.sortResult')"
-              class="q-mt-sm"
-            />
+            <div class="q-mb-md q-gutter-y-sm">
+              <div>
+                <q-checkbox
+                  v-model="permitirRepetidos"
+                  :label="t('numbers.allowRepeats')"
+                  color="primary"
+                />
+              </div>
+              <div>
+                <q-checkbox
+                  v-model="ordenarResultado"
+                  :label="t('numbers.sortResult')"
+                  color="primary"
+                />
+              </div>
+            </div>
 
             <q-btn
-              class="q-mt-md full-width"
+              class="full-width q-py-sm text-weight-bold"
               color="primary"
+              unelevated
               :label="t('numbers.actions.draw')"
               :disable="!configuracaoValida"
               @click="sortear"
@@ -72,22 +79,35 @@
 
       <!-- Resultado -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm">
+        <q-card flat class="card shadow-modern">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-md">
               {{ t('numbers.result.title') }}
             </div>
 
-            <div v-if="resultado.length === 0" class="text-grey-6 text-caption">
+            <div
+              v-if="resultado.length === 0"
+              class="text-grey-6 text-center q-pa-lg bg-slate-50 br-20"
+              :class="
+                $q.dark.isActive ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+              "
+              style="border: 1px solid"
+            >
               {{ t('numbers.result.none') }}
             </div>
 
-            <div class="row q-col-gutter-sm">
-              <div v-for="(numero, index) in sortedResultado" :key="index" class="col-auto">
-                <q-chip color="primary" text-color="white" icon="casino">
-                  {{ numero }}
-                </q-chip>
-              </div>
+            <div v-else class="row q-gutter-sm">
+              <q-chip
+                v-for="(numero, index) in sortedResultado"
+                :key="index"
+                :color="$q.dark.isActive ? 'primary' : 'primary'"
+                text-color="white"
+                icon="casino"
+                class="text-weight-medium shadow-1 q-px-md q-py-sm"
+                style="border-radius: 12px; font-size: 16px"
+              >
+                {{ numero }}
+              </q-chip>
             </div>
           </q-card-section>
         </q-card>

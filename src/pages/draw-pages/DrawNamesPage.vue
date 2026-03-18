@@ -1,24 +1,35 @@
 <template>
-  <q-page class="q-pa-lg">
-    <div class="text-h5 text-weight-bold q-mb-sm">{{ t('names.pageTitle') }}</div>
-    <div class="text-subtitle2 text-grey-7 q-mb-lg">
-      {{ t('names.pageSubtitle') }}
+  <q-page class="q-pa-lg text-center" style="max-width: 1200px; margin: 0 auto">
+    <div class="q-mb-xl">
+      <div class="text-h4 text-weight-bold q-mb-md text-gradient" style="letter-spacing: -1px">
+        {{ t('names.pageTitle') }}
+      </div>
+      <div class="text-h6 text-weight-regular text-grey-6">
+        {{ t('names.pageSubtitle') }}
+      </div>
     </div>
 
-    <div class="row q-col-gutter-lg">
+    <div class="row q-col-gutter-xl text-left">
       <!-- Entrada de nomes -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm row items-center">
+        <q-card flat class="card shadow-modern">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-md row items-center">
               {{ t('names.listTitle') }}
               <q-space />
-              <q-btn flat dense icon="folder_open" color="primary" @click="loadDialogOpen = true">
+              <q-btn
+                flat
+                round
+                class="q-mr-sm"
+                icon="folder_open"
+                color="primary"
+                @click="loadDialogOpen = true"
+              >
                 <q-tooltip>{{ t('shared.loadList') }}</q-tooltip>
               </q-btn>
               <q-btn
                 flat
-                dense
+                round
                 icon="save"
                 color="primary"
                 :disable="nomes.length === 0"
@@ -33,44 +44,58 @@
               :label="t('names.addName')"
               :hint="t('shared.addNamesHint')"
               outlined
-              dense
+              class="q-mb-md"
               @keyup.enter="adicionarNome"
             >
               <template #append>
-                <q-btn icon="add" round dense flat @click="adicionarNome" />
+                <q-btn icon="add" round color="primary" class="q-ml-sm" @click="adicionarNome" />
               </template>
             </q-input>
 
-            <q-list bordered separator class="q-mt-md rounded-borders">
-              <q-item v-if="nomes.length === 0">
-                <q-item-section class="text-grey-6 text-caption">
-                  {{ t('names.noNames') }}
-                </q-item-section>
-              </q-item>
-
-              <q-item v-for="(nome, index) in nomes" :key="index">
-                <q-item-section>{{ nome }}</q-item-section>
-                <q-item-section side>
-                  <q-btn
-                    icon="close"
+            <div
+              class="bg-slate-50 dark-bg-slate-900 br-20 q-pa-sm"
+              :class="
+                $q.dark.isActive ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+              "
+              style="border: 1px solid; min-height: 200px"
+            >
+              <div v-if="nomes.length === 0" class="text-grey-6 text-center q-pa-lg">
+                {{ t('names.noNames') }}
+              </div>
+              <div v-else class="row q-col-gutter-sm">
+                <div v-for="(nome, index) in nomes" :key="index" class="col-12">
+                  <q-card
                     flat
-                    dense
-                    round
-                    color="negative"
-                    @click="removerNome(index)"
-                  />
-                </q-item-section>
-              </q-item>
-            </q-list>
+                    class="bg-white dark-bg-slate-800 row items-center justify-between q-py-sm q-px-md br-20"
+                    :class="
+                      $q.dark.isActive
+                        ? 'bg-slate-800 border-slate-700'
+                        : 'bg-white border-slate-200'
+                    "
+                    style="border: 1px solid"
+                  >
+                    <span class="text-weight-medium">{{ nome }}</span>
+                    <q-btn
+                      icon="close"
+                      flat
+                      dense
+                      round
+                      color="negative"
+                      @click="removerNome(index)"
+                    />
+                  </q-card>
+                </div>
+              </div>
+            </div>
           </q-card-section>
         </q-card>
       </div>
 
       <!-- Configuração e resultado -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">
+        <q-card flat class="card shadow-modern">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-lg">
               {{ t('names.configTitle') }}
             </div>
 
@@ -78,42 +103,53 @@
               v-model.number="quantidade"
               type="number"
               outlined
-              dense
+              class="q-mb-lg"
               :label="t('names.config.quantity')"
               :min="1"
               :max="nomes.length"
             />
 
             <q-btn
-              class="q-mt-md full-width"
+              class="full-width q-py-sm text-weight-bold"
               color="primary"
+              unelevated
               :label="t('names.actions.draw')"
               :disable="nomes.length === 0 || quantidade < 1"
               @click="sortear"
             />
           </q-card-section>
 
-          <q-separator />
+          <q-separator class="q-mx-lg" />
 
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-md">
               {{ t('names.result.title') }}
             </div>
 
-            <div v-if="resultado.length === 0" class="text-grey-6 text-caption">
+            <div
+              v-if="resultado.length === 0"
+              class="text-grey-6 text-center q-pa-lg bg-slate-50 br-20"
+              :class="
+                $q.dark.isActive ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+              "
+              style="border: 1px solid"
+            >
               {{ t('names.result.none') }}
             </div>
 
-            <q-chip
-              v-for="(nome, index) in resultado"
-              :key="index"
-              color="primary"
-              text-color="white"
-              icon="emoji_events"
-              class="q-mr-sm q-mb-sm"
-            >
-              {{ nome }}
-            </q-chip>
+            <div v-else class="row q-gutter-sm">
+              <q-chip
+                v-for="(nome, index) in resultado"
+                :key="index"
+                :color="$q.dark.isActive ? 'indigo-9' : 'indigo-1'"
+                :text-color="$q.dark.isActive ? 'white' : 'indigo-10'"
+                icon="emoji_events"
+                class="text-weight-medium shadow-1 q-px-md q-py-sm"
+                style="border-radius: 12px; font-size: 14px"
+              >
+                {{ nome }}
+              </q-chip>
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -121,60 +157,82 @@
 
     <!-- Load list dialog -->
     <q-dialog v-model="loadDialogOpen">
-      <q-card style="min-width: 360px; max-width: 500px; width: 90vw">
-        <q-card-section class="row items-center">
-          <div class="text-h6">{{ t('shared.loadList') }}</div>
+      <q-card
+        class="shadow-modern q-pa-sm"
+        style="min-width: 360px; max-width: 500px; width: 90vw; border-radius: 24px"
+      >
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6 text-weight-bold">{{ t('shared.loadList') }}</div>
           <q-space />
-          <q-btn v-close-popup icon="close" flat round dense />
+          <q-btn v-close-popup icon="close" flat round color="grey-6" />
         </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div v-if="savedLists.length === 0" class="text-grey-6 text-center q-pa-md">
+        <q-card-section class="q-mt-sm">
+          <div
+            v-if="savedLists.length === 0"
+            class="text-grey-6 text-center q-pa-xl bg-slate-50 br-20"
+          >
             {{ t('shared.noSavedLists') }}
           </div>
-          <q-list v-else bordered separator class="rounded-borders">
-            <q-item
+          <div v-else class="row q-col-gutter-sm">
+            <q-card
               v-for="list in savedLists"
               :key="list.id"
-              clickable
-              v-ripple
+              flat
+              class="col-12 cursor-pointer q-mb-sm q-pa-md br-20 row items-center justify-between"
+              :class="
+                $q.dark.isActive
+                  ? 'bg-slate-800 hover-bg-slate-700'
+                  : 'bg-slate-50 hover-bg-slate-100'
+              "
               @click="loadList(list)"
+              style="transition: background 0.2s"
             >
-              <q-item-section>
-                <q-item-label>{{ list.name }}</q-item-label>
-                <q-item-label caption>
+              <div>
+                <div class="text-weight-bold text-subtitle1">{{ list.name }}</div>
+                <div class="text-grey-6 text-caption">
                   {{ t('savedLists.itemCount', { count: list.items.length }) }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section v-if="list.isDefault" side>
-                <q-badge color="amber" :label="t('savedLists.isDefault')" />
-              </q-item-section>
-            </q-item>
-          </q-list>
+                </div>
+              </div>
+              <q-badge
+                v-if="list.isDefault"
+                color="amber-8"
+                :label="t('savedLists.isDefault')"
+                rounded
+                class="q-px-sm q-py-xs"
+              />
+            </q-card>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
 
     <!-- Save list dialog -->
     <q-dialog v-model="saveDialogOpen">
-      <q-card style="min-width: 320px">
-        <q-card-section>
-          <div class="text-h6">{{ t('shared.saveList') }}</div>
+      <q-card class="shadow-modern q-pa-sm" style="min-width: 340px; border-radius: 24px">
+        <q-card-section class="q-pb-none">
+          <div class="text-h6 text-weight-bold">{{ t('shared.saveList') }}</div>
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="q-mt-sm">
           <q-input
             v-model="saveListName"
             :label="t('shared.listNameLabel')"
             outlined
-            dense
             autofocus
             @keyup.enter="saveCurrentList"
           />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat :label="t('shared.cancel')" />
+        <q-card-actions align="right" class="q-px-md q-pb-md">
+          <q-btn
+            v-close-popup
+            flat
+            :label="t('shared.cancel')"
+            color="grey-7"
+            class="text-weight-bold q-px-md"
+          />
           <q-btn
             color="primary"
+            unelevated
+            class="text-weight-bold q-px-md"
             :label="t('shared.save')"
             :disable="!saveListName.trim()"
             @click="saveCurrentList"

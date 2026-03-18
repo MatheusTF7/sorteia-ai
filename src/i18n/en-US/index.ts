@@ -80,6 +80,8 @@ export default {
       title: 'Tic-Tac-Toe',
       desc: 'Draw who starts and play against a friend',
     },
+    compactView: 'Compact view',
+    normalView: 'Normal view',
   },
 
   // Draw teams page

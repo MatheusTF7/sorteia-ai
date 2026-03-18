@@ -79,6 +79,8 @@ export default {
       title: 'Jogo da Velha',
       desc: 'Sorteie quem começa e jogue contra um amigo',
     },
+    compactView: 'Modo compacto',
+    normalView: 'Modo normal',
   },
 
   // Página de times

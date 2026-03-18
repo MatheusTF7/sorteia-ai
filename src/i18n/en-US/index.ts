@@ -6,6 +6,19 @@ export default {
   success: 'Action was successful',
 
   // Main layout / navigation
+  layout: {
+    brandTag: 'Draw studio',
+    brandSubtitle: 'Cleaner, faster and fully local draw flows in your browser.',
+    activeWorkspace: 'Active area',
+    settingsHint: 'Adjust theme and language',
+    navTitle: 'Navigation',
+    navTipTitle: 'Productivity tip',
+    navTipDescription:
+      'Set a default list to start the next draws with participants already filled in.',
+    privacyBadge: '100% local',
+    flowsBadge: 'Ready flows',
+    languageReloadHint: 'If any text stays in the previous language, refresh the page.',
+  },
   nav: {
     home: 'Home',
     names: 'Names',
@@ -51,6 +64,13 @@ export default {
   drawList: {
     title: 'Draw Types',
     subtitle: 'Choose the type of draw you want to perform',
+    eyebrow: 'New experience',
+    openFlow: 'Open flow',
+    stats: {
+      flows: 'Flows',
+      private: 'Privacy',
+      reusable: 'Lists',
+    },
     nameDraw: {
       title: 'Name Draw',
       desc: 'Good for raffles, classrooms or events',
@@ -77,6 +97,9 @@ export default {
     addParticipant: 'Add participant',
     noParticipants: 'No participants added',
     preconfig: 'Pre config',
+    configTitle: 'Configuration',
+    configDescription: 'Set team size and decide whether to choose a starter automatically.',
+    resultDescription: 'Teams are displayed in clearer blocks for fast scanning.',
     config: {
       teamCount: 'Number of teams',
       teamSize: 'Team size',
@@ -91,6 +114,9 @@ export default {
       none: 'No teams generated yet',
     },
     starterLabel: 'Starter',
+    estimatedTeams: 'Estimated teams',
+    starterReady: 'Starter ready',
+    teamLabel: 'Team',
   },
 
   // Theme
@@ -105,10 +131,12 @@ export default {
     pageTitle: 'Name Draw',
     pageSubtitle: 'Insert names and define how many will be drawn',
     listTitle: 'Name list',
+    listDescription: 'Add participants and keep the list ready for reuse later.',
     addName: 'Add name',
     noNames: 'No names added',
     preconfig: 'Pre config',
     configTitle: 'Configuration',
+    configDescription: 'Choose how many names should be drawn before running the draw.',
     config: {
       quantity: 'Quantity to draw',
     },
@@ -119,6 +147,7 @@ export default {
       title: 'Result',
       none: 'No draw performed yet',
     },
+    resultDescription: 'Chosen names appear in a highlighted, easy-to-read format.',
   },
 
   // Draw numbers page
@@ -126,6 +155,7 @@ export default {
     pageTitle: 'Number Draw',
     pageSubtitle: 'Define the range and how many numbers to draw',
     configTitle: 'Configuration',
+    configDescription: 'Control the range, quantity and rules for the numeric draw.',
     minLabel: 'Minimum number',
     maxLabel: 'Maximum number',
     config: {
@@ -133,6 +163,10 @@ export default {
     },
     allowRepeats: 'Allow repeated numbers',
     sortResult: 'Sort result',
+    rangeSize: 'Range size',
+    modeLabel: 'Current mode',
+    uniqueMode: 'No repeats',
+    repeatMode: 'With repeats',
     actions: {
       draw: 'Draw',
     },
@@ -140,6 +174,7 @@ export default {
       title: 'Result',
       none: 'No draw performed yet',
     },
+    resultDescription: 'Clean visualization with strong emphasis on the chosen numbers.',
   },
 
   // Draw prizes page
@@ -147,17 +182,22 @@ export default {
     pageTitle: 'Prize Draw',
     pageSubtitle: 'Configure prizes, participants and draw rules',
     prizesTitle: 'Prizes',
+    prizesDescription: 'Register the items that will be distributed in the draw.',
     addPrize: 'Add prize',
     noPrizes: 'No prizes added',
 
     participantsTitle: 'Participants',
+    participantsDescription: 'Use names or a numeric range to define the participant pool.',
     useNumberRange: 'Use numbers instead of names',
     addParticipant: 'Add participant',
     noParticipants: 'No participants added',
     rangeMin: 'Min',
     rangeMax: 'Max',
+    manualMode: 'Manual list',
+    numberMode: 'Number range',
 
     configTitle: 'Configuration',
+    configDescription: 'Adjust the draw rule and run it when everything is ready.',
     drawCount: 'Number of draws',
     prizesPerDraw: 'Prizes per draw',
     singleWinnerPerDraw: 'Single winner per draw (wins all prizes)',
@@ -169,6 +209,7 @@ export default {
       title: 'Result',
       none: 'No draw performed yet',
     },
+    resultDescription: 'Each round clearly shows who received which prize.',
   },
 
   settings: {
@@ -179,6 +220,7 @@ export default {
   savedLists: {
     pageTitle: 'My Lists',
     pageSubtitle: 'Manage your saved name lists',
+    manageDescription: 'Create, edit and reuse lists with a clearer organization.',
     noLists: 'No saved lists yet',
     firstList: 'Create my first list',
     createList: 'New List',
@@ -197,17 +239,34 @@ export default {
     isDefault: 'Default',
     setDefault: 'Set as default',
     unsetDefault: 'Remove as default',
+    totalItems: 'Saved items',
+    defaultStatus: 'Default list ready',
+    noDefaultStatus: 'No default list',
+    createdAt: 'Created on {date}',
+  },
+
+  error: {
+    title: 'Page not found',
+    description: 'The route you tried to access no longer exists or has not been created yet.',
+    backHome: 'Back to home',
   },
 
   // Shared across draw pages
   shared: {
     loadList: 'Load List',
     saveList: 'Save List',
+    loadListDescription: 'Pick a saved list to instantly fill this flow.',
+    saveListDescription: 'Save the current content to reuse it later.',
     noSavedLists: 'No saved lists. Create one in "My Lists".',
     listLoaded: 'List "{name}" loaded!',
     listSaved: 'List "{name}" saved!',
     listNameLabel: 'List name',
     addNamesHint: 'Separate multiple names with comma ( , ), semicolon ( ; ) or period ( . )',
+    addAction: 'Add',
+    readyToUse: 'Ready to use',
+    participantsCount: '{count} participant | {count} participants',
+    itemsCount: '{count} item | {count} items',
+    drawLabel: 'Draw',
     cancel: 'Cancel',
     save: 'Save',
   },

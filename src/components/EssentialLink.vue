@@ -1,22 +1,49 @@
 <template>
-  <q-item v-if="isExternalLink(link)" clickable tag="a" target="_blank" :href="link">
-    <q-item-section v-if="icon" avatar>
-      <q-icon :name="icon" />
+  <q-item
+    v-if="isExternalLink(link)"
+    clickable
+    tag="a"
+    target="_blank"
+    :href="link"
+    class="app-nav-item"
+  >
+    <q-item-section v-if="icon" avatar class="app-nav-item__avatar">
+      <div class="app-nav-item__icon-wrap">
+        <q-icon :name="icon" />
+      </div>
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>{{ caption }}</q-item-label>
+      <q-item-label class="app-nav-item__title">{{ title }}</q-item-label>
+      <q-item-label caption class="app-nav-item__caption">{{ caption }}</q-item-label>
+    </q-item-section>
+
+    <q-item-section side class="app-nav-item__chevron">
+      <q-icon name="north_east" size="18px" />
     </q-item-section>
   </q-item>
-  <q-item v-else clickable :to="link">
-    <q-item-section v-if="icon" avatar>
-      <q-icon :name="icon" />
+
+  <q-item
+    v-else
+    clickable
+    exact
+    :to="link"
+    class="app-nav-item"
+    active-class="app-nav-item--active"
+  >
+    <q-item-section v-if="icon" avatar class="app-nav-item__avatar">
+      <div class="app-nav-item__icon-wrap">
+        <q-icon :name="icon" />
+      </div>
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>{{ caption }}</q-item-label>
+      <q-item-label class="app-nav-item__title">{{ title }}</q-item-label>
+      <q-item-label caption class="app-nav-item__caption">{{ caption }}</q-item-label>
+    </q-item-section>
+
+    <q-item-section side class="app-nav-item__chevron">
+      <q-icon name="chevron_right" size="18px" />
     </q-item-section>
   </q-item>
 </template>

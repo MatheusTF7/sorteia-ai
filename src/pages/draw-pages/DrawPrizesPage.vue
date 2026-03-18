@@ -1,305 +1,403 @@
 <template>
-  <q-page class="q-pa-lg">
-    <div class="text-h5 text-weight-bold q-mb-sm">{{ t('prizes.pageTitle') }}</div>
-    <div class="text-subtitle2 text-grey-7 q-mb-lg">
-      {{ t('prizes.pageSubtitle') }}
-    </div>
+  <q-page class="page-shell">
+    <AppPageHero
+      :eyebrow="t('nav.prizes')"
+      :title="t('prizes.pageTitle')"
+      :subtitle="t('prizes.pageSubtitle')"
+      icon="workspace_premium"
+      tone="warning"
+    >
+      <template #meta>
+        <div class="metric-pills">
+          <div class="metric-pill">
+            <span class="metric-pill__label">{{ t('prizes.prizesTitle') }}</span>
+            <strong class="metric-pill__value">{{ prizes.length }}</strong>
+          </div>
+          <div class="metric-pill">
+            <span class="metric-pill__label">{{ t('prizes.participantsTitle') }}</span>
+            <strong class="metric-pill__value">{{ participantPool.length }}</strong>
+          </div>
+          <div class="metric-pill">
+            <span class="metric-pill__label">{{ t('prizes.drawCount') }}</span>
+            <strong class="metric-pill__value">{{ drawCount }}</strong>
+          </div>
+        </div>
+      </template>
+    </AppPageHero>
 
-    <div class="row q-col-gutter-lg">
-      <!-- Prizes -->
-      <div class="col-12 col-md-4">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm">
-              {{ t('prizes.prizesTitle') }}
+    <div class="page-grid page-grid--three">
+      <q-card flat class="panel-card">
+        <q-card-section class="panel-card__header">
+          <div>
+            <div class="panel-card__eyebrow">{{ t('prizes.prizesTitle') }}</div>
+            <div class="panel-card__title">{{ t('prizes.prizesTitle') }}</div>
+            <div class="panel-card__description">{{ t('prizes.prizesDescription') }}</div>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="panel-card__body panel-card__body--spacious">
+          <q-input
+            v-model="newPrize"
+            :label="t('prizes.addPrize')"
+            outlined
+            dense
+            class="app-field"
+            @keyup.enter="addPrize"
+          >
+            <template #append>
+              <q-btn
+                flat
+                round
+                class="app-icon-btn app-icon-btn--brand"
+                icon="add"
+                @click="addPrize"
+              />
+            </template>
+          </q-input>
+
+          <div v-if="prizes.length === 0" class="empty-state empty-state--compact">
+            <q-icon name="redeem" size="28px" />
+            <div>{{ t('prizes.noPrizes') }}</div>
+          </div>
+
+          <div v-else class="collection-list">
+            <div
+              v-for="(prize, index) in prizes"
+              :key="`${prize}-${index}`"
+              class="collection-item"
+            >
+              <div class="collection-item__body">
+                <span class="collection-item__title">{{ prize }}</span>
+                <span class="collection-item__meta">#{{ index + 1 }}</span>
+              </div>
+
+              <q-btn
+                flat
+                round
+                class="app-icon-btn app-icon-btn--danger"
+                icon="close"
+                @click="removePrize(index)"
+              />
             </div>
+          </div>
+        </q-card-section>
+      </q-card>
 
+      <q-card flat class="panel-card">
+        <q-card-section class="panel-card__header">
+          <div>
+            <div class="panel-card__eyebrow">{{ t('prizes.participantsTitle') }}</div>
+            <div class="panel-card__title">{{ t('prizes.participantsTitle') }}</div>
+            <div class="panel-card__description">{{ t('prizes.participantsDescription') }}</div>
+          </div>
+
+          <div class="inline-tool-actions">
+            <q-btn
+              flat
+              round
+              class="app-icon-btn"
+              icon="folder_open"
+              @click="loadDialogOpen = true"
+            >
+              <q-tooltip>{{ t('shared.loadList') }}</q-tooltip>
+            </q-btn>
+
+            <q-btn
+              flat
+              round
+              class="app-icon-btn app-icon-btn--brand"
+              icon="save"
+              :disable="participants.length === 0 || useNumberRange"
+              @click="openSaveDialog"
+            >
+              <q-tooltip>{{ t('shared.saveList') }}</q-tooltip>
+            </q-btn>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="panel-card__body panel-card__body--spacious">
+          <div class="segmented-control">
+            <button
+              type="button"
+              :class="[
+                'segmented-control__button',
+                { 'segmented-control__button--active': !useNumberRange },
+              ]"
+              @click="useNumberRange = false"
+            >
+              {{ t('prizes.manualMode') }}
+            </button>
+            <button
+              type="button"
+              :class="[
+                'segmented-control__button',
+                { 'segmented-control__button--active': useNumberRange },
+              ]"
+              @click="useNumberRange = true"
+            >
+              {{ t('prizes.numberMode') }}
+            </button>
+          </div>
+
+          <template v-if="!useNumberRange">
             <q-input
-              v-model="newPrize"
-              :label="t('prizes.addPrize')"
+              v-model="newParticipant"
+              :label="t('prizes.addParticipant')"
               outlined
               dense
-              @keyup.enter="addPrize"
+              class="app-field"
+              @keyup.enter="addParticipant"
             >
               <template #append>
-                <q-btn icon="add" round dense flat @click="addPrize" />
+                <q-btn
+                  flat
+                  round
+                  class="app-icon-btn app-icon-btn--brand"
+                  icon="add"
+                  @click="addParticipant"
+                />
               </template>
             </q-input>
 
-            <q-list bordered separator class="q-mt-md rounded-borders">
-              <q-item v-if="prizes.length === 0">
-                <q-item-section class="text-grey-6 text-caption">
-                  {{ t('prizes.noPrizes') }}
-                </q-item-section>
-              </q-item>
+            <div class="field-hint">{{ t('shared.addNamesHint') }}</div>
 
-              <q-item v-for="(prize, index) in prizes" :key="index">
-                <q-item-section>{{ prize }}</q-item-section>
-                <q-item-section side>
-                  <q-btn
-                    icon="close"
-                    flat
-                    dense
-                    round
-                    color="negative"
-                    @click="removePrize(index)"
-                  />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <!-- Participants -->
-      <div class="col-12 col-md-4">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm row items-center">
-              {{ t('prizes.participantsTitle') }}
-              <q-space />
-              <q-btn flat dense icon="folder_open" color="primary" @click="loadDialogOpen = true">
-                <q-tooltip>{{ t('shared.loadList') }}</q-tooltip>
-              </q-btn>
-              <q-btn
-                flat
-                dense
-                icon="save"
-                color="primary"
-                :disable="participants.length === 0"
-                @click="openSaveDialog"
-              >
-                <q-tooltip>{{ t('shared.saveList') }}</q-tooltip>
-              </q-btn>
+            <div v-if="participants.length === 0" class="empty-state empty-state--compact">
+              <q-icon name="group" size="28px" />
+              <div>{{ t('prizes.noParticipants') }}</div>
             </div>
 
-            <q-toggle
-              v-model="useNumberRange"
-              :label="t('prizes.useNumberRange')"
-              class="q-mb-sm"
-            />
-
-            <template v-if="!useNumberRange">
-              <q-input
-                v-model="newParticipant"
-                :label="t('prizes.addParticipant')"
-                :hint="t('shared.addNamesHint')"
-                outlined
-                dense
-                @keyup.enter="addParticipant"
+            <div v-else class="collection-list">
+              <div
+                v-for="(participant, index) in participants"
+                :key="`${participant}-${index}`"
+                class="collection-item"
               >
-                <template #append>
-                  <q-btn icon="add" round dense flat @click="addParticipant" />
-                </template>
-              </q-input>
-
-              <q-list bordered separator class="q-mt-md rounded-borders">
-                <q-item v-if="participants.length === 0">
-                  <q-item-section class="text-grey-6 text-caption">
-                    {{ t('prizes.noParticipants') }}
-                  </q-item-section>
-                </q-item>
-
-                <q-item v-for="(participant, index) in participants" :key="index">
-                  <q-item-section>{{ participant }}</q-item-section>
-                  <q-item-section side>
-                    <q-btn
-                      icon="close"
-                      flat
-                      dense
-                      round
-                      color="negative"
-                      @click="removeParticipant(index)"
-                    />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </template>
-
-            <template v-else>
-              <div class="row q-col-gutter-md">
-                <div class="col-6">
-                  <q-input
-                    v-model.number="rangeMin"
-                    type="number"
-                    outlined
-                    dense
-                    :label="t('prizes.rangeMin')"
-                  />
+                <div class="collection-item__body">
+                  <span class="collection-item__title">{{ participant }}</span>
+                  <span class="collection-item__meta">#{{ index + 1 }}</span>
                 </div>
-                <div class="col-6">
-                  <q-input
-                    v-model.number="rangeMax"
-                    type="number"
-                    outlined
-                    dense
-                    :label="t('prizes.rangeMax')"
-                  />
+
+                <q-btn
+                  flat
+                  round
+                  class="app-icon-btn app-icon-btn--danger"
+                  icon="close"
+                  @click="removeParticipant(index)"
+                />
+              </div>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model.number="rangeMin"
+                  type="number"
+                  outlined
+                  dense
+                  class="app-field"
+                  :label="t('prizes.rangeMin')"
+                />
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model.number="rangeMax"
+                  type="number"
+                  outlined
+                  dense
+                  class="app-field"
+                  :label="t('prizes.rangeMax')"
+                />
+              </div>
+            </div>
+
+            <div class="section-note">
+              {{ t('prizes.useNumberRange') }}
+            </div>
+          </template>
+        </q-card-section>
+      </q-card>
+
+      <q-card flat class="panel-card">
+        <q-card-section class="panel-card__header">
+          <div>
+            <div class="panel-card__eyebrow">{{ t('prizes.configTitle') }}</div>
+            <div class="panel-card__title">{{ t('prizes.configTitle') }}</div>
+            <div class="panel-card__description">{{ t('prizes.configDescription') }}</div>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="panel-card__body panel-card__body--spacious">
+          <q-input
+            v-model.number="drawCount"
+            type="number"
+            outlined
+            dense
+            class="app-field"
+            :label="t('prizes.drawCount')"
+            :min="1"
+          />
+
+          <q-input
+            v-model.number="prizesPerDraw"
+            type="number"
+            outlined
+            dense
+            class="app-field"
+            :label="t('prizes.prizesPerDraw')"
+            :min="1"
+          />
+
+          <q-toggle v-model="singleWinnerPerDraw" :label="t('prizes.singleWinnerPerDraw')" />
+
+          <q-btn
+            unelevated
+            no-caps
+            class="app-btn app-btn--primary full-width"
+            :label="t('prizes.actions.runDraw')"
+            :disable="!isValidConfiguration"
+            @click="runDraw"
+          />
+
+          <div class="panel-divider" />
+
+          <div>
+            <div class="panel-card__title">{{ t('prizes.result.title') }}</div>
+            <div class="panel-card__description">{{ t('prizes.resultDescription') }}</div>
+          </div>
+
+          <div v-if="results.length === 0" class="empty-state empty-state--compact">
+            <q-icon name="emoji_events" size="28px" />
+            <div>{{ t('prizes.result.none') }}</div>
+          </div>
+
+          <div v-else class="page-stack">
+            <div v-for="(draw, index) in results" :key="index" class="result-card">
+              <div class="team-board__header">
+                <div>
+                  <div class="team-board__title">{{ t('shared.drawLabel') }} {{ index + 1 }}</div>
+                  <div class="team-board__meta">
+                    {{ t('shared.itemsCount', { count: draw.length }) }}
+                  </div>
                 </div>
               </div>
-            </template>
-          </q-card-section>
-        </q-card>
-      </div>
 
-      <!-- Configuration & Result -->
-      <div class="col-12 col-md-4">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">
-              {{ t('prizes.configTitle') }}
+              <div class="saved-list-card__tags q-mt-md">
+                <div
+                  v-for="(item, itemIndex) in draw"
+                  :key="`${item.prize}-${itemIndex}`"
+                  class="result-pill"
+                >
+                  <q-icon name="workspace_premium" size="18px" />
+                  <span>{{ item.participant }} -> {{ item.prize }}</span>
+                </div>
+              </div>
             </div>
-
-            <q-input
-              v-model.number="drawCount"
-              type="number"
-              outlined
-              dense
-              :label="t('prizes.drawCount')"
-              :min="1"
-            />
-
-            <q-input
-              v-model.number="prizesPerDraw"
-              type="number"
-              outlined
-              dense
-              :label="t('prizes.prizesPerDraw')"
-              class="q-mt-sm"
-              :min="1"
-            />
-
-            <q-toggle
-              v-model="singleWinnerPerDraw"
-              :label="t('prizes.singleWinnerPerDraw')"
-              class="q-mt-sm"
-            />
-
-            <q-btn
-              class="q-mt-md full-width"
-              color="primary"
-              :label="t('prizes.actions.runDraw')"
-              :disable="!isValidConfiguration"
-              @click="runDraw"
-            />
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm">
-              {{ t('prizes.result.title') }}
-            </div>
-            <div v-if="results.length === 0" class="text-grey-6 text-caption">
-              {{ t('prizes.result.none') }}
-            </div>
-
-            <div v-for="(draw, index) in results" :key="index" class="q-mb-md">
-              <q-card flat bordered class="result-card">
-                <q-card-section>
-                  <div class="text-subtitle2 text-weight-bold q-mb-sm">Sorteio {{ index + 1 }}</div>
-
-                  <div v-for="(item, idx) in draw" :key="idx" class="q-mb-xs">
-                    <q-chip color="primary" text-color="white" icon="emoji_events">
-                      {{ item.participant }} → {{ item.prize }}
-                    </q-chip>
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
+          </div>
+        </q-card-section>
+      </q-card>
     </div>
 
-    <!-- Load list dialog -->
     <q-dialog v-model="loadDialogOpen">
-      <q-card style="min-width: 360px; max-width: 500px; width: 90vw">
-        <q-card-section class="row items-center">
-          <div class="text-h6">{{ t('shared.loadList') }}</div>
-          <q-space />
-          <q-btn v-close-popup icon="close" flat round dense />
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div v-if="savedLists.length === 0" class="text-grey-6 text-center q-pa-md">
-            {{ t('shared.noSavedLists') }}
+      <q-card flat class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div>
+            <div class="dialog-title">{{ t('shared.loadList') }}</div>
+            <div class="dialog-caption">{{ t('shared.loadListDescription') }}</div>
           </div>
-          <q-list v-else bordered separator class="rounded-borders">
-            <q-item
+
+          <q-btn v-close-popup flat round class="app-icon-btn" icon="close" />
+        </q-card-section>
+
+        <q-card-section class="dialog-body">
+          <div v-if="savedLists.length === 0" class="empty-state empty-state--compact">
+            <q-icon name="bookmarks" size="28px" />
+            <div>{{ t('shared.noSavedLists') }}</div>
+          </div>
+
+          <div v-else class="dialog-list">
+            <button
               v-for="list in savedLists"
               :key="list.id"
-              clickable
-              v-ripple
+              type="button"
+              class="dialog-list__item"
               @click="loadList(list)"
             >
-              <q-item-section>
-                <q-item-label>{{ list.name }}</q-item-label>
-                <q-item-label caption>
+              <div class="dialog-list__body">
+                <span class="dialog-list__title">{{ list.name }}</span>
+                <span class="dialog-list__meta">
                   {{ t('savedLists.itemCount', { count: list.items.length }) }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section v-if="list.isDefault" side>
-                <q-badge color="amber" :label="t('savedLists.isDefault')" />
-              </q-item-section>
-            </q-item>
-          </q-list>
+                </span>
+              </div>
+
+              <q-badge v-if="list.isDefault" color="warning" text-color="dark">
+                {{ t('savedLists.isDefault') }}
+              </q-badge>
+            </button>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
 
-    <!-- Save list dialog -->
     <q-dialog v-model="saveDialogOpen">
-      <q-card style="min-width: 320px">
-        <q-card-section>
-          <div class="text-h6">{{ t('shared.saveList') }}</div>
+      <q-card flat class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div>
+            <div class="dialog-title">{{ t('shared.saveList') }}</div>
+            <div class="dialog-caption">{{ t('shared.saveListDescription') }}</div>
+          </div>
+
+          <q-btn v-close-popup flat round class="app-icon-btn" icon="close" />
         </q-card-section>
-        <q-card-section>
+
+        <q-card-section class="dialog-body panel-card__body--spacious">
           <q-input
             v-model="saveListName"
             :label="t('shared.listNameLabel')"
             outlined
             dense
             autofocus
+            class="app-field"
             @keyup.enter="saveCurrentList"
           />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat :label="t('shared.cancel')" />
+
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline no-caps class="app-btn app-btn--secondary">
+            {{ t('shared.cancel') }}
+          </q-btn>
           <q-btn
-            color="primary"
-            :label="t('shared.save')"
+            unelevated
+            no-caps
+            class="app-btn app-btn--primary"
             :disable="!saveListName.trim()"
             @click="saveCurrentList"
-          />
-        </q-card-actions>
+          >
+            {{ t('shared.save') }}
+          </q-btn>
+        </div>
       </q-card>
     </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import AppPageHero from 'components/AppPageHero.vue';
 import { useSavedConfigs } from 'src/composables/useSavedConfigs';
-
-const { t } = useI18n();
-const $q = useQuasar();
-
-interface SavedList {
-  [key: string]: string | string[] | boolean;
-  id: string;
-  name: string;
-  items: string[];
-  createdAt: string;
-  isDefault: boolean;
-}
+import { parseDelimitedEntries, shuffleItems, type SavedList } from 'src/utils/draw';
 
 interface DrawResult {
   participant: string | number;
   prize: string;
 }
+
+const { t } = useI18n();
+const $q = useQuasar();
 
 const newPrize = ref('');
 const prizes = ref<string[]>([]);
@@ -313,18 +411,16 @@ const rangeMax = ref<number>(100);
 
 const drawCount = ref<number>(1);
 const prizesPerDraw = ref<number>(1);
-const singleWinnerPerDraw = ref<boolean>(false);
-
+const singleWinnerPerDraw = ref(false);
 const results = ref<DrawResult[][]>([]);
 
-// ─── Saved lists integration ──────────────────────────────────────────────────
 const { data: savedLists } = useSavedConfigs<SavedList[]>('saved_lists', []);
 const loadDialogOpen = ref(false);
 const saveDialogOpen = ref(false);
 const saveListName = ref('');
 
 onMounted(() => {
-  const defaultList = savedLists.value.find((l) => l.isDefault);
+  const defaultList = savedLists.value.find((list) => list.isDefault);
   if (defaultList) {
     participants.value = [...defaultList.items];
     useNumberRange.value = false;
@@ -369,10 +465,10 @@ function saveCurrentList() {
   });
 }
 
-// ─── Prizes ──────────────────────────────────────────────────────────────────
 function addPrize() {
   const value = newPrize.value.trim();
   if (!value) return;
+
   prizes.value.push(value);
   newPrize.value = '';
 }
@@ -381,17 +477,11 @@ function removePrize(index: number) {
   prizes.value.splice(index, 1);
 }
 
-// ─── Participants ─────────────────────────────────────────────────────────────
 function addParticipant() {
-  const raw = newParticipant.value;
-  if (!raw.trim()) return;
+  const raw = newParticipant.value.trim();
+  if (!raw) return;
 
-  const parsed = raw
-    .split(/[,;.]+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-
-  participants.value.push(...parsed);
+  participants.value.push(...parseDelimitedEntries(raw));
   newParticipant.value = '';
 }
 
@@ -403,9 +493,10 @@ const participantPool = computed<(string | number)[]>(() => {
   if (!useNumberRange.value) return participants.value;
 
   const pool: number[] = [];
-  for (let i = rangeMin.value; i <= rangeMax.value; i++) {
-    pool.push(i);
+  for (let number = rangeMin.value; number <= rangeMax.value; number += 1) {
+    pool.push(number);
   }
+
   return pool;
 });
 
@@ -413,40 +504,32 @@ const isValidConfiguration = computed(() => {
   if (prizes.value.length === 0) return false;
   if (participantPool.value.length === 0) return false;
   if (drawCount.value < 1 || prizesPerDraw.value < 1) return false;
-
   return prizesPerDraw.value * drawCount.value <= prizes.value.length;
 });
 
 function runDraw() {
-  const availablePrizes = [...prizes.value];
+  const availablePrizes = shuffleItems(prizes.value);
   const pool = [...participantPool.value];
-
-  // Shuffle prizes
-  for (let i = availablePrizes.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [availablePrizes[i], availablePrizes[j]] = [availablePrizes[j]!, availablePrizes[i]!];
-  }
 
   results.value = [];
 
-  for (let d = 0; d < drawCount.value; d++) {
+  for (let drawIndex = 0; drawIndex < drawCount.value; drawIndex += 1) {
     const drawResult: DrawResult[] = [];
-
     let selectedParticipant: string | number | null = null;
 
     if (singleWinnerPerDraw.value) {
-      const index = Math.floor(Math.random() * pool.length);
-      selectedParticipant = pool[index]!;
+      selectedParticipant = pool[Math.floor(Math.random() * pool.length)] ?? null;
     }
 
-    for (let p = 0; p < prizesPerDraw.value; p++) {
+    for (let prizeIndex = 0; prizeIndex < prizesPerDraw.value; prizeIndex += 1) {
       const prize = availablePrizes.shift();
       if (!prize) break;
 
       const participant = singleWinnerPerDraw.value
-        ? selectedParticipant!
-        : pool[Math.floor(Math.random() * pool.length)]!;
+        ? selectedParticipant
+        : (pool[Math.floor(Math.random() * pool.length)] ?? null);
 
+      if (participant === null) break;
       drawResult.push({ participant, prize });
     }
 
@@ -454,13 +537,3 @@ function runDraw() {
   }
 }
 </script>
-
-<style scoped>
-.card {
-  border-radius: 16px;
-}
-
-.result-card {
-  border-radius: 12px;
-}
-</style>

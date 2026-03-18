@@ -5,6 +5,19 @@ export default {
   success: 'A ação foi bem sucedida',
 
   // Layout / navegação
+  layout: {
+    brandTag: 'Estúdio de sorteios',
+    brandSubtitle: 'Fluxos mais claros, organizados e 100% locais no navegador.',
+    activeWorkspace: 'Área ativa',
+    settingsHint: 'Ajuste tema e idioma da interface',
+    navTitle: 'Navegação',
+    navTipTitle: 'Dica de produtividade',
+    navTipDescription:
+      'Defina uma lista padrão para abrir os próximos sorteios com participantes preenchidos.',
+    privacyBadge: '100% local',
+    flowsBadge: 'Fluxos prontos',
+    languageReloadHint: 'Se algum texto continuar no idioma anterior, recarregue a página.',
+  },
   nav: {
     home: 'Início',
     names: 'Nomes',
@@ -50,6 +63,13 @@ export default {
   drawList: {
     title: 'Tipos de Sorteios',
     subtitle: 'Escolha o tipo de sorteio que deseja realizar',
+    eyebrow: 'Nova experiência',
+    openFlow: 'Abrir fluxo',
+    stats: {
+      flows: 'Fluxos',
+      private: 'Privacidade',
+      reusable: 'Listas',
+    },
     nameDraw: {
       title: 'Sorteio de Nomes',
       desc: 'Ideal para rifas, salas de aula ou eventos',
@@ -76,6 +96,9 @@ export default {
     addParticipant: 'Adicionar participante',
     noParticipants: 'Nenhum participante adicionado',
     preconfig: 'Pre config',
+    configTitle: 'Configuração',
+    configDescription: 'Defina o tamanho dos times e escolha se haverá iniciante.',
+    resultDescription: 'Os times aparecem organizados em blocos mais claros e fáceis de ler.',
     config: {
       teamCount: 'Número de times',
       teamSize: 'Tamanho do time',
@@ -90,6 +113,9 @@ export default {
       none: 'Nenhum time gerado ainda',
     },
     starterLabel: 'Iniciante',
+    estimatedTeams: 'Times estimados',
+    starterReady: 'Iniciante pronto',
+    teamLabel: 'Time',
   },
 
   // Tema
@@ -104,10 +130,12 @@ export default {
     pageTitle: 'Sorteio de Nomes',
     pageSubtitle: 'Insira os nomes e defina quantos serão sorteados',
     listTitle: 'Lista de nomes',
+    listDescription: 'Adicione os participantes e mantenha a lista pronta para reutilizar depois.',
     addName: 'Adicionar nome',
     noNames: 'Nenhum nome adicionado',
     preconfig: 'Pre config',
     configTitle: 'Configuração',
+    configDescription: 'Escolha quantos nomes devem sair no sorteio antes de executar.',
     config: {
       quantity: 'Quantidade a sortear',
     },
@@ -118,6 +146,7 @@ export default {
       title: 'Resultado',
       none: 'Nenhum sorteio realizado ainda',
     },
+    resultDescription: 'Os nomes sorteados aparecem em destaque para leitura imediata.',
   },
 
   // Página de números
@@ -125,6 +154,7 @@ export default {
     pageTitle: 'Sorteio de Números',
     pageSubtitle: 'Defina o intervalo e quantos números deseja sortear',
     configTitle: 'Configuração',
+    configDescription: 'Controle intervalo, quantidade e regras para o sorteio numérico.',
     minLabel: 'Número mínimo',
     maxLabel: 'Número máximo',
     config: {
@@ -132,6 +162,10 @@ export default {
     },
     allowRepeats: 'Permitir números repetidos',
     sortResult: 'Ordenar resultado',
+    rangeSize: 'Amplitude do intervalo',
+    modeLabel: 'Modo atual',
+    uniqueMode: 'Sem repetição',
+    repeatMode: 'Com repetição',
     actions: {
       draw: 'Sortear',
     },
@@ -139,6 +173,7 @@ export default {
       title: 'Resultado',
       none: 'Nenhum sorteio realizado ainda',
     },
+    resultDescription: 'Visualização limpa com destaque para os números sorteados.',
   },
 
   // Página de prêmios
@@ -146,17 +181,22 @@ export default {
     pageTitle: 'Sorteio de Prêmios',
     pageSubtitle: 'Configure prêmios, participantes e regras do sorteio',
     prizesTitle: 'Prêmios',
+    prizesDescription: 'Cadastre os itens que serão distribuídos no sorteio.',
     addPrize: 'Adicionar prêmio',
     noPrizes: 'Nenhum prêmio adicionado',
 
     participantsTitle: 'Participantes',
+    participantsDescription: 'Use nomes ou uma faixa numérica para montar o grupo participante.',
     useNumberRange: 'Usar números em vez de nomes',
     addParticipant: 'Adicionar participante',
     noParticipants: 'Nenhum participante adicionado',
     rangeMin: 'Min',
     rangeMax: 'Max',
+    manualMode: 'Lista manual',
+    numberMode: 'Faixa numérica',
 
     configTitle: 'Configuração',
+    configDescription: 'Ajuste a regra do sorteio e execute quando tudo estiver pronto.',
     drawCount: 'Número de sorteios',
     prizesPerDraw: 'Prêmios por sorteio',
     singleWinnerPerDraw: 'Um participante ganha todos os prêmios por sorteio',
@@ -168,6 +208,14 @@ export default {
       title: 'Resultado',
       none: 'Nenhum sorteio executado ainda',
     },
+    resultDescription: 'Cada rodada mostra com clareza quem recebeu qual prêmio.',
+  },
+
+  error: {
+    title: 'Página não encontrada',
+    description:
+      'O caminho que você tentou acessar não existe mais ou ainda não foi criado nesta aplicação.',
+    backHome: 'Voltar para o início',
   },
 
   settings: {
@@ -178,6 +226,7 @@ export default {
   savedLists: {
     pageTitle: 'Minhas Listas',
     pageSubtitle: 'Gerencie suas listas de nomes salvas',
+    manageDescription: 'Crie, edite e reutilize listas com uma organização mais clara.',
     noLists: 'Nenhuma lista salva ainda',
     firstList: 'Criar minha primeira lista',
     createList: 'Nova Lista',
@@ -196,17 +245,28 @@ export default {
     isDefault: 'Padrão',
     setDefault: 'Marcar como padrão',
     unsetDefault: 'Remover como padrão',
+    totalItems: 'Itens salvos',
+    defaultStatus: 'Lista padrão definida',
+    noDefaultStatus: 'Sem lista padrão',
+    createdAt: 'Criada em {date}',
   },
 
   // Compartilhado entre páginas de sorteio
   shared: {
     loadList: 'Carregar Lista',
     saveList: 'Salvar Lista',
+    loadListDescription: 'Escolha uma lista salva para preencher este fluxo imediatamente.',
+    saveListDescription: 'Salve o conteúdo atual para reutilizar em outro momento.',
     noSavedLists: 'Nenhuma lista salva. Crie uma em "Minhas Listas".',
     listLoaded: 'Lista "{name}" carregada!',
     listSaved: 'Lista "{name}" salva!',
     listNameLabel: 'Nome da lista',
     addNamesHint: 'Separe múltiplos nomes por vírgula ( , ), ponto-e-vírgula ( ; ) ou ponto ( . )',
+    addAction: 'Adicionar',
+    readyToUse: 'Pronto para usar',
+    participantsCount: '{count} participante | {count} participantes',
+    itemsCount: '{count} item | {count} itens',
+    drawLabel: 'Sorteio',
     cancel: 'Cancelar',
     save: 'Salvar',
   },

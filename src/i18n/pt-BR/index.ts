@@ -13,6 +13,7 @@ export default {
     prizes: 'Prêmios',
     bingo: 'Bingo',
     about: 'Sobre',
+    aboutSubtitle: 'Sobre este app, seu propósito e aviso legal',
     savedLists: 'Minhas Listas',
     openMenu: 'Abrir menu lateral',
     closeMenu: 'Fechar menu',

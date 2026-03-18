@@ -104,7 +104,7 @@ const sorteios: Sorteio[] = [
   {
     id: 7,
     nome: t('nav.about'),
-    descricao: t('drawList.subtitle'),
+    descricao: t('nav.aboutSubtitle'),
     icon: 'info',
     rgb: '139, 92, 246', // Violet
     route: '/about',

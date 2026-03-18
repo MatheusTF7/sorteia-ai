@@ -14,6 +14,7 @@ export default {
     prizes: 'Prizes',
     bingo: 'Bingo',
     about: 'About',
+    aboutSubtitle: 'About this app, its purpose and disclaimer',
     savedLists: 'Saved Lists',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',

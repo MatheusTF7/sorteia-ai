@@ -193,7 +193,7 @@ const linksList: EssentialLinkProps[] = [
   },
   {
     title: t('nav.about'),
-    caption: t('drawList.subtitle'),
+    caption: t('nav.aboutSubtitle'),
     icon: 'info',
     link: '/about',
   },

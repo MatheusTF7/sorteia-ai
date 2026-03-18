@@ -186,6 +186,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/bingo',
   },
   {
+    title: t('nav.tictactoe'),
+    caption: t('drawList.tictactoeDraw.desc'),
+    icon: 'grid_3x3',
+    link: '/tictactoe',
+  },
+  {
     title: t('nav.savedLists'),
     caption: t('savedLists.pageSubtitle'),
     icon: 'bookmark',

@@ -95,6 +95,14 @@ const sorteios: Sorteio[] = [
   },
   {
     id: 6,
+    nome: t('drawList.tictactoeDraw.title'),
+    descricao: t('drawList.tictactoeDraw.desc'),
+    icon: 'grid_3x3',
+    rgb: '236, 72, 153', // Pink
+    route: '/tictactoe',
+  },
+  {
+    id: 7,
     nome: t('nav.savedLists'),
     descricao: t('savedLists.pageSubtitle'),
     icon: 'bookmark',
@@ -102,7 +110,7 @@ const sorteios: Sorteio[] = [
     route: '/saved-lists',
   },
   {
-    id: 7,
+    id: 8,
     nome: t('nav.about'),
     descricao: t('nav.aboutSubtitle'),
     icon: 'info',
@@ -110,7 +118,7 @@ const sorteios: Sorteio[] = [
     route: '/about',
   },
   {
-    id: 8,
+    id: 9,
     nome: t('pwa.pageTitle'),
     descricao: t('pwa.subtitle'),
     icon: 'get_app',

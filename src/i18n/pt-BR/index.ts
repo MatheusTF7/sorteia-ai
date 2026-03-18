@@ -12,6 +12,7 @@ export default {
     teams: 'Times',
     prizes: 'Prêmios',
     bingo: 'Bingo',
+    tictactoe: 'Jogo da Velha',
     about: 'Sobre',
     aboutSubtitle: 'Sobre este app, seu propósito e aviso legal',
     savedLists: 'Minhas Listas',
@@ -73,6 +74,10 @@ export default {
     bingoDraw: {
       title: 'Bingo',
       desc: 'Jogue bingo completo com cartela e sorteio',
+    },
+    tictactoeDraw: {
+      title: 'Jogo da Velha',
+      desc: 'Sorteie quem começa e jogue contra um amigo',
     },
   },
 
@@ -249,6 +254,25 @@ export default {
     isDefault: 'Padrão',
     setDefault: 'Marcar como padrão',
     unsetDefault: 'Remover como padrão',
+  },
+
+  // Jogo da Velha
+  tictactoe: {
+    pageTitle: 'Jogo da Velha',
+    pageSubtitle: 'Sorteie quem começa e desafie um amigo no clássico jogo da velha!',
+    playerX: 'Jogador X',
+    playerO: 'Jogador O',
+    playerName: 'Nome do jogador',
+    startGame: 'Sortear Quem Começa',
+    newGame: 'Novo Jogo',
+    resetScores: 'Zerar Placar',
+    turn: 'Vez de',
+    wins: 'venceu',
+    draw: 'Empate!',
+    pressToStart: 'Insira os nomes e clique em "Sortear Quem Começa"',
+    scores: 'Placar',
+    draws: 'Empates',
+    startsFirst: 'começa primeiro!',
   },
 
   // Compartilhado entre páginas de sorteio

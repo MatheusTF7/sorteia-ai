@@ -13,6 +13,7 @@ export default {
     teams: 'Teams',
     prizes: 'Prizes',
     bingo: 'Bingo',
+    tictactoe: 'Tic-Tac-Toe',
     about: 'About',
     aboutSubtitle: 'About this app, its purpose and disclaimer',
     savedLists: 'Saved Lists',
@@ -74,6 +75,10 @@ export default {
     bingoDraw: {
       title: 'Bingo',
       desc: 'Play a full bingo game with cards and drawing',
+    },
+    tictactoeDraw: {
+      title: 'Tic-Tac-Toe',
+      desc: 'Draw who starts and play against a friend',
     },
   },
 
@@ -249,6 +254,25 @@ export default {
     isDefault: 'Default',
     setDefault: 'Set as default',
     unsetDefault: 'Remove as default',
+  },
+
+  // Tic-Tac-Toe page
+  tictactoe: {
+    pageTitle: 'Tic-Tac-Toe',
+    pageSubtitle: 'Draw who goes first and challenge a friend in the classic game!',
+    playerX: 'Player X',
+    playerO: 'Player O',
+    playerName: 'Player name',
+    startGame: 'Draw Who Starts',
+    newGame: 'New Game',
+    resetScores: 'Reset Scores',
+    turn: 'Turn',
+    wins: 'wins',
+    draw: 'Draw!',
+    pressToStart: 'Enter names and click "Draw Who Starts"',
+    scores: 'Scores',
+    draws: 'Draws',
+    startsFirst: 'goes first!',
   },
 
   // Shared across draw pages

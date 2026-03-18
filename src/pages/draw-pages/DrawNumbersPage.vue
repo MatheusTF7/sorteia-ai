@@ -96,7 +96,12 @@
               {{ t('numbers.result.none') }}
             </div>
 
-            <div v-else class="row q-gutter-sm">
+            <div
+              v-else
+              class="row q-gutter-sm q-pa-md br-20"
+              :class="$q.dark.isActive ? 'bg-slate-800' : 'bg-indigo-50'"
+              style="border: 1px solid rgba(0, 0, 0, 0.05)"
+            >
               <q-chip
                 v-for="(numero, index) in sortedResultado"
                 :key="index"

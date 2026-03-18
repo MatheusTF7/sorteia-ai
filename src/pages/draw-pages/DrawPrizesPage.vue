@@ -26,7 +26,13 @@
               @keyup.enter="addPrize"
             >
               <template #append>
-                <q-btn icon="add" round color="primary" class="q-ml-sm" @click="addPrize" />
+                <q-btn
+                  icon="add"
+                  round
+                  color="primary"
+                  class="app-icon-btn q-ml-sm"
+                  @click="addPrize"
+                />
               </template>
             </q-input>
 
@@ -57,7 +63,7 @@
                       icon="close"
                       flat
                       dense
-                      round
+                      rounded
                       color="negative"
                       @click="removePrize(index)"
                     />
@@ -79,7 +85,7 @@
               <q-btn
                 flat
                 round
-                class="q-mr-sm"
+                class="app-icon-btn q-mr-sm"
                 icon="folder_open"
                 color="primary"
                 @click="loadDialogOpen = true"
@@ -89,6 +95,7 @@
               <q-btn
                 flat
                 round
+                class="app-icon-btn"
                 icon="save"
                 color="primary"
                 :disable="participants.length === 0"
@@ -115,7 +122,13 @@
                 @keyup.enter="addParticipant"
               >
                 <template #append>
-                  <q-btn icon="add" round color="primary" class="q-ml-sm" @click="addParticipant" />
+                  <q-btn
+                    icon="add"
+                    round
+                    color="primary"
+                    class="app-icon-btn q-ml-sm"
+                    @click="addParticipant"
+                  />
                 </template>
               </q-input>
 
@@ -148,7 +161,7 @@
                         icon="close"
                         flat
                         dense
-                        round
+                        rounded
                         color="negative"
                         @click="removeParticipant(index)"
                       />

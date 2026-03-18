@@ -177,3 +177,53 @@ body.body--dark .shadow-modern {
   opacity: 1;
   transform: translateY(0);
 }
+
+:root {
+  --sa-text: #162033;
+  --sa-text-muted: #667085;
+  --sa-primary: #2457f5;
+  --sa-surface-strong: #ffffff;
+  --sa-surface-muted: #f8fbff;
+  --sa-primary-strong: #1d45c7;
+  --sa-primary-soft: rgba(36, 87, 245, 0.1);
+  --sa-border: rgba(15, 23, 42, 0.08);
+  --sa-border-strong: rgba(15, 23, 42, 0.12);
+  --sa-negative-soft: rgba(209, 67, 91, 0.12);
+}
+
+body.body--dark {
+  --sa-text: #edf2ff;
+  --sa-text-muted: #9aabc7;
+  --sa-primary-soft: rgba(92, 138, 255, 0.18);
+  --sa-surface-muted: #132235;
+  --sa-surface-strong: #0f1b2d;
+  --sa-border: rgba(148, 163, 184, 0.14);
+  --sa-border-strong: rgba(148, 163, 184, 0.2);
+  --sa-negative-soft: rgba(209, 67, 91, 0.16);
+}
+
+.app-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  color: var(--sa-text-muted);
+  background: var(--sa-surface-strong);
+  border: 1px solid var(--sa-border);
+}
+
+.app-icon-btn:not(.app-icon-btn--danger):hover {
+  color: var(--sa-text);
+  background: var(--sa-surface-muted);
+}
+
+.app-icon-btn--brand {
+  background: var(--sa-primary-soft);
+  color: var(--sa-primary);
+  border-color: transparent;
+}
+
+.app-icon-btn--danger {
+  background: var(--sa-negative-soft);
+  color: $negative;
+  border-color: transparent;
+}

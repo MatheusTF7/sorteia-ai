@@ -20,7 +20,7 @@
               <q-btn
                 flat
                 round
-                class="q-mr-sm"
+                class="app-icon-btn q-mr-sm"
                 icon="folder_open"
                 color="primary"
                 @click="loadDialogOpen = true"
@@ -30,6 +30,7 @@
               <q-btn
                 flat
                 round
+                class="app-icon-btn"
                 icon="save"
                 color="primary"
                 :disable="nomes.length === 0"
@@ -48,7 +49,13 @@
               @keyup.enter="adicionarNome"
             >
               <template #append>
-                <q-btn icon="add" round color="primary" class="q-ml-sm" @click="adicionarNome" />
+                <q-btn
+                  icon="add"
+                  round
+                  color="primary"
+                  class="app-icon-btn q-ml-sm"
+                  @click="adicionarNome"
+                />
               </template>
             </q-input>
 
@@ -79,7 +86,7 @@
                       icon="close"
                       flat
                       dense
-                      round
+                      rounded
                       color="negative"
                       @click="removerNome(index)"
                     />
@@ -137,11 +144,16 @@
               {{ t('names.result.none') }}
             </div>
 
-            <div v-else class="row q-gutter-sm">
+            <div
+              v-else
+              class="row q-gutter-sm q-pa-md br-20"
+              :class="$q.dark.isActive ? 'bg-slate-800' : 'bg-indigo-50'"
+              style="border: 1px solid rgba(0, 0, 0, 0.05)"
+            >
               <q-chip
                 v-for="(nome, index) in resultado"
                 :key="index"
-                :color="$q.dark.isActive ? 'indigo-9' : 'indigo-1'"
+                :color="$q.dark.isActive ? 'indigo-9' : 'white'"
                 :text-color="$q.dark.isActive ? 'white' : 'indigo-10'"
                 icon="emoji_events"
                 class="text-weight-medium shadow-1 q-px-md q-py-sm"

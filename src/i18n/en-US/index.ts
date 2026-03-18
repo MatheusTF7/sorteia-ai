@@ -194,5 +194,8 @@ export default {
     cancel: 'Cancel',
     confirm: 'Delete',
     itemCount: '{count} name | {count} names',
+    isDefault: 'Default',
+    setDefault: 'Set as default',
+    unsetDefault: 'Remove as default',
   },
 };

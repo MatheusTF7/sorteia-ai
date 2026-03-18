@@ -193,5 +193,8 @@ export default {
     cancel: 'Cancelar',
     confirm: 'Excluir',
     itemCount: '{count} nome | {count} nomes',
+    isDefault: 'Padrão',
+    setDefault: 'Marcar como padrão',
+    unsetDefault: 'Remover como padrão',
   },
 };

@@ -1,5 +1,12 @@
 export type SharedBingoHostRole = 'drawer' | 'both';
 
+export interface SharedBingoClaim {
+  id: string;
+  playerName: string;
+  cardNumbers: number[];
+  submittedAt: string;
+}
+
 export interface SharedBingoRoomRecord {
   appId: 'sorteia-ai-bingo';
   version: 1;
@@ -8,6 +15,7 @@ export interface SharedBingoRoomRecord {
   hostRole: SharedBingoHostRole;
   calledNumbers: number[];
   lastDrawnNumber: number | null;
+  claims: SharedBingoClaim[];
   createdAt: string;
   updatedAt: string;
 }
@@ -24,6 +32,22 @@ interface JsonBinResponse<T> {
 
 const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3';
 const JSONBIN_KEY_HEADERS = ['X-Access-Key', 'X-Master-Key'] as const;
+
+function buildNoCacheUrl(path: string): string {
+  const url = new URL(`${JSONBIN_BASE_URL}${path}`);
+  url.searchParams.set('_ts', Date.now().toString());
+  return url.toString();
+}
+
+async function fetchNoCache(path: string): Promise<Response> {
+  return fetch(buildNoCacheUrl(path), {
+    cache: 'no-store',
+    headers: {
+      'Cache-Control': 'no-cache, no-store, max-age=0',
+      Pragma: 'no-cache',
+    },
+  });
+}
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -47,12 +71,40 @@ function sanitizeCalledNumbers(value: unknown): number[] {
   return sanitized;
 }
 
+function sanitizeClaims(value: unknown): SharedBingoClaim[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.flatMap((item) => {
+    if (!isObject(item)) return [];
+
+    const playerName = typeof item.playerName === 'string' ? item.playerName.trim() : '';
+    const id = typeof item.id === 'string' && item.id ? item.id : crypto.randomUUID();
+    const submittedAt =
+      typeof item.submittedAt === 'string' ? item.submittedAt : new Date().toISOString();
+    const cardNumbers = sanitizeCalledNumbers(item.cardNumbers);
+
+    if (!playerName || cardNumbers.length === 0) {
+      return [];
+    }
+
+    return [
+      {
+        id,
+        playerName,
+        cardNumbers,
+        submittedAt,
+      },
+    ];
+  });
+}
+
 function normalizeRoomRecord(payload: unknown, roomCode: string): SharedBingoRoomRecord {
   if (!isObject(payload) || payload.appId !== 'sorteia-ai-bingo') {
     throw new Error('A sala informada nao pertence ao bingo compartilhado do Sorteia Ai.');
   }
 
   const calledNumbers = sanitizeCalledNumbers(payload.calledNumbers);
+  const claims = sanitizeClaims(payload.claims);
   const lastDrawnNumber =
     Number.isInteger(payload.lastDrawnNumber) &&
     Number(payload.lastDrawnNumber) >= 1 &&
@@ -70,6 +122,7 @@ function normalizeRoomRecord(payload: unknown, roomCode: string): SharedBingoRoo
     hostRole,
     calledNumbers,
     lastDrawnNumber,
+    claims,
     createdAt: typeof payload.createdAt === 'string' ? payload.createdAt : new Date().toISOString(),
     updatedAt: typeof payload.updatedAt === 'string' ? payload.updatedAt : new Date().toISOString(),
   };
@@ -134,6 +187,20 @@ async function requestWithApiKey(
   return lastResponse;
 }
 
+async function requestWithOptionalApiKey(
+  path: string,
+  init: RequestInit,
+  apiKey?: string,
+): Promise<Response> {
+  const trimmedKey = apiKey?.trim() ?? '';
+
+  if (!trimmedKey) {
+    return fetch(`${JSONBIN_BASE_URL}${path}`, init);
+  }
+
+  return requestWithApiKey(path, init, trimmedKey);
+}
+
 export function createSharedBingoRecord(
   roomCode: string,
   hostRole: SharedBingoHostRole,
@@ -148,6 +215,7 @@ export function createSharedBingoRecord(
     hostRole,
     calledNumbers: [],
     lastDrawnNumber: null,
+    claims: [],
     createdAt: now,
     updatedAt: now,
   };
@@ -189,7 +257,7 @@ export async function createSharedBingoRoom(
 }
 
 export async function readSharedBingoRoom(roomCode: string): Promise<SharedBingoRoomRecord> {
-  const response = await fetch(`${JSONBIN_BASE_URL}/b/${roomCode}/latest?meta=false`);
+  const response = await fetchNoCache(`/b/${roomCode}/latest?meta=false`);
 
   if (!response.ok) {
     throw new Error(await parseError(response));
@@ -202,9 +270,9 @@ export async function readSharedBingoRoom(roomCode: string): Promise<SharedBingo
 export async function updateSharedBingoRoom(
   roomCode: string,
   record: SharedBingoRoomRecord,
-  apiKey: string,
+  apiKey?: string,
 ): Promise<SharedBingoRoomRecord> {
-  const response = await requestWithApiKey(
+  const response = await requestWithOptionalApiKey(
     `/b/${roomCode}`,
     {
       method: 'PUT',

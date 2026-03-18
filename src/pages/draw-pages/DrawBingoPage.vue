@@ -87,6 +87,13 @@
               </div>
 
               <q-input
+                v-model="sharedPlayerName"
+                outlined
+                class="q-mb-md"
+                :label="t('bingo.sharedPlayerNameLabel')"
+              />
+
+              <q-input
                 v-model="sharedRoomInput"
                 outlined
                 :label="t('bingo.sharedRoomInputLabel')"
@@ -150,14 +157,78 @@
                   @click="copyRoomLink"
                 />
               </div>
-              <div v-if="isSharedGuestSession" class="col-auto">
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator v-if="isSharedHostSession && sharedQrCodeDataUrl" />
+        <q-card-section
+          v-if="isSharedHostSession && sharedQrCodeDataUrl"
+          class="row q-col-gutter-lg items-center"
+        >
+          <div class="col-12 col-md-auto text-center">
+            <div class="shared-qr-panel q-pa-sm q-mx-auto">
+              <img
+                :src="sharedQrCodeDataUrl"
+                :alt="t('bingo.sharedQrAlt')"
+                class="shared-qr-image"
+              />
+            </div>
+          </div>
+
+          <div class="col-12 col-md">
+            <div class="text-subtitle1 text-weight-bold q-mb-sm">
+              {{ t('bingo.sharedQrTitle') }}
+            </div>
+            <div class="text-body2 text-grey-6 q-mb-sm">
+              {{ t('bingo.sharedQrDesc') }}
+            </div>
+            <div class="text-caption text-grey-6">
+              {{ t('bingo.sharedQrCodeHint') }}
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card v-if="isSharedHostSession" flat class="card shadow-modern q-mb-lg">
+        <q-card-section>
+          <div class="text-h6 text-weight-bold q-mb-md row items-center">
+            {{ t('bingo.sharedClaimsTitle') }}
+            <q-space />
+            <q-btn
+              flat
+              color="primary"
+              icon="refresh"
+              :label="t('bingo.sharedClaimsRefresh')"
+              :loading="sharedClaimsLoading"
+              @click="refreshSharedClaims"
+            />
+            <q-badge color="primary" :label="sharedClaims.length" rounded />
+          </div>
+
+          <div v-if="sharedClaims.length === 0" class="text-body2 text-grey-6">
+            {{ t('bingo.sharedClaimsEmpty') }}
+          </div>
+
+          <div v-else class="column q-gutter-md">
+            <div v-for="claim in sharedClaimsSorted" :key="claim.id" class="shared-claim-item">
+              <div class="shared-claim-item__content">
+                <div class="text-subtitle2 text-weight-bold">{{ claim.playerName }}</div>
+                <div class="text-caption text-grey-6">
+                  {{ t('bingo.sharedClaimSubmittedAt', { time: formatSyncTime(claim.submittedAt) }) }}
+                </div>
+                <div class="text-caption text-grey-6">
+                  {{ t('bingo.sharedClaimCardCount', { count: claim.cardNumbers.length }) }}
+                </div>
+              </div>
+
+              <div class="shared-claim-item__action">
                 <q-btn
-                  outline
+                  unelevated
                   color="primary"
-                  icon="refresh"
-                  :label="t('bingo.syncNow')"
-                  :loading="sharedManualRefreshing"
-                  @click="refreshSharedRoom(true, true)"
+                  icon="fact_check"
+                  :label="t('bingo.sharedClaimReviewAction')"
+                  @click="reviewSharedClaim(claim)"
                 />
               </div>
             </div>
@@ -242,7 +313,7 @@
                   unelevated
                   icon="casino"
                   :label="t('bingo.drawNumber')"
-                  :disable="availableNumbers.length === 0 || suspenseAnimating"
+                  :disable="availableNumbers.length === 0 || suspenseAnimating || drawActionLocked"
                   @click="drawNumber"
                 />
               </div>
@@ -275,93 +346,6 @@
         </q-card>
 
         <!-- Called Numbers Board -->
-        <q-card flat class="card shadow-modern q-mt-lg">
-          <q-card-section
-            :class="{
-              'q-pa-lg': $q.screen.gt.sm,
-              'q-pa-md': $q.screen.lt.md,
-            }"
-          >
-            <div class="text-h6 text-weight-bold q-mb-md row items-center">
-              {{ t('bingo.calledNumbers') }}
-              <q-badge class="q-ml-sm" color="primary" :label="calledNumbers.length" rounded />
-            </div>
-
-            <div class="bingo-board">
-              <div v-for="letter in bingoLetters" :key="letter.char" class="bingo-board__column">
-                <div class="bingo-board__header" :class="letter.colorClass">
-                  {{ letter.char }}
-                </div>
-                <div
-                  v-for="n in letter.numbers"
-                  :key="n"
-                  class="bingo-board__cell"
-                  :class="{
-                    'bingo-board__cell--called': calledNumbers.includes(n),
-                    [letter.colorClass]: calledNumbers.includes(n),
-                  }"
-                >
-                  {{ n }}
-                </div>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <div v-if="showSharedFeed" class="q-mb-xl">
-        <q-card flat class="card shadow-modern">
-          <q-card-section
-            :class="{
-              'q-pa-lg': $q.screen.gt.sm,
-              'q-pa-md': $q.screen.lt.md,
-            }"
-          >
-            <div class="text-h6 text-weight-bold q-mb-lg row items-center">
-              {{ t('bingo.sharedFeedTitle') }}
-              <q-space />
-              <q-badge color="primary" :label="calledNumbers.length" rounded />
-            </div>
-
-            <div class="text-center q-mb-md">
-              <div
-                v-if="lastDrawnNumber !== null"
-                class="bingo-ball q-mx-auto"
-                :class="getBallColorClass(lastDrawnNumber)"
-              >
-                <div class="bingo-ball__letter">{{ getLetterForNumber(lastDrawnNumber) }}</div>
-                <div class="bingo-ball__number">{{ lastDrawnNumber }}</div>
-              </div>
-              <div v-else class="bingo-ball bingo-ball--empty q-mx-auto">
-                <span class="text-grey-5 text-h6">?</span>
-              </div>
-
-              <div class="text-caption text-grey-6 q-mt-sm">
-                {{
-                  lastDrawnNumber === null
-                    ? t('bingo.sharedWaitingNumber')
-                    : t('bingo.sharedStatusConnected', {
-                        time: sharedLastSyncTime,
-                      })
-                }}
-              </div>
-            </div>
-
-            <div class="q-mt-md">
-              <div class="row items-center justify-between q-mb-xs">
-                <span class="text-caption text-grey-6">{{ t('bingo.progress') }}</span>
-                <span class="text-caption text-weight-bold">{{ calledNumbers.length }} / 75</span>
-              </div>
-              <q-linear-progress
-                :value="calledNumbers.length / 75"
-                color="primary"
-                rounded
-                size="8px"
-              />
-            </div>
-          </q-card-section>
-        </q-card>
-
         <q-card flat class="card shadow-modern q-mt-lg">
           <q-card-section
             :class="{
@@ -465,16 +449,20 @@
             <div class="text-center q-mt-lg">
               <q-btn
                 class="bingo-shout-btn text-weight-bold"
-                :class="{ 'bingo-shout-btn--ready': hasBingo }"
+                :class="{ 'bingo-shout-btn--ready': isSharedGuestSession || hasBingo }"
                 color="amber-8"
                 unelevated
-                icon="celebration"
-                label="BINGO!"
+                :icon="isSharedGuestSession ? 'fact_check' : 'celebration'"
+                :label="isSharedGuestSession ? t('bingo.sharedClaimAction') : 'BINGO!'"
                 size="lg"
-                :disable="!hasBingo"
-                @click="shoutBingo"
+                :loading="sharedClaimBusy"
+                :disable="isSharedGuestSession ? sharedClaimBusy : !hasBingo"
+                @click="handleBingoAction"
               />
-              <div v-if="!hasBingo" class="text-caption text-grey-5 q-mt-sm">
+              <div v-if="isSharedGuestSession" class="text-caption text-grey-5 q-mt-sm">
+                {{ t('bingo.sharedClaimHint') }}
+              </div>
+              <div v-else-if="!hasBingo" class="text-caption text-grey-5 q-mt-sm">
                 {{ t('bingo.markAllToShout') }}
               </div>
             </div>
@@ -568,7 +556,12 @@
         "
       >
         <q-card-section class="row items-center q-pb-none" style="flex-shrink: 0">
-          <div class="text-h6 text-weight-bold">{{ t('bingo.validateCard') }}</div>
+          <div>
+            <div class="text-h6 text-weight-bold">{{ t('bingo.validateCard') }}</div>
+            <div v-if="validateClaimName" class="text-caption text-grey-6">
+              {{ validateClaimName }}
+            </div>
+          </div>
           <q-space />
           <q-btn v-close-popup flat round icon="close" color="grey-6" />
         </q-card-section>
@@ -693,9 +686,20 @@
                 {{
                   validateResult.valid
                     ? t('bingo.validateResultValid')
+                    : !validateResult.isComplete
+                      ? t('bingo.validateResultIncomplete')
                     : t('bingo.validateResultInvalid')
                 }}
               </span>
+            </div>
+            <div v-if="validateResult.missingCount > 0" class="q-mb-md">
+              <div class="text-caption text-weight-bold text-negative q-mb-xs">
+                {{
+                  t('bingo.validateMissingCountLabel', {
+                    count: validateResult.missingCount,
+                  })
+                }}
+              </div>
             </div>
             <div v-if="validateResult.notCalled.length > 0" class="q-mb-md">
               <div class="text-caption text-weight-bold text-negative q-mb-xs">
@@ -764,10 +768,12 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 import { copyToClipboard, useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
+import QRCode from 'qrcode';
 import {
   createSharedBingoRoom,
   readSharedBingoRoom,
   updateSharedBingoRoom,
+  type SharedBingoClaim,
   type SharedBingoHostRole,
   type SharedBingoRoomRecord,
 } from 'src/services/jsonbinBingo';
@@ -784,12 +790,13 @@ type SharedSessionOwner = 'host' | 'guest' | null;
 interface ValidateResult {
   called: number[];
   notCalled: number[];
+  enteredCount: number;
+  missingCount: number;
+  isComplete: boolean;
   valid: boolean;
 }
 
 const JSONBIN_KEY_STORAGE = 'bingo_jsonbin_api_key';
-const SHARED_POLL_INTERVAL = 3000;
-
 const roles = computed(() => [
   {
     value: 'drawer' as Role,
@@ -831,10 +838,13 @@ const ttsEnabled = ref(false);
 const suspenseEnabled = ref(true);
 const suspenseAnimating = ref(false);
 let suspenseTimeoutId: number | null = null;
+const drawActionLocked = ref(false);
+let drawActionLockTimeoutId: number | null = null;
 
 const jsonBinApiKey = ref('');
 const showJsonBinKey = ref(false);
 const sharedRoomInput = ref('');
+const sharedPlayerName = ref('');
 const sharedRoomId = ref('');
 const sharedRoomCreatedAt = ref('');
 const sharedLastSyncedAt = ref('');
@@ -842,12 +852,14 @@ const sharedSessionOwner = ref<SharedSessionOwner>(null);
 const sharedSyncState = ref<'idle' | 'connected' | 'error'>('idle');
 const sharedErrorMessage = ref('');
 const sharedBusy = ref(false);
-const sharedManualRefreshing = ref(false);
+const sharedClaimBusy = ref(false);
+const sharedClaimsLoading = ref(false);
+const sharedQrCodeDataUrl = ref('');
+const sharedClaims = ref<SharedBingoClaim[]>([]);
 
-let sharedPollTimer: number | null = null;
-let sharedPollInFlight = false;
 let sharedPersistQueue = Promise.resolve();
 
+const isSharedGame = computed(() => gameStarted.value && isSharedMode.value);
 const isSharedHostSession = computed(
   () => gameStarted.value && sharedSessionOwner.value === 'host' && sharedRoomId.value.length > 0,
 );
@@ -860,9 +872,16 @@ const sharedRoomLink = computed(() =>
   sharedRoomId.value ? buildRoomLink(sharedRoomId.value) : '',
 );
 const sharedLastSyncTime = computed(() => formatSyncTime(sharedLastSyncedAt.value));
+const sharedClaimsSorted = computed(() =>
+  [...sharedClaims.value].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt)),
+);
 const sharedConnectionText = computed(() => {
   if (sharedSyncState.value === 'error') {
     return sharedErrorMessage.value || t('bingo.sharedStatusError');
+  }
+
+  if (isSharedGuestSession.value) {
+    return t('bingo.sharedStatusOnDemand');
   }
 
   if (sharedLastSyncedAt.value) {
@@ -871,9 +890,6 @@ const sharedConnectionText = computed(() => {
 
   return t('bingo.sharedStatusReady');
 });
-
-const showSharedFeed = computed(() => isSharedGuestSession.value);
-
 const canStartGame = computed(() => {
   if (!selectedRole.value) return false;
 
@@ -886,7 +902,7 @@ const canStartGame = computed(() => {
   }
 
   if (isSharedGuestSetup.value) {
-    return normalizedSharedRoomCode.value.length > 0;
+    return normalizedSharedRoomCode.value.length > 0 && sharedPlayerName.value.trim().length > 0;
   }
 
   return false;
@@ -1043,8 +1059,27 @@ function clearSuspenseTimeout() {
   suspenseAnimating.value = false;
 }
 
+function clearDrawActionLock() {
+  if (drawActionLockTimeoutId !== null) {
+    window.clearTimeout(drawActionLockTimeoutId);
+    drawActionLockTimeoutId = null;
+  }
+
+  drawActionLocked.value = false;
+}
+
+function startDrawActionLock() {
+  clearDrawActionLock();
+  drawActionLocked.value = true;
+  drawActionLockTimeoutId = window.setTimeout(() => {
+    drawActionLockTimeoutId = null;
+    drawActionLocked.value = false;
+  }, 700);
+}
+
 function clearCurrentGameState() {
   clearSuspenseTimeout();
+  clearDrawActionLock();
   calledNumbers.value = [];
   lastDrawnNumber.value = null;
   markedCells.clear();
@@ -1058,9 +1093,12 @@ function prepareNewGame() {
   }
 }
 
-function applySharedRecord(record: SharedBingoRoomRecord) {
+function applySharedRecord(record: SharedBingoRoomRecord, options?: { syncClaims?: boolean }) {
   calledNumbers.value = [...record.calledNumbers];
   lastDrawnNumber.value = record.lastDrawnNumber ?? record.calledNumbers.at(-1) ?? null;
+  if (options?.syncClaims !== false) {
+    sharedClaims.value = [...record.claims];
+  }
   sharedRoomCreatedAt.value = record.createdAt;
   sharedLastSyncedAt.value = record.updatedAt;
   sharedSyncState.value = 'connected';
@@ -1073,18 +1111,23 @@ function setSharedSession(record: SharedBingoRoomRecord, owner: Exclude<SharedSe
   sharedRoomInput.value = record.roomCode;
   applySharedRecord(record);
   updateRouteRoom(record.roomCode);
+
+  if (owner === 'host') {
+    void refreshSharedClaims();
+  }
 }
 
 function clearSharedSession(options?: { clearInput?: boolean }) {
-  stopSharedPolling();
   sharedSessionOwner.value = null;
   sharedRoomId.value = '';
   sharedRoomCreatedAt.value = '';
   sharedLastSyncedAt.value = '';
   sharedSyncState.value = 'idle';
   sharedErrorMessage.value = '';
-  sharedManualRefreshing.value = false;
-  sharedPollInFlight = false;
+  sharedClaimBusy.value = false;
+  sharedClaimsLoading.value = false;
+  sharedQrCodeDataUrl.value = '';
+  sharedClaims.value = [];
 
   if (options?.clearInput) {
     sharedRoomInput.value = '';
@@ -1102,6 +1145,7 @@ function buildSharedSnapshot(): SharedBingoRoomRecord {
     hostRole: selectedRole.value === 'both' ? 'both' : 'drawer',
     calledNumbers: [...calledNumbers.value],
     lastDrawnNumber: lastDrawnNumber.value,
+    claims: [...sharedClaims.value],
     createdAt: sharedRoomCreatedAt.value || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -1123,9 +1167,10 @@ function speakNumber(n: number) {
 }
 
 function drawNumber() {
-  if (availableNumbers.value.length === 0) return;
+  if (availableNumbers.value.length === 0 || drawActionLocked.value) return;
 
   clearSuspenseTimeout();
+  startDrawActionLock();
 
   const idx = Math.floor(Math.random() * availableNumbers.value.length);
   const number = availableNumbers.value[idx]!;
@@ -1246,6 +1291,87 @@ function shoutBingo() {
   }
 }
 
+function getCardNumbersForClaim() {
+  return [...markedCells].sort((a, b) => a - b);
+}
+
+async function submitSharedBingoClaim() {
+  if (!isSharedGuestSession.value || !sharedRoomId.value) {
+    return;
+  }
+
+  const playerName = sharedPlayerName.value.trim();
+  if (!playerName) {
+    notifyError(t('bingo.sharedPlayerNameRequired'));
+    return;
+  }
+
+  const markedNumbers = getCardNumbersForClaim();
+  if (markedNumbers.length === 0) {
+    notifyError(t('bingo.sharedClaimMarkRequired'));
+    return;
+  }
+
+  sharedClaimBusy.value = true;
+
+  try {
+    const room = await readSharedBingoRoom(sharedRoomId.value);
+    const claim: SharedBingoClaim = {
+      id: crypto.randomUUID(),
+      playerName,
+      cardNumbers: markedNumbers,
+      submittedAt: new Date().toISOString(),
+    };
+
+    const updated = await updateSharedBingoRoom(
+      sharedRoomId.value,
+      {
+        ...room,
+        claims: [...room.claims, claim],
+      },
+      jsonBinApiKey.value,
+    );
+
+    sharedLastSyncedAt.value = updated.updatedAt;
+    sharedSyncState.value = 'connected';
+    sharedErrorMessage.value = '';
+    notifySuccess(t('bingo.sharedClaimSent'));
+  } catch (error) {
+    handleSharedError(error, true);
+  } finally {
+    sharedClaimBusy.value = false;
+  }
+}
+
+async function refreshSharedClaims() {
+  if (!isSharedHostSession.value || !sharedRoomId.value) {
+    return;
+  }
+
+  sharedClaimsLoading.value = true;
+
+  try {
+    const room = await readSharedBingoRoom(sharedRoomId.value);
+    sharedClaims.value = [...room.claims];
+    sharedLastSyncedAt.value = room.updatedAt;
+    sharedSyncState.value = 'connected';
+    sharedErrorMessage.value = '';
+  } catch (error) {
+    handleSharedError(error, true);
+  } finally {
+    sharedClaimsLoading.value = false;
+  }
+}
+
+function handleBingoAction() {
+  if (isSharedGuestSession.value) {
+    void submitSharedBingoClaim();
+    return;
+  }
+
+  shoutBingo();
+}
+
 function confettiStyle(i: number) {
   const colors = ['#4f46e5', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
   const color = colors[i % colors.length];
@@ -1268,13 +1394,17 @@ async function persistSharedRoomState(notifyOnError = false) {
     return;
   }
 
-  const snapshot = buildSharedSnapshot();
-
   sharedPersistQueue = sharedPersistQueue
     .catch(() => undefined)
     .then(async () => {
+      const latestRoom = await readSharedBingoRoom(sharedRoomId.value);
+      const snapshot = {
+        ...buildSharedSnapshot(),
+        claims: latestRoom.claims,
+        createdAt: latestRoom.createdAt,
+      };
       const updated = await updateSharedBingoRoom(sharedRoomId.value, snapshot, jsonBinApiKey.value);
-      applySharedRecord(updated);
+      applySharedRecord(updated, { syncClaims: false });
     });
 
   try {
@@ -1284,44 +1414,23 @@ async function persistSharedRoomState(notifyOnError = false) {
   }
 }
 
-async function refreshSharedRoom(notifyOnError = false, manual = false) {
-  if (!sharedRoomId.value || sharedPollInFlight) {
+async function generateSharedQrCode() {
+  if (!sharedRoomLink.value) {
+    sharedQrCodeDataUrl.value = '';
     return;
   }
 
-  sharedPollInFlight = true;
-
-  if (manual) {
-    sharedManualRefreshing.value = true;
-  }
-
   try {
-    const room = await readSharedBingoRoom(sharedRoomId.value);
-    applySharedRecord(room);
-  } catch (error) {
-    handleSharedError(error, notifyOnError);
-  } finally {
-    sharedPollInFlight = false;
-
-    if (manual) {
-      sharedManualRefreshing.value = false;
-    }
-  }
-}
-
-function startSharedPolling() {
-  stopSharedPolling();
-  void refreshSharedRoom(false);
-
-  sharedPollTimer = window.setInterval(() => {
-    void refreshSharedRoom(false);
-  }, SHARED_POLL_INTERVAL);
-}
-
-function stopSharedPolling() {
-  if (sharedPollTimer !== null) {
-    window.clearInterval(sharedPollTimer);
-    sharedPollTimer = null;
+    sharedQrCodeDataUrl.value = await QRCode.toDataURL(sharedRoomLink.value, {
+      width: 220,
+      margin: 1,
+      color: {
+        dark: '#1f2937',
+        light: '#0000',
+      },
+    });
+  } catch {
+    sharedQrCodeDataUrl.value = '';
   }
 }
 
@@ -1369,9 +1478,7 @@ async function startSharedGuestGame() {
     clearSharedSession();
     setSharedSession(room, 'guest');
     prepareNewGame();
-    applySharedRecord(room);
     gameStarted.value = true;
-    startSharedPolling();
 
     notifySuccess(t('bingo.sharedRoomJoined'));
   } catch (error) {
@@ -1452,6 +1559,7 @@ async function copyRoomLink() {
 
 const showValidateDialog = ref(false);
 const validateMode = ref<'type' | 'select'>('type');
+const validateClaimName = ref('');
 const validateInputText = ref('');
 const validateSelected = reactive(new Set<number>());
 const validateResult = ref<ValidateResult | null>(null);
@@ -1476,6 +1584,7 @@ const validateNumbers = computed(() => {
 });
 
 function resetValidate() {
+  validateClaimName.value = '';
   validateInputText.value = '';
   validateSelected.clear();
   validateResult.value = null;
@@ -1496,8 +1605,17 @@ function toggleValidateSelect(n: number) {
   }
 }
 
+function reviewSharedClaim(claim: SharedBingoClaim) {
+  validateClaimName.value = claim.playerName;
+  validateMode.value = 'type';
+  validateInputText.value = claim.cardNumbers.join(', ');
+  validateSelected.clear();
+  runValidation();
+  showValidateDialog.value = true;
+}
+
 function runValidation() {
-  const nums = [...validateNumbers.value];
+  const nums = [...validateNumbers.value].sort((a, b) => a - b);
   const called: number[] = [];
   const notCalled: number[] = [];
 
@@ -1509,10 +1627,17 @@ function runValidation() {
     }
   }
 
+  const enteredCount = nums.length;
+  const missingCount = Math.max(24 - enteredCount, 0);
+  const isComplete = enteredCount === 24;
+
   validateResult.value = {
     called,
     notCalled,
-    valid: notCalled.length === 0,
+    enteredCount,
+    missingCount,
+    isComplete,
+    valid: isComplete && notCalled.length === 0,
   };
 }
 
@@ -1529,6 +1654,10 @@ watch(
   },
   { flush: 'post' },
 );
+
+watch(sharedRoomLink, () => {
+  void generateSharedQrCode();
+});
 
 watch(
   () => route.query.room,
@@ -1570,7 +1699,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   clearSuspenseTimeout();
-  stopSharedPolling();
+  clearDrawActionLock();
 });
 </script>
 
@@ -1917,6 +2046,43 @@ body.body--dark .bingo-card__cell--free {
   }
 }
 
+.shared-qr-panel {
+  width: 220px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(99, 102, 241, 0.16)),
+    white;
+  border: 1px solid rgba(79, 70, 229, 0.14);
+}
+
+.shared-qr-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+}
+
+.shared-claim-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(79, 70, 229, 0.12);
+  background: rgba(79, 70, 229, 0.04);
+}
+
+.shared-claim-item__content {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.shared-claim-item__action {
+  flex: 0 0 auto;
+}
+
 // ─── Responsive ──────────────────────────────────────────────────────────────
 @media (max-width: 599px) {
   .bingo-ball {
@@ -1954,6 +2120,18 @@ body.body--dark .bingo-card__cell--free {
       font-size: 11px;
       padding: 3px 1px;
     }
+  }
+
+  .shared-claim-item__action {
+    width: 100%;
+  }
+
+  .shared-claim-item__action .q-btn {
+    width: 100%;
+  }
+
+  .shared-qr-panel {
+    width: 190px;
   }
 }
 </style>

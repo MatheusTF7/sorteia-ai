@@ -87,6 +87,22 @@ const sorteios: Sorteio[] = [
   },
   {
     id: 5,
+    nome: t('drawList.bingoDraw.title'),
+    descricao: t('drawList.bingoDraw.desc'),
+    icon: 'grid_on',
+    rgb: '6, 182, 212', // Cyan
+    route: '/bingo',
+  },
+  {
+    id: 6,
+    nome: t('nav.savedLists'),
+    descricao: t('savedLists.pageSubtitle'),
+    icon: 'bookmark',
+    rgb: '102, 126, 234', // Blue
+    route: '/saved-lists',
+  },
+  {
+    id: 7,
     nome: t('nav.about'),
     descricao: t('drawList.subtitle'),
     icon: 'info',
@@ -94,7 +110,7 @@ const sorteios: Sorteio[] = [
     route: '/about',
   },
   {
-    id: 6,
+    id: 8,
     nome: t('pwa.pageTitle'),
     descricao: t('pwa.subtitle'),
     icon: 'get_app',

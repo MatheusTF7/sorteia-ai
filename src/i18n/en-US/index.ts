@@ -12,6 +12,7 @@ export default {
     numbers: 'Numbers',
     teams: 'Teams',
     prizes: 'Prizes',
+    bingo: 'Bingo',
     about: 'About',
     savedLists: 'Saved Lists',
   },
@@ -66,6 +67,10 @@ export default {
     prizeDraw: {
       title: 'Prize Draw',
       desc: 'Distribute prizes automatically',
+    },
+    bingoDraw: {
+      title: 'Bingo',
+      desc: 'Play a full bingo game with cards and drawing',
     },
   },
 
@@ -169,6 +174,38 @@ export default {
       title: 'Result',
       none: 'No draw performed yet',
     },
+  },
+
+  // Bingo page
+  bingo: {
+    pageTitle: 'Bingo',
+    pageSubtitle: 'Play bingo with friends! Draw numbers, mark your card and shout BINGO!',
+    startGame: 'Start Game',
+    roles: {
+      drawer: 'Drawer',
+      drawerDesc: 'Draws numbers and controls the game',
+      player: 'Player',
+      playerDesc: 'Gets a card and marks the drawn numbers',
+      both: 'Drawer & Player',
+      bothDesc: 'Draws numbers and plays with your own card',
+    },
+    drawerPanel: 'Drawer Panel',
+    toggleTts: 'Toggle voice announcement',
+    toggleSuspense: 'Toggle suspense animation',
+    drawNumber: 'Draw Number',
+    newGame: 'New Game',
+    progress: 'Progress',
+    calledNumbers: 'Called Numbers',
+    yourCard: 'Your Card',
+    newCard: 'New Card',
+    markAllToShout: 'Complete a row, column or diagonal to shout BINGO!',
+    congratulations: 'Congratulations! You completed Bingo!',
+    verifyWithDrawer: 'Show your card to the drawer for verification.',
+    confirmReset: 'Reset game',
+    confirmResetDesc: 'All drawn numbers and marks will be lost. Continue?',
+    confirmChangeRoleDesc: 'The current game will be lost. Change role?',
+    reset: 'Reset',
+    changeRole: 'Change role',
   },
 
   settings: {

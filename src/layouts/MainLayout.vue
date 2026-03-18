@@ -6,12 +6,16 @@
           flat
           dense
           round
-          icon="menu_open"
+          :icon="leftDrawerOpen ? 'menu_open' : 'menu'"
           aria-label="Menu"
           @click="toggleLeftDrawer"
           color="primary"
           class="q-mr-sm"
-        />
+        >
+          <q-tooltip anchor="top middle" self="bottom middle">
+            {{ leftDrawerOpen ? t('nav.closeMenu') : t('nav.openMenu') }}
+          </q-tooltip>
+        </q-btn>
 
         <q-toolbar-title
           class="text-weight-bold text-gradient"
@@ -27,10 +31,26 @@
             round
             dense
             flat
-            class="q-mr-sm"
+            class="app-icon-btn q-mr-sm"
             @click="toggleDarkMode"
-          />
-          <q-btn flat dense round icon="settings" aria-label="Settings" color="grey-6">
+          >
+            <q-tooltip anchor="top middle" self="bottom middle">
+              {{ darkMode ? t('theme.light') : t('theme.dark') }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            flat
+            dense
+            round
+            icon="settings"
+            class="app-icon-btn"
+            aria-label="Settings"
+            color="grey-6"
+          >
+            <q-tooltip anchor="top middle" self="bottom middle">
+              {{ t('settings.title') }}
+            </q-tooltip>
+
             <q-menu anchor="top right" self="top right" class="br-20 shadow-modern">
               <q-list padding style="min-width: 280px">
                 <q-item>
@@ -158,6 +178,12 @@ const linksList: EssentialLinkProps[] = [
     caption: t('drawList.prizeDraw.desc'),
     icon: 'card_giftcard',
     link: '/prizes',
+  },
+  {
+    title: t('nav.bingo'),
+    caption: t('drawList.bingoDraw.desc'),
+    icon: 'grid_on',
+    link: '/bingo',
   },
   {
     title: t('nav.savedLists'),

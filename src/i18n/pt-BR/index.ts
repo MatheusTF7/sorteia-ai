@@ -11,6 +11,7 @@ export default {
     numbers: 'Números',
     teams: 'Times',
     prizes: 'Prêmios',
+    bingo: 'Bingo',
     about: 'Sobre',
     savedLists: 'Minhas Listas',
   },
@@ -65,6 +66,10 @@ export default {
     prizeDraw: {
       title: 'Sorteio de Prêmios',
       desc: 'Distribua prêmios automaticamente',
+    },
+    bingoDraw: {
+      title: 'Bingo',
+      desc: 'Jogue bingo completo com cartela e sorteio',
     },
   },
 
@@ -168,6 +173,38 @@ export default {
       title: 'Resultado',
       none: 'Nenhum sorteio executado ainda',
     },
+  },
+
+  // Página de bingo
+  bingo: {
+    pageTitle: 'Bingo',
+    pageSubtitle: 'Jogue bingo com amigos! Sorteie pedras, marque sua cartela e grite BINGO!',
+    startGame: 'Iniciar Jogo',
+    roles: {
+      drawer: 'Sorteador',
+      drawerDesc: 'Sorteia os números e controla o jogo',
+      player: 'Participante',
+      playerDesc: 'Recebe uma cartela e marca os números sorteados',
+      both: 'Sorteador Participante',
+      bothDesc: 'Sorteia os números e joga com sua própria cartela',
+    },
+    drawerPanel: 'Painel do Sorteador',
+    toggleTts: 'Alternar leitura em voz alta',
+    toggleSuspense: 'Alternar animação de suspense',
+    drawNumber: 'Sortear Número',
+    newGame: 'Novo Jogo',
+    progress: 'Progresso',
+    calledNumbers: 'Números Sorteados',
+    yourCard: 'Sua Cartela',
+    newCard: 'Nova Cartela',
+    markAllToShout: 'Complete uma linha, coluna ou diagonal para gritar BINGO!',
+    congratulations: 'Parabéns! Você completou o Bingo!',
+    verifyWithDrawer: 'Apresente sua cartela ao sorteador para conferência.',
+    confirmReset: 'Reiniciar jogo',
+    confirmResetDesc: 'Todos os números sorteados e marcações serão perdidos. Deseja continuar?',
+    confirmChangeRoleDesc: 'O jogo atual será perdido. Deseja trocar de modo?',
+    reset: 'Reiniciar',
+    changeRole: 'Trocar modo',
   },
 
   settings: {

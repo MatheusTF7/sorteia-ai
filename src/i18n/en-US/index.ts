@@ -15,6 +15,8 @@ export default {
     bingo: 'Bingo',
     about: 'About',
     savedLists: 'Saved Lists',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
   },
   pwa: {
     pageTitle: 'Install this app',

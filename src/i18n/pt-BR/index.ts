@@ -14,6 +14,8 @@ export default {
     bingo: 'Bingo',
     about: 'Sobre',
     savedLists: 'Minhas Listas',
+    openMenu: 'Abrir menu lateral',
+    closeMenu: 'Fechar menu',
   },
   pwa: {
     pageTitle: 'Instalar este app',

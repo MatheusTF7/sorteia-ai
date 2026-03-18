@@ -205,6 +205,19 @@ export default {
     confirmChangeRoleDesc: 'O jogo atual será perdido. Deseja trocar de modo?',
     reset: 'Reiniciar',
     changeRole: 'Trocar modo',
+    validateCard: 'Validar Cartela',
+    validateCardDesc:
+      'Insira os 24 números da cartela do participante para verificar se todos foram sorteados.',
+    validateModeType: 'Digitar',
+    validateModeSelect: 'Selecionar',
+    validateInputLabel: 'Números da cartela',
+    validateInputHint: 'Separe por vírgula ( , ), ponto ( . ) ou ponto-e-vírgula ( ; )',
+    validateCountLabel: 'Números inseridos',
+    validateAction: 'Validar',
+    validateResultValid: 'Cartela válida!',
+    validateResultInvalid: 'Cartela inválida!',
+    validateCalledLabel: 'Números sorteados ✓',
+    validateNotCalledLabel: 'Números NÃO sorteados ✗',
   },
 
   settings: {

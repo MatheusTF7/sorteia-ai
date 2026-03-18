@@ -206,6 +206,18 @@ export default {
     confirmChangeRoleDesc: 'The current game will be lost. Change role?',
     reset: 'Reset',
     changeRole: 'Change role',
+    validateCard: 'Validate Card',
+    validateCardDesc: "Enter the 24 numbers on the participant's card to verify all were called.",
+    validateModeType: 'Type',
+    validateModeSelect: 'Select',
+    validateInputLabel: 'Card numbers',
+    validateInputHint: 'Separate with comma ( , ), period ( . ) or semicolon ( ; )',
+    validateCountLabel: 'Numbers entered',
+    validateAction: 'Validate',
+    validateResultValid: 'Valid card!',
+    validateResultInvalid: 'Invalid card!',
+    validateCalledLabel: 'Called numbers ✓',
+    validateNotCalledLabel: 'NOT called numbers ✗',
   },
 
   settings: {

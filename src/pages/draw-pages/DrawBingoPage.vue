@@ -70,12 +70,22 @@
               <q-btn
                 flat
                 round
-                class="app-icon-btn"
+                class="app-icon-btn q-mr-sm"
                 :icon="suspenseEnabled ? 'hourglass_top' : 'hourglass_disabled'"
                 :color="suspenseEnabled ? 'primary' : 'grey-6'"
                 @click="suspenseEnabled = !suspenseEnabled"
               >
                 <q-tooltip>{{ t('bingo.toggleSuspense') }}</q-tooltip>
+              </q-btn>
+              <q-btn
+                flat
+                round
+                class="app-icon-btn"
+                icon="fact_check"
+                color="primary"
+                @click="openValidateDialog"
+              >
+                <q-tooltip>{{ t('bingo.validateCard') }}</q-tooltip>
               </q-btn>
             </div>
 
@@ -332,6 +342,209 @@
             class="text-weight-bold q-px-md"
             :label="t('bingo.reset')"
             @click="resetGame"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Validate Card Dialog -->
+    <q-dialog v-model="showValidateDialog">
+      <q-card
+        class="shadow-modern"
+        style="
+          width: 95vw;
+          max-width: 600px;
+          border-radius: 24px;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <q-card-section class="row items-center q-pb-none" style="flex-shrink: 0">
+          <div class="text-h6 text-weight-bold">{{ t('bingo.validateCard') }}</div>
+          <q-space />
+          <q-btn v-close-popup flat round icon="close" color="grey-6" />
+        </q-card-section>
+
+        <div class="q-px-lg q-pb-md q-pt-sm" style="flex: 1; overflow-y: auto">
+          <div class="text-body2 text-grey-6 q-mb-md">{{ t('bingo.validateCardDesc') }}</div>
+
+          <q-btn-toggle
+            v-model="validateMode"
+            spread
+            unelevated
+            rounded
+            :options="[
+              { label: t('bingo.validateModeType'), value: 'type', icon: 'edit' },
+              { label: t('bingo.validateModeSelect'), value: 'select', icon: 'grid_on' },
+            ]"
+            color="white"
+            text-color="grey-7"
+            toggle-color="primary"
+            toggle-text-color="white"
+            class="q-mb-lg"
+            @update:model-value="resetValidate"
+          />
+
+          <!-- Type mode -->
+          <template v-if="validateMode === 'type'">
+            <q-input
+              v-model="validateInputText"
+              type="textarea"
+              outlined
+              autogrow
+              rows="2"
+              :label="t('bingo.validateInputLabel')"
+              :hint="t('bingo.validateInputHint')"
+              class="q-mb-md"
+              @update:model-value="validateResult = null"
+            />
+            <div v-if="validateNumbers.size > 0" class="row q-gutter-xs q-mb-md">
+              <q-chip
+                v-for="n in [...validateNumbers].sort((a, b) => a - b)"
+                :key="n"
+                dense
+                :color="
+                  validateResult
+                    ? validateResult.called.includes(n)
+                      ? 'positive'
+                      : 'negative'
+                    : 'primary'
+                "
+                text-color="white"
+                :icon="
+                  validateResult ? (validateResult.called.includes(n) ? 'check' : 'close') : 'tag'
+                "
+                size="sm"
+              >
+                {{ n }}
+              </q-chip>
+            </div>
+          </template>
+
+          <!-- Select mode -->
+          <template v-else>
+            <div class="bingo-board q-mb-md" style="max-width: 100%">
+              <div v-for="letter in bingoLetters" :key="letter.char" class="bingo-board__column">
+                <div class="bingo-board__header" :class="letter.colorClass">
+                  {{ letter.char }}
+                </div>
+                <div
+                  v-for="n in letter.numbers"
+                  :key="n"
+                  class="bingo-board__cell bingo-board__cell--selectable"
+                  :class="{
+                    'bingo-board__cell--selected':
+                      validateSelected.has(n) &&
+                      !(validateResult && validateResult.notCalled.includes(n)),
+                    'bingo-board__cell--v-invalid':
+                      validateSelected.has(n) &&
+                      !!(validateResult && validateResult.notCalled.includes(n)),
+                    'bingo-board__cell--maxed':
+                      validateSelected.size >= 24 && !validateSelected.has(n),
+                  }"
+                  @click="toggleValidateSelect(n)"
+                >
+                  {{ n }}
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Progress counter -->
+          <div class="row items-center justify-between q-mb-xs">
+            <span class="text-caption text-grey-6">{{ t('bingo.validateCountLabel') }}</span>
+            <span
+              class="text-caption text-weight-bold"
+              :class="validateNumbers.size === 24 ? 'text-positive' : 'text-grey-7'"
+            >
+              {{ validateNumbers.size }} / 24
+            </span>
+          </div>
+          <q-linear-progress
+            :value="Math.min(validateNumbers.size / 24, 1)"
+            :color="validateNumbers.size === 24 ? 'positive' : 'primary'"
+            rounded
+            size="6px"
+            class="q-mb-lg"
+          />
+
+          <!-- Result -->
+          <template v-if="validateResult">
+            <q-separator class="q-mb-md" />
+            <div
+              class="q-pa-md br-20 row items-center justify-center q-mb-md"
+              :class="validateResult.valid ? 'bg-positive' : 'bg-negative'"
+            >
+              <q-icon
+                :name="validateResult.valid ? 'check_circle' : 'cancel'"
+                size="28px"
+                color="white"
+                class="q-mr-sm"
+              />
+              <span class="text-subtitle1 text-weight-bold text-white">
+                {{
+                  validateResult.valid
+                    ? t('bingo.validateResultValid')
+                    : t('bingo.validateResultInvalid')
+                }}
+              </span>
+            </div>
+            <div v-if="validateResult.notCalled.length > 0" class="q-mb-md">
+              <div class="text-caption text-weight-bold text-negative q-mb-xs">
+                {{ t('bingo.validateNotCalledLabel') }} ({{ validateResult.notCalled.length }})
+              </div>
+              <div class="row q-gutter-xs">
+                <q-chip
+                  v-for="n in validateResult.notCalled"
+                  :key="n"
+                  dense
+                  color="negative"
+                  text-color="white"
+                  icon="close"
+                  size="sm"
+                >
+                  {{ n }}
+                </q-chip>
+              </div>
+            </div>
+            <div v-if="validateResult.called.length > 0">
+              <div class="text-caption text-weight-bold text-positive q-mb-xs">
+                {{ t('bingo.validateCalledLabel') }} ({{ validateResult.called.length }})
+              </div>
+              <div class="row q-gutter-xs">
+                <q-chip
+                  v-for="n in validateResult.called"
+                  :key="n"
+                  dense
+                  color="positive"
+                  text-color="white"
+                  icon="check"
+                  size="sm"
+                >
+                  {{ n }}
+                </q-chip>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <q-separator style="flex-shrink: 0" />
+        <q-card-actions align="right" class="q-px-md q-py-sm" style="flex-shrink: 0">
+          <q-btn
+            v-close-popup
+            flat
+            :label="t('shared.cancel')"
+            color="grey-7"
+            class="text-weight-bold q-px-md"
+          />
+          <q-btn
+            color="primary"
+            unelevated
+            class="text-weight-bold q-px-md"
+            :label="t('bingo.validateAction')"
+            :disable="validateNumbers.size !== 24"
+            @click="runValidation"
           />
         </q-card-actions>
       </q-card>
@@ -613,6 +826,74 @@ function confirmChangeRole() {
     markedCells.clear();
   });
 }
+
+// ─── Validate card ────────────────────────────────────────────────────────────
+interface ValidateResult {
+  called: number[];
+  notCalled: number[];
+  valid: boolean;
+}
+
+const showValidateDialog = ref(false);
+const validateMode = ref<'type' | 'select'>('type');
+const validateInputText = ref('');
+const validateSelected = reactive(new Set<number>());
+const validateResult = ref<ValidateResult | null>(null);
+
+const validateNumbers = computed(() => {
+  if (validateMode.value === 'select') {
+    return new Set(validateSelected);
+  }
+  const parts = validateInputText.value
+    .split(/[,;.\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const nums = new Set<number>();
+  for (const p of parts) {
+    const n = parseInt(p, 10);
+    if (!isNaN(n) && n >= 1 && n <= 75) nums.add(n);
+  }
+  return nums;
+});
+
+function resetValidate() {
+  validateInputText.value = '';
+  validateSelected.clear();
+  validateResult.value = null;
+}
+
+function openValidateDialog() {
+  resetValidate();
+  showValidateDialog.value = true;
+}
+
+function toggleValidateSelect(n: number) {
+  if (validateSelected.has(n)) {
+    validateSelected.delete(n);
+    validateResult.value = null;
+  } else if (validateSelected.size < 24) {
+    validateSelected.add(n);
+    validateResult.value = null;
+  }
+}
+
+function runValidation() {
+  const nums = [...validateNumbers.value];
+  const called: number[] = [];
+  const notCalled: number[] = [];
+  for (const n of nums) {
+    if (calledNumbers.value.includes(n)) {
+      called.push(n);
+    } else {
+      notCalled.push(n);
+    }
+  }
+  validateResult.value = {
+    called,
+    notCalled,
+    valid: notCalled.length === 0,
+  };
+}
 </script>
 
 <style scoped lang="scss">
@@ -720,14 +1001,43 @@ body.body--dark .bingo-ball--empty {
     border-radius: 6px;
     background: rgba(0, 0, 0, 0.03);
     color: #94a3b8;
-    border: 2px solid transparent;
+    border: 2px solid rgba(0, 0, 0, 0.05);
     transition: all 0.25s ease;
 
     &--called {
       color: white;
-      background: $indigo-4;
+      background: $indigo-5;
       font-weight: 700;
       border-color: $primary;
+    }
+
+    &--selectable {
+      cursor: pointer;
+      &:hover {
+        border-color: rgba(79, 70, 229, 0.5);
+        background: rgba(79, 70, 229, 0.1);
+        color: $primary;
+        transform: scale(1.06);
+      }
+    }
+
+    &--selected {
+      background: $primary;
+      color: white;
+      font-weight: 700;
+      border-color: $primary;
+    }
+
+    &--v-invalid {
+      background: $negative !important;
+      color: white !important;
+      border-color: rgba($negative, 0.1) !important;
+    }
+
+    &--maxed {
+      cursor: not-allowed;
+      opacity: 0.35;
+      pointer-events: none;
     }
   }
 }
@@ -737,9 +1047,15 @@ body.body--dark .bingo-board__cell {
   color: #475569;
   &--called {
     color: white;
-    background: $indigo;
+    background: $primary;
     font-weight: 700;
-    border-color: $indigo-10;
+    border-color: $indigo-3;
+  }
+  &--selected {
+    color: white;
+    background: $primary;
+    font-weight: 700;
+    border-color: $indigo-3;
   }
 }
 

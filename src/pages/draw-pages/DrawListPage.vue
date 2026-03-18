@@ -1,28 +1,34 @@
 <template>
-  <q-page class="q-pa-lg">
-    <div class="text-h5 text-weight-bold q-mb-md">{{ t('drawList.title') }}</div>
-    <div class="text-subtitle2 text-grey-7 q-mb-lg">
-      {{ t('drawList.subtitle') }}
+  <q-page class="q-pa-xl page-container">
+    <div class="text-center q-mb-xl">
+      <div class="text-h3 text-weight-bold q-mb-md text-gradient" style="letter-spacing: -1px">
+        {{ t('drawList.title') }}
+      </div>
+      <div class="text-h6 text-weight-regular text-grey-6" style="max-width: 600px; margin: 0 auto">
+        {{ t('drawList.subtitle') }}
+      </div>
     </div>
 
-    <div class="row q-col-gutter-lg">
+    <div class="row q-col-gutter-xl justify-center max-width-container">
       <div v-for="item in sorteios" :key="item.id" class="col-12 col-sm-6 col-md-4">
         <q-card
-          class="sorteio-card cursor-pointer full-height"
+          class="sorteio-card cursor-pointer full-height flex flex-center text-center q-pa-md"
           flat
-          bordered
           @click="item.route ? $router.push(item.route) : null"
         >
-          <q-card-section class="row items-center no-wrap">
-            <q-avatar size="56px" :color="item.color" text-color="white" class="q-mr-md">
-              <q-icon :name="item.icon" size="28px" />
-            </q-avatar>
+          <q-card-section class="column items-center q-pa-none w-full">
+            <div
+              class="icon-wrapper q-mb-lg flex flex-center"
+              :style="{ backgroundColor: `rgba(${item.rgb}, 0.1)` }"
+            >
+              <q-icon :name="item.icon" size="36px" :style="{ color: `rgb(${item.rgb})` }" />
+            </div>
 
             <div>
-              <div class="text-subtitle1 text-weight-medium">
+              <div class="text-h6 text-weight-bold q-mb-sm text-dark-mode-adjust">
                 {{ item.nome }}
               </div>
-              <div class="text-caption text-grey-7">
+              <div class="text-body2 text-grey-6 line-height-relaxed">
                 {{ item.descricao }}
               </div>
             </div>
@@ -36,12 +42,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
+
 interface Sorteio {
   id: number;
   nome: string;
   descricao: string;
   icon: string;
-  color: string;
+  rgb: string;
   route?: string;
 }
 
@@ -51,7 +58,7 @@ const sorteios: Sorteio[] = [
     nome: t('drawList.nameDraw.title'),
     descricao: t('drawList.nameDraw.desc'),
     icon: 'person',
-    color: 'primary',
+    rgb: '79, 70, 229', // Indigo
     route: '/names',
   },
   {
@@ -59,7 +66,7 @@ const sorteios: Sorteio[] = [
     nome: t('drawList.numberDraw.title'),
     descricao: t('drawList.numberDraw.desc'),
     icon: 'pin',
-    color: 'deep-orange',
+    rgb: '244, 63, 94', // Rose
     route: '/numbers',
   },
   {
@@ -67,7 +74,7 @@ const sorteios: Sorteio[] = [
     nome: t('drawList.teamDraw.title'),
     descricao: t('drawList.teamDraw.desc'),
     icon: 'groups',
-    color: 'teal',
+    rgb: '16, 185, 129', // Emerald
     route: '/teams',
   },
   {
@@ -75,7 +82,7 @@ const sorteios: Sorteio[] = [
     nome: t('drawList.prizeDraw.title'),
     descricao: t('drawList.prizeDraw.desc'),
     icon: 'emoji_events',
-    color: 'amber',
+    rgb: '245, 158, 11', // Amber
     route: '/prizes',
   },
   {
@@ -83,7 +90,7 @@ const sorteios: Sorteio[] = [
     nome: t('nav.about'),
     descricao: t('drawList.subtitle'),
     icon: 'info',
-    color: 'purple',
+    rgb: '139, 92, 246', // Violet
     route: '/about',
   },
   {
@@ -91,20 +98,71 @@ const sorteios: Sorteio[] = [
     nome: t('pwa.pageTitle'),
     descricao: t('pwa.subtitle'),
     icon: 'get_app',
-    color: 'grey',
+    rgb: '100, 116, 139', // Slate
     route: '/install',
   },
 ];
 </script>
 
 <style scoped>
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.max-width-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
 .sorteio-card {
-  border-radius: 16px;
-  transition: all 0.25s ease;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.body--dark .sorteio-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sorteio-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(79, 70, 229, 0.1);
+}
+
+body.body--dark .sorteio-card:hover {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(79, 70, 229, 0.3);
+}
+
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  transition: transform 0.3s ease;
+}
+
+.sorteio-card:hover .icon-wrapper {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.line-height-relaxed {
+  line-height: 1.6;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-dark-mode-adjust {
+  color: #1e293b;
+}
+
+body.body--dark .text-dark-mode-adjust {
+  color: #f8fafc;
 }
 </style>

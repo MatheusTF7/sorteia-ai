@@ -1,31 +1,45 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated :class="$q.dark.isActive ? 'header--dark' : 'header--light'">
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+    <q-header flat :class="$q.dark.isActive ? 'header--dark' : 'header--light'">
+      <q-toolbar class="q-py-sm">
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu_open"
+          aria-label="Menu"
+          @click="toggleLeftDrawer"
+          color="primary"
+          class="q-mr-sm"
+        />
 
-        <q-toolbar-title> Sorteia Aí </q-toolbar-title>
+        <q-toolbar-title
+          class="text-weight-bold text-gradient"
+          style="font-size: 1.5rem; letter-spacing: -0.5px"
+        >
+          Sorteia Aí
+        </q-toolbar-title>
 
         <div>
           <q-btn
-            :color="darkMode ? 'yellow' : 'blue-grey-9'"
-            :icon="darkMode ? 'dark_mode' : 'light_mode'"
+            :color="darkMode ? 'amber-4' : 'slate-8'"
+            :icon="darkMode ? 'lightbulb' : 'dark_mode'"
             round
             dense
             flat
             class="q-mr-sm"
             @click="toggleDarkMode"
           />
-          <q-btn flat dense round icon="settings" aria-label="Settings">
-            <q-menu anchor="top right" self="top right">
+          <q-btn flat dense round icon="settings" aria-label="Settings" color="grey-6">
+            <q-menu anchor="top right" self="top right" class="br-20 shadow-modern">
               <q-list padding style="min-width: 280px">
                 <q-item>
                   <q-item-section>
-                    <div class="text-subtitle2">{{ t('settings.title') }}</div>
+                    <div class="text-subtitle1 text-weight-bold">{{ t('settings.title') }}</div>
                   </q-item-section>
                 </q-item>
 
-                <q-separator />
+                <q-separator class="q-my-sm" />
 
                 <q-item>
                   <q-item-section>
@@ -33,8 +47,9 @@
                       v-model="darkMode"
                       :label="darkMode ? t('theme.dark') : t('theme.light')"
                       dense
+                      class="text-weight-medium"
                       keep-color
-                      :color="darkMode ? 'light-blue-10' : 'yellow'"
+                      :color="darkMode ? 'primary' : 'grey-8'"
                       checked-icon="dark_mode"
                       unchecked-icon="light_mode"
                       @click="toggleDarkMode()"
@@ -44,14 +59,14 @@
 
                 <q-item>
                   <q-item-section>
-                    <div class="row items-center">
+                    <div class="row items-center q-pt-sm">
                       <q-select
                         :label="t('theme.language')"
                         class="full-width"
                         v-model="selectedLang"
                         :options="langOptions"
                         dense
-                        filled
+                        outlined
                         emit-value
                         map-options
                         @update:model-value="changeLanguage"
@@ -59,12 +74,15 @@
                     </div>
                   </q-item-section>
                 </q-item>
-                <q-item v-if="changeLanguageInfo" class="bg-blue-1 text-blue">
+                <q-item
+                  v-if="changeLanguageInfo"
+                  class="q-mt-sm rounded-borders bg-indigo-1 text-indigo-8 q-mx-sm"
+                >
                   <q-item-section top avatar>
-                    <q-avatar color="primary" text-color="white" icon="info" />
+                    <q-avatar color="indigo" text-color="white" icon="info" size="sm" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label
+                    <q-item-label class="text-caption text-weight-medium"
                       >Se houver texto não traduzido, <br />
                       por favor, recarregue a página.</q-item-label
                     >
@@ -77,16 +95,24 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> {{ t('nav.home') }}</q-item-label>
+    <q-drawer v-model="leftDrawerOpen" show-if-above :width="280">
+      <q-list class="q-pt-lg">
+        <q-item-label header class="text-weight-bold text-uppercase text-grey-5 q-mb-sm q-px-lg">
+          {{ t('nav.home') }}
+        </q-item-label>
 
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        <div class="q-px-sm">
+          <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        </div>
       </q-list>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>

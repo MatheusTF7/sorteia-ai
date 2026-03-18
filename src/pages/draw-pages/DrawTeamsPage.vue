@@ -1,24 +1,35 @@
 <template>
-  <q-page class="q-pa-lg">
-    <div class="text-h5 text-weight-bold q-mb-sm">{{ t('teams.pageTitle') }}</div>
-    <div class="text-subtitle2 text-grey-7 q-mb-lg">
-      {{ t('teams.pageSubtitle') }}
+  <q-page class="q-pa-lg text-center" style="max-width: 1200px; margin: 0 auto">
+    <div class="q-mb-xl">
+      <div class="text-h4 text-weight-bold q-mb-md text-gradient" style="letter-spacing: -1px">
+        {{ t('teams.pageTitle') }}
+      </div>
+      <div class="text-h6 text-weight-regular text-grey-6">
+        {{ t('teams.pageSubtitle') }}
+      </div>
     </div>
 
-    <div class="row q-col-gutter-lg">
+    <div class="row q-col-gutter-xl text-left">
       <!-- Participants -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm row items-center">
+        <q-card flat class="card shadow-modern">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-md row items-center">
               {{ t('teams.participants') }}
               <q-space />
-              <q-btn flat dense icon="folder_open" color="primary" @click="loadDialogOpen = true">
+              <q-btn
+                flat
+                round
+                class="q-mr-sm"
+                icon="folder_open"
+                color="primary"
+                @click="loadDialogOpen = true"
+              >
                 <q-tooltip>{{ t('shared.loadList') }}</q-tooltip>
               </q-btn>
               <q-btn
                 flat
-                dense
+                round
                 icon="save"
                 color="primary"
                 :disable="participants.length === 0"
@@ -33,106 +44,158 @@
               :label="t('teams.addParticipant')"
               :hint="t('shared.addNamesHint')"
               outlined
-              dense
+              class="q-mb-md"
               @keyup.enter="addParticipant"
             >
               <template #append>
-                <q-btn icon="add" round dense flat @click="addParticipant" />
+                <q-btn icon="add" round color="primary" class="q-ml-sm" @click="addParticipant" />
               </template>
             </q-input>
 
-            <q-list bordered separator class="q-mt-md rounded-borders">
-              <q-item v-if="participants.length === 0">
-                <q-item-section class="text-grey-6 text-caption">
-                  {{ t('teams.noParticipants') }}
-                </q-item-section>
-              </q-item>
-
-              <q-item v-for="(participant, index) in participants" :key="index">
-                <q-item-section>{{ participant }}</q-item-section>
-                <q-item-section side>
-                  <q-btn
-                    icon="close"
+            <div
+              class="bg-slate-50 dark-bg-slate-900 br-20 q-pa-sm"
+              :class="
+                $q.dark.isActive ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+              "
+              style="border: 1px solid; min-height: 200px"
+            >
+              <div v-if="participants.length === 0" class="text-grey-6 text-center q-pa-lg">
+                {{ t('teams.noParticipants') }}
+              </div>
+              <div v-else class="row q-col-gutter-sm">
+                <div v-for="(participant, index) in participants" :key="index" class="col-12">
+                  <q-card
                     flat
-                    dense
-                    round
-                    color="negative"
-                    @click="removeParticipant(index)"
-                  />
-                </q-item-section>
-              </q-item>
-            </q-list>
+                    class="bg-white dark-bg-slate-800 row items-center justify-between q-py-sm q-px-md br-20"
+                    :class="
+                      $q.dark.isActive
+                        ? 'bg-slate-800 border-slate-700'
+                        : 'bg-white border-slate-200'
+                    "
+                    style="border: 1px solid"
+                  >
+                    <span class="text-weight-medium">{{ participant }}</span>
+                    <q-btn
+                      icon="close"
+                      flat
+                      dense
+                      round
+                      color="negative"
+                      @click="removeParticipant(index)"
+                    />
+                  </q-card>
+                </div>
+              </div>
+            </div>
           </q-card-section>
         </q-card>
       </div>
 
       <!-- Configuration and result -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered class="card">
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">Configuração</div>
+        <q-card flat class="card shadow-modern">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-lg">Configuração</div>
 
             <q-input
               v-model.number="teamSize"
               type="number"
               outlined
-              dense
+              class="q-mb-md"
               :label="t('teams.config.teamSize')"
               :min="1"
-            />
+            >
+              <template #prepend>
+                <q-icon name="groups" />
+              </template>
+            </q-input>
 
             <q-toggle
               v-model="defineStarter"
               :label="t('teams.config.defineStarter')"
-              dense
-              class="q-mt-sm"
+              class="text-weight-medium q-mb-lg"
+              color="primary"
             />
 
-            <q-btn
-              class="q-mt-md full-width"
-              color="primary"
-              :label="t('teams.actions.generateTeams')"
-              :disable="!isValidConfiguration"
-              @click="generateTeams"
-            />
-            <q-btn
-              class="q-mt-sm full-width"
-              color="amber"
-              :label="t('teams.actions.pickStarter')"
-              icon="star"
-              :disable="!defineStarter || teams.length === 0 || starterCandidates.length === 0"
-              @click="pickStarter()"
-            />
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-sm-6">
+                <q-btn
+                  class="full-width q-py-sm text-weight-bold"
+                  color="primary"
+                  unelevated
+                  :label="t('teams.actions.generateTeams')"
+                  :disable="!isValidConfiguration"
+                  @click="generateTeams"
+                />
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-btn
+                  class="full-width q-py-sm text-weight-bold"
+                  color="amber-8"
+                  unelevated
+                  :label="t('teams.actions.pickStarter')"
+                  icon="star"
+                  :disable="!defineStarter || teams.length === 0 || starterCandidates.length === 0"
+                  @click="pickStarter()"
+                />
+              </div>
+            </div>
           </q-card-section>
 
-          <q-separator />
+          <q-separator class="q-mx-lg" />
 
-          <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm">
+          <q-card-section class="q-pa-lg">
+            <div class="text-h6 text-weight-bold q-mb-md">
               {{ t('teams.result.title') }}
             </div>
-            <div v-if="teams.length === 0" class="text-grey-6 text-caption">
+
+            <div
+              v-if="teams.length === 0"
+              class="text-grey-6 text-center q-pa-lg bg-slate-50 br-20"
+              :class="
+                $q.dark.isActive ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+              "
+              style="border: 1px solid"
+            >
               {{ t('teams.result.none') }}
             </div>
 
-            <div v-for="(team, index) in teams" :key="index" class="q-mb-md">
-              <q-card flat bordered class="team-card">
-                <q-card-section>
-                  <div class="text-subtitle2 text-weight-bold q-mb-sm">Time {{ index + 1 }}</div>
-
-                  <q-chip
-                    v-for="(member, idx) in team"
-                    :key="idx"
-                    color="primary"
-                    text-color="white"
-                    icon="person"
-                    class="q-mr-sm q-mb-sm"
+            <div v-else class="row q-col-gutter-md">
+              <div v-for="(team, index) in teams" :key="index" class="col-12">
+                <q-card
+                  flat
+                  class="team-card q-pa-md br-20"
+                  :class="$q.dark.isActive ? 'bg-slate-800' : 'bg-indigo-50'"
+                >
+                  <div
+                    class="text-subtitle1 text-weight-bold q-mb-md text-indigo-8"
+                    :class="$q.dark.isActive ? 'text-indigo-3' : 'text-indigo-8'"
                   >
-                    {{ member }}
-                    <q-icon v-if="starter === member" name="star" color="amber" class="q-ml-sm" />
-                  </q-chip>
-                </q-card-section>
-              </q-card>
+                    <q-icon name="flag" class="q-mr-sm" size="sm" />
+                    Time {{ index + 1 }}
+                  </div>
+
+                  <div class="row q-gutter-sm">
+                    <q-chip
+                      v-for="(member, idx) in team"
+                      :key="idx"
+                      :color="$q.dark.isActive ? 'indigo-9' : 'white'"
+                      :text-color="$q.dark.isActive ? 'white' : 'indigo-10'"
+                      class="text-weight-medium shadow-1 q-px-md q-py-sm"
+                      style="border-radius: 12px; font-size: 14px"
+                    >
+                      {{ member }}
+                      <q-icon
+                        v-if="starter === member"
+                        name="star"
+                        color="amber-6"
+                        size="20px"
+                        class="q-ml-sm"
+                      />
+                    </q-chip>
+                  </div>
+                </q-card>
+              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -141,60 +204,82 @@
 
     <!-- Load list dialog -->
     <q-dialog v-model="loadDialogOpen">
-      <q-card style="min-width: 360px; max-width: 500px; width: 90vw">
-        <q-card-section class="row items-center">
-          <div class="text-h6">{{ t('shared.loadList') }}</div>
+      <q-card
+        class="shadow-modern q-pa-sm"
+        style="min-width: 360px; max-width: 500px; width: 90vw; border-radius: 24px"
+      >
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6 text-weight-bold">{{ t('shared.loadList') }}</div>
           <q-space />
-          <q-btn v-close-popup icon="close" flat round dense />
+          <q-btn v-close-popup icon="close" flat round color="grey-6" />
         </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div v-if="savedLists.length === 0" class="text-grey-6 text-center q-pa-md">
+        <q-card-section class="q-mt-sm">
+          <div
+            v-if="savedLists.length === 0"
+            class="text-grey-6 text-center q-pa-xl bg-slate-50 br-20"
+          >
             {{ t('shared.noSavedLists') }}
           </div>
-          <q-list v-else bordered separator class="rounded-borders">
-            <q-item
+          <div v-else class="row q-col-gutter-sm">
+            <q-card
               v-for="list in savedLists"
               :key="list.id"
-              clickable
-              v-ripple
+              flat
+              class="col-12 cursor-pointer q-pa-md br-20 row items-center justify-between"
+              :class="
+                $q.dark.isActive
+                  ? 'bg-slate-800 hover-bg-slate-700'
+                  : 'bg-slate-50 hover-bg-slate-100'
+              "
               @click="loadList(list)"
+              style="transition: background 0.2s"
             >
-              <q-item-section>
-                <q-item-label>{{ list.name }}</q-item-label>
-                <q-item-label caption>
+              <div>
+                <div class="text-weight-bold text-subtitle1">{{ list.name }}</div>
+                <div class="text-grey-6 text-caption">
                   {{ t('savedLists.itemCount', { count: list.items.length }) }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section v-if="list.isDefault" side>
-                <q-badge color="amber" :label="t('savedLists.isDefault')" />
-              </q-item-section>
-            </q-item>
-          </q-list>
+                </div>
+              </div>
+              <q-badge
+                v-if="list.isDefault"
+                color="amber-8"
+                :label="t('savedLists.isDefault')"
+                rounded
+                class="q-px-sm q-py-xs"
+              />
+            </q-card>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
 
     <!-- Save list dialog -->
     <q-dialog v-model="saveDialogOpen">
-      <q-card style="min-width: 320px">
-        <q-card-section>
-          <div class="text-h6">{{ t('shared.saveList') }}</div>
+      <q-card class="shadow-modern q-pa-sm" style="min-width: 340px; border-radius: 24px">
+        <q-card-section class="q-pb-none">
+          <div class="text-h6 text-weight-bold">{{ t('shared.saveList') }}</div>
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="q-mt-sm">
           <q-input
             v-model="saveListName"
             :label="t('shared.listNameLabel')"
             outlined
-            dense
             autofocus
             @keyup.enter="saveCurrentList"
           />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat :label="t('shared.cancel')" />
+        <q-card-actions align="right" class="q-px-md q-pb-md">
+          <q-btn
+            v-close-popup
+            flat
+            :label="t('shared.cancel')"
+            color="grey-7"
+            class="text-weight-bold q-px-md"
+          />
           <q-btn
             color="primary"
+            unelevated
+            class="text-weight-bold q-px-md"
             :label="t('shared.save')"
             :disable="!saveListName.trim()"
             @click="saveCurrentList"

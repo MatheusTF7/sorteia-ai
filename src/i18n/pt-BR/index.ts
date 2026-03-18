@@ -78,7 +78,7 @@ export default {
     preconfig: 'Pre config',
     config: {
       teamCount: 'Número de times',
-      teamSize: 'Tamanho do time (opcional)',
+      teamSize: 'Tamanho do time',
       defineStarter: 'Definir iniciante',
     },
     actions: {
@@ -196,5 +196,18 @@ export default {
     isDefault: 'Padrão',
     setDefault: 'Marcar como padrão',
     unsetDefault: 'Remover como padrão',
+  },
+
+  // Compartilhado entre páginas de sorteio
+  shared: {
+    loadList: 'Carregar Lista',
+    saveList: 'Salvar Lista',
+    noSavedLists: 'Nenhuma lista salva. Crie uma em "Minhas Listas".',
+    listLoaded: 'Lista "{name}" carregada!',
+    listSaved: 'Lista "{name}" salva!',
+    listNameLabel: 'Nome da lista',
+    addNamesHint: 'Separe múltiplos nomes por vírgula ( , ), ponto-e-vírgula ( ; ) ou ponto ( . )',
+    cancel: 'Cancelar',
+    save: 'Salvar',
   },
 };

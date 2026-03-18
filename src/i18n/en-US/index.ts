@@ -79,7 +79,7 @@ export default {
     preconfig: 'Pre config',
     config: {
       teamCount: 'Number of teams',
-      teamSize: 'Team size (optional)',
+      teamSize: 'Team size',
       defineStarter: 'Define starter',
     },
     actions: {
@@ -197,5 +197,18 @@ export default {
     isDefault: 'Default',
     setDefault: 'Set as default',
     unsetDefault: 'Remove as default',
+  },
+
+  // Shared across draw pages
+  shared: {
+    loadList: 'Load List',
+    saveList: 'Save List',
+    noSavedLists: 'No saved lists. Create one in "My Lists".',
+    listLoaded: 'List "{name}" loaded!',
+    listSaved: 'List "{name}" saved!',
+    listNameLabel: 'List name',
+    addNamesHint: 'Separate multiple names with comma ( , ), semicolon ( ; ) or period ( . )',
+    cancel: 'Cancel',
+    save: 'Save',
   },
 };

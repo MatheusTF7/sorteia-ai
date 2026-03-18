@@ -10,11 +10,28 @@
       <div class="col-12 col-md-6">
         <q-card flat bordered class="card">
           <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm">{{ t('names.listTitle') }}</div>
+            <div class="text-subtitle1 text-weight-medium q-mb-sm row items-center">
+              {{ t('names.listTitle') }}
+              <q-space />
+              <q-btn flat dense icon="folder_open" color="primary" @click="loadDialogOpen = true">
+                <q-tooltip>{{ t('shared.loadList') }}</q-tooltip>
+              </q-btn>
+              <q-btn
+                flat
+                dense
+                icon="save"
+                color="primary"
+                :disable="nomes.length === 0"
+                @click="openSaveDialog"
+              >
+                <q-tooltip>{{ t('shared.saveList') }}</q-tooltip>
+              </q-btn>
+            </div>
 
             <q-input
               v-model="novoNome"
               :label="t('names.addName')"
+              :hint="t('shared.addNamesHint')"
               outlined
               dense
               @keyup.enter="adicionarNome"
@@ -101,25 +118,157 @@
         </q-card>
       </div>
     </div>
+
+    <!-- Load list dialog -->
+    <q-dialog v-model="loadDialogOpen">
+      <q-card style="min-width: 360px; max-width: 500px; width: 90vw">
+        <q-card-section class="row items-center">
+          <div class="text-h6">{{ t('shared.loadList') }}</div>
+          <q-space />
+          <q-btn v-close-popup icon="close" flat round dense />
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div v-if="savedLists.length === 0" class="text-grey-6 text-center q-pa-md">
+            {{ t('shared.noSavedLists') }}
+          </div>
+          <q-list v-else bordered separator class="rounded-borders">
+            <q-item
+              v-for="list in savedLists"
+              :key="list.id"
+              clickable
+              v-ripple
+              @click="loadList(list)"
+            >
+              <q-item-section>
+                <q-item-label>{{ list.name }}</q-item-label>
+                <q-item-label caption>
+                  {{ t('savedLists.itemCount', { count: list.items.length }) }}
+                </q-item-label>
+              </q-item-section>
+              <q-item-section v-if="list.isDefault" side>
+                <q-badge color="amber" :label="t('savedLists.isDefault')" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Save list dialog -->
+    <q-dialog v-model="saveDialogOpen">
+      <q-card style="min-width: 320px">
+        <q-card-section>
+          <div class="text-h6">{{ t('shared.saveList') }}</div>
+        </q-card-section>
+        <q-card-section>
+          <q-input
+            v-model="saveListName"
+            :label="t('shared.listNameLabel')"
+            outlined
+            dense
+            autofocus
+            @keyup.enter="saveCurrentList"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat :label="t('shared.cancel')" />
+          <q-btn
+            color="primary"
+            :label="t('shared.save')"
+            :disable="!saveListName.trim()"
+            @click="saveCurrentList"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
+import { useSavedConfigs } from 'src/composables/useSavedConfigs';
+
+interface SavedList {
+  [key: string]: string | string[] | boolean;
+  id: string;
+  name: string;
+  items: string[];
+  createdAt: string;
+  isDefault: boolean;
+}
 
 const { t } = useI18n();
+const $q = useQuasar();
 
 const novoNome = ref('');
 const nomes = ref<string[]>([]);
 const quantidade = ref<number>(1);
 const resultado = ref<string[]>([]);
 
-function adicionarNome() {
-  const nome = novoNome.value.trim();
-  if (!nome) return;
+// ─── Saved lists integration ──────────────────────────────────────────────────
+const { data: savedLists } = useSavedConfigs<SavedList[]>('saved_lists', []);
+const loadDialogOpen = ref(false);
+const saveDialogOpen = ref(false);
+const saveListName = ref('');
 
-  nomes.value.push(nome);
+onMounted(() => {
+  const defaultList = savedLists.value.find((l) => l.isDefault);
+  if (defaultList) {
+    nomes.value = [...defaultList.items];
+  }
+});
+
+function loadList(list: SavedList) {
+  nomes.value = [...list.items];
+  loadDialogOpen.value = false;
+  $q.notify({
+    message: t('shared.listLoaded', { name: list.name }),
+    color: 'positive',
+    position: 'bottom',
+    timeout: 2000,
+  });
+}
+
+function openSaveDialog() {
+  saveListName.value = '';
+  saveDialogOpen.value = true;
+}
+
+function saveCurrentList() {
+  const name = saveListName.value.trim();
+  if (!name) return;
+
+  savedLists.value.push({
+    id: crypto.randomUUID(),
+    name,
+    items: [...nomes.value],
+    createdAt: new Date().toISOString(),
+    isDefault: false,
+  });
+
+  saveDialogOpen.value = false;
+  $q.notify({
+    message: t('shared.listSaved', { name }),
+    color: 'positive',
+    position: 'bottom',
+    timeout: 2000,
+  });
+}
+
+// ─── Core logic ───────────────────────────────────────────────────────────────
+function adicionarNome() {
+  const raw = novoNome.value;
+  if (!raw.trim()) return;
+
+  const parsed = raw
+    .split(/[,;.]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  nomes.value.push(...parsed);
   novoNome.value = '';
 
   if (quantidade.value > nomes.value.length) {

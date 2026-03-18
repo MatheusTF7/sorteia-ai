@@ -10,24 +10,28 @@
       <div class="col-12 col-md-6">
         <q-card flat bordered class="card">
           <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-sm row">
-              {{ t('teams.participants') }} <q-space />
+            <div class="text-subtitle1 text-weight-medium q-mb-sm row items-center">
+              {{ t('teams.participants') }}
+              <q-space />
+              <q-btn flat dense icon="folder_open" color="primary" @click="loadDialogOpen = true">
+                <q-tooltip>{{ t('shared.loadList') }}</q-tooltip>
+              </q-btn>
               <q-btn
+                flat
+                dense
+                icon="save"
                 color="primary"
-                icon="engineering"
-                :label="t('teams.preconfig')"
-                @click="myAutoConfig"
+                :disable="participants.length === 0"
+                @click="openSaveDialog"
               >
-                <q-tooltip>
-                  Uma pré configuração criada pelo autor com os <br />
-                  participantes e configurações já definidas.
-                </q-tooltip>
+                <q-tooltip>{{ t('shared.saveList') }}</q-tooltip>
               </q-btn>
             </div>
 
             <q-input
               v-model="newParticipant"
               :label="t('teams.addParticipant')"
+              :hint="t('shared.addNamesHint')"
               outlined
               dense
               @keyup.enter="addParticipant"
@@ -69,22 +73,11 @@
             <div class="text-subtitle1 text-weight-medium q-mb-md">Configuração</div>
 
             <q-input
-              v-model.number="teamCount"
-              type="number"
-              outlined
-              dense
-              :label="t('teams.config.teamCount')"
-              :min="2"
-              :max="participants.length"
-            />
-
-            <q-input
               v-model.number="teamSize"
               type="number"
               outlined
               dense
               :label="t('teams.config.teamSize')"
-              class="q-mt-sm"
               :min="1"
             />
 
@@ -145,38 +138,166 @@
         </q-card>
       </div>
     </div>
+
+    <!-- Load list dialog -->
+    <q-dialog v-model="loadDialogOpen">
+      <q-card style="min-width: 360px; max-width: 500px; width: 90vw">
+        <q-card-section class="row items-center">
+          <div class="text-h6">{{ t('shared.loadList') }}</div>
+          <q-space />
+          <q-btn v-close-popup icon="close" flat round dense />
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div v-if="savedLists.length === 0" class="text-grey-6 text-center q-pa-md">
+            {{ t('shared.noSavedLists') }}
+          </div>
+          <q-list v-else bordered separator class="rounded-borders">
+            <q-item
+              v-for="list in savedLists"
+              :key="list.id"
+              clickable
+              v-ripple
+              @click="loadList(list)"
+            >
+              <q-item-section>
+                <q-item-label>{{ list.name }}</q-item-label>
+                <q-item-label caption>
+                  {{ t('savedLists.itemCount', { count: list.items.length }) }}
+                </q-item-label>
+              </q-item-section>
+              <q-item-section v-if="list.isDefault" side>
+                <q-badge color="amber" :label="t('savedLists.isDefault')" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Save list dialog -->
+    <q-dialog v-model="saveDialogOpen">
+      <q-card style="min-width: 320px">
+        <q-card-section>
+          <div class="text-h6">{{ t('shared.saveList') }}</div>
+        </q-card-section>
+        <q-card-section>
+          <q-input
+            v-model="saveListName"
+            :label="t('shared.listNameLabel')"
+            outlined
+            dense
+            autofocus
+            @keyup.enter="saveCurrentList"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat :label="t('shared.cancel')" />
+          <q-btn
+            color="primary"
+            :label="t('shared.save')"
+            :disable="!saveListName.trim()"
+            @click="saveCurrentList"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
+import { useSavedConfigs } from 'src/composables/useSavedConfigs';
+
+interface SavedList {
+  [key: string]: string | string[] | boolean;
+  id: string;
+  name: string;
+  items: string[];
+  createdAt: string;
+  isDefault: boolean;
+}
 
 const { t } = useI18n();
+const $q = useQuasar();
 
 const newParticipant = ref<string>('');
 const participants = ref<string[]>([]);
-const teamCount = ref<number>(1);
-const teamSize = ref<number | null>(null);
+const teamSize = ref<number>(2);
 const teams = ref<string[][]>([]);
-const defineStarter = ref(false);
+const defineStarter = ref(true);
 const starter = ref<string | null>(null);
 
-// Compute eligible candidates based on current teams and configuration
+// ─── Saved lists integration ──────────────────────────────────────────────────
+const { data: savedLists } = useSavedConfigs<SavedList[]>('saved_lists', []);
+const loadDialogOpen = ref(false);
+const saveDialogOpen = ref(false);
+const saveListName = ref('');
+
+onMounted(() => {
+  const defaultList = savedLists.value.find((l) => l.isDefault);
+  if (defaultList) {
+    participants.value = [...defaultList.items];
+  }
+});
+
+function loadList(list: SavedList) {
+  participants.value = [...list.items];
+  loadDialogOpen.value = false;
+  $q.notify({
+    message: t('shared.listLoaded', { name: list.name }),
+    color: 'positive',
+    position: 'bottom',
+    timeout: 2000,
+  });
+}
+
+function openSaveDialog() {
+  saveListName.value = '';
+  saveDialogOpen.value = true;
+}
+
+function saveCurrentList() {
+  const name = saveListName.value.trim();
+  if (!name) return;
+
+  savedLists.value.push({
+    id: crypto.randomUUID(),
+    name,
+    items: [...participants.value],
+    createdAt: new Date().toISOString(),
+    isDefault: false,
+  });
+
+  saveDialogOpen.value = false;
+  $q.notify({
+    message: t('shared.listSaved', { name }),
+    color: 'positive',
+    position: 'bottom',
+    timeout: 2000,
+  });
+}
+
+// ─── Dynamic team count ───────────────────────────────────────────────────────
+const teamCount = computed(() => {
+  if (!teamSize.value || teamSize.value < 1) return 0;
+  return Math.ceil(participants.value.length / teamSize.value);
+});
+
+// ─── Starter logic ───────────────────────────────────────────────────────────
 function computeStarterCandidates(fromTeams: string[][]) {
   const candidates: string[] = [];
-
   if (!fromTeams || fromTeams.length === 0) return candidates;
 
-  if (teamSize.value) {
-    // Only members in teams that reached the configured teamSize are eligible
-    fromTeams.forEach((team) => {
-      if (team.length === teamSize.value) {
-        candidates.push(...team);
-      }
-    });
-  } else {
-    // When no teamSize provided, only members of the largest teams are eligible
+  fromTeams.forEach((team) => {
+    if (team.length === teamSize.value) {
+      candidates.push(...team);
+    }
+  });
+
+  if (candidates.length === 0) {
     const maxSize = Math.max(...fromTeams.map((t) => t.length));
     fromTeams.forEach((team) => {
       if (team.length === maxSize) {
@@ -188,10 +309,8 @@ function computeStarterCandidates(fromTeams: string[][]) {
   return candidates;
 }
 
-// Reactive computed list of current eligible candidates
 const starterCandidates = computed(() => computeStarterCandidates(teams.value));
 
-// Pick a starter from provided teams or from current state
 function pickStarter(fromTeams?: string[][]) {
   if (!defineStarter.value) {
     starter.value = null;
@@ -208,80 +327,53 @@ function pickStarter(fromTeams?: string[][]) {
   starter.value = pool[idx]!;
 }
 
+// ─── Participants ─────────────────────────────────────────────────────────────
 function addParticipant() {
-  const name = newParticipant.value.trim();
-  if (!name) return;
+  const raw = newParticipant.value;
+  if (!raw.trim()) return;
 
-  participants.value.push(name);
+  const parsed = raw
+    .split(/[,;.]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  participants.value.push(...parsed);
   newParticipant.value = '';
-
-  if (teamCount.value > participants.value.length) {
-    teamCount.value = participants.value.length;
-  }
 }
 
 function removeParticipant(index: number) {
   participants.value.splice(index, 1);
-
-  if (teamCount.value > participants.value.length) {
-    teamCount.value = participants.value.length;
-  }
 }
 
 const isValidConfiguration = computed(() => {
   if (participants.value.length < 2) return false;
-  if (teamCount.value < 2) return false;
-
-  if (teamSize.value) {
-    return teamSize.value * teamCount.value >= participants.value.length;
-  }
-
-  return teamCount.value <= participants.value.length;
+  if (!teamSize.value || teamSize.value < 1) return false;
+  return true;
 });
 
 function generateTeams() {
+  const count = teamCount.value;
+  if (count < 1) return;
+
   const shuffled = [...participants.value];
 
-  // Shuffle participants
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
   }
 
-  const result: string[][] = Array.from({ length: teamCount.value }, () => []);
+  const result: string[][] = Array.from({ length: count }, () => []);
+  let teamIndex = 0;
 
-  if (teamSize.value) {
-    let teamIndex = 0;
-
-    shuffled.forEach((participant) => {
-      while (result[teamIndex]!.length >= teamSize.value!) {
-        teamIndex = (teamIndex + 1) % teamCount.value;
-      }
-      result[teamIndex]!.push(participant);
-    });
-  } else {
-    shuffled.forEach((participant, index) => {
-      result[index % teamCount.value]!.push(participant);
-    });
-  }
+  shuffled.forEach((participant) => {
+    if (result[teamIndex]!.length >= teamSize.value) {
+      teamIndex++;
+    }
+    result[teamIndex]!.push(participant);
+  });
 
   teams.value = result;
-  // Automatically pick starter if option enabled
   pickStarter(result);
-}
-function myAutoConfig() {
-  participants.value = [
-    'Matheus',
-    'Pedro Henrique',
-    'Caio',
-    'Rafael',
-    'Anderson',
-    'Jefferson',
-    'Marcellus',
-  ];
-  teamSize.value = 2;
-  teamCount.value = Math.ceil(participants.value.length / teamSize.value);
-  defineStarter.value = true;
 }
 </script>
 

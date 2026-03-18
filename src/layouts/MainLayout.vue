@@ -92,7 +92,7 @@
       :breakpoint="1024"
       class="app-drawer"
     >
-      <q-scroll-area class="fit">
+      <div class="drawer-scroll fit">
         <div class="drawer-shell">
           <div class="drawer-brand">
             <div class="drawer-brand__badge">{{ t('layout.brandTag') }}</div>
@@ -123,7 +123,7 @@
             <div class="drawer-tip__description">{{ t('layout.navTipDescription') }}</div>
           </div>
         </div>
-      </q-scroll-area>
+      </div>
     </q-drawer>
 
     <q-page-container class="app-page-container">

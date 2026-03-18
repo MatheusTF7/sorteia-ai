@@ -64,16 +64,16 @@
           <q-input
             v-model="newParticipant"
             :label="t('teams.addParticipant')"
+            :placeholder="t('teams.addParticipant')"
             outlined
             dense
-            class="app-field"
+            class="app-field app-field--action"
             @keyup.enter="addParticipant"
           >
             <template #append>
               <q-btn
                 flat
-                round
-                class="app-icon-btn app-icon-btn--brand"
+                class="app-icon-btn app-icon-btn--brand app-field__action"
                 icon="add"
                 @click="addParticipant"
               />

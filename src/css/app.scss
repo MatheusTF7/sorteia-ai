@@ -259,6 +259,11 @@ a {
   padding: 24px 20px;
 }
 
+.drawer-scroll {
+  height: 100%;
+  overflow: auto;
+}
+
 .drawer-brand {
   padding: 18px;
   border: 1px solid var(--sa-border);
@@ -695,11 +700,71 @@ a {
   font-weight: 600;
 }
 
+.app-field.q-field--with-bottom {
+  padding-bottom: 0;
+}
+
+.app-field .q-field__bottom {
+  min-height: 0;
+  padding: 0;
+}
+
 .q-field--outlined .q-field__control {
   min-height: 54px;
   border-radius: 16px;
   background: var(--sa-field-bg);
   color: var(--sa-text);
+}
+
+.app-field.q-field--dense .q-field__control {
+  min-height: 54px;
+}
+
+.app-field.q-field--dense .q-field__native,
+.app-field.q-field--dense .q-field__input {
+  min-height: 54px;
+  padding-top: 16px;
+  padding-bottom: 10px;
+}
+
+.app-field.q-field--dense .q-field__label {
+  top: 16px;
+}
+
+.app-field--action .q-field__control {
+  padding-right: 6px;
+}
+
+.app-field--action.q-field--float .q-field__label {
+  opacity: 0;
+  transform: none;
+}
+
+.app-field--action .q-field__append {
+  align-items: center;
+  height: 100%;
+  padding-left: 8px;
+}
+
+.app-field--action .q-field__append .app-field__action {
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.app-field--action .q-field__append .app-field__action .q-btn__content {
+  width: 100%;
+  height: 100%;
+}
+
+.app-field--action .q-field__append .app-field__action .q-focus-helper {
+  border-radius: inherit;
 }
 
 .q-field--outlined .q-field__control:before {

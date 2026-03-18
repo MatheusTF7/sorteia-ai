@@ -62,16 +62,16 @@
           <q-input
             v-model="novoNome"
             :label="t('names.addName')"
+            :placeholder="t('names.addName')"
             outlined
             dense
-            class="app-field"
+            class="app-field app-field--action"
             @keyup.enter="adicionarNome"
           >
             <template #append>
               <q-btn
                 flat
-                round
-                class="app-icon-btn app-icon-btn--brand"
+                class="app-icon-btn app-icon-btn--brand app-field__action"
                 icon="add"
                 @click="adicionarNome"
               />

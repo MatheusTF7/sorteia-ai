@@ -39,16 +39,16 @@
           <q-input
             v-model="newPrize"
             :label="t('prizes.addPrize')"
+            :placeholder="t('prizes.addPrize')"
             outlined
             dense
-            class="app-field"
+            class="app-field app-field--action"
             @keyup.enter="addPrize"
           >
             <template #append>
               <q-btn
                 flat
-                round
-                class="app-icon-btn app-icon-btn--brand"
+                class="app-icon-btn app-icon-btn--brand app-field__action"
                 icon="add"
                 @click="addPrize"
               />
@@ -143,16 +143,16 @@
             <q-input
               v-model="newParticipant"
               :label="t('prizes.addParticipant')"
+              :placeholder="t('prizes.addParticipant')"
               outlined
               dense
-              class="app-field"
+              class="app-field app-field--action"
               @keyup.enter="addParticipant"
             >
               <template #append>
                 <q-btn
                   flat
-                  round
-                  class="app-icon-btn app-icon-btn--brand"
+                  class="app-icon-btn app-icon-btn--brand app-field__action"
                   icon="add"
                   @click="addParticipant"
                 />

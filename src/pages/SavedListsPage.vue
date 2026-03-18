@@ -154,16 +154,16 @@
           <q-input
             v-model="itemInput"
             :label="t('savedLists.addItemsLabel')"
+            :placeholder="t('savedLists.addItemsLabel')"
             outlined
             dense
-            class="app-field"
+            class="app-field app-field--action"
             @keyup.enter="addItems"
           >
             <template #append>
               <q-btn
                 flat
-                round
-                class="app-icon-btn app-icon-btn--brand"
+                class="app-icon-btn app-icon-btn--brand app-field__action"
                 icon="add"
                 @click="addItems"
               />

@@ -12,6 +12,7 @@ export default {
     teams: 'Times',
     prizes: 'Prêmios',
     about: 'Sobre',
+    savedLists: 'Minhas Listas',
   },
   pwa: {
     pageTitle: 'Instalar este app',
@@ -171,5 +172,26 @@ export default {
 
   settings: {
     title: 'Configurações',
+  },
+
+  // Página de listas salvas
+  savedLists: {
+    pageTitle: 'Minhas Listas',
+    pageSubtitle: 'Gerencie suas listas de nomes salvas',
+    noLists: 'Nenhuma lista salva ainda',
+    firstList: 'Criar minha primeira lista',
+    createList: 'Nova Lista',
+    editList: 'Editar Lista',
+    deleteList: 'Excluir Lista',
+    listName: 'Nome da lista',
+    addItemsLabel: 'Adicionar nomes',
+    addItemsHint: 'Separe múltiplos nomes por vírgula ( , ), ponto-e-vírgula ( ; ) ou ponto ( . )',
+    itemsLabel: 'Nomes',
+    noItems: 'Nenhum nome adicionado',
+    confirmDelete: 'Deseja excluir a lista "{name}"? Esta ação não pode ser desfeita.',
+    save: 'Salvar',
+    cancel: 'Cancelar',
+    confirm: 'Excluir',
+    itemCount: '{count} nome | {count} nomes',
   },
 };

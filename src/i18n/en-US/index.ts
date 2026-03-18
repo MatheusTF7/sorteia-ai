@@ -13,6 +13,7 @@ export default {
     teams: 'Teams',
     prizes: 'Prizes',
     about: 'About',
+    savedLists: 'Saved Lists',
   },
   pwa: {
     pageTitle: 'Install this app',
@@ -172,5 +173,26 @@ export default {
 
   settings: {
     title: 'Settings',
+  },
+
+  // Saved lists page
+  savedLists: {
+    pageTitle: 'My Lists',
+    pageSubtitle: 'Manage your saved name lists',
+    noLists: 'No saved lists yet',
+    firstList: 'Create my first list',
+    createList: 'New List',
+    editList: 'Edit List',
+    deleteList: 'Delete List',
+    listName: 'List name',
+    addItemsLabel: 'Add names',
+    addItemsHint: 'Separate multiple names with comma ( , ), semicolon ( ; ) or period ( . )',
+    itemsLabel: 'Names',
+    noItems: 'No names added',
+    confirmDelete: 'Delete the list "{name}"? This cannot be undone.',
+    save: 'Save',
+    cancel: 'Cancel',
+    confirm: 'Delete',
+    itemCount: '{count} name | {count} names',
   },
 };

@@ -134,6 +134,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/prizes',
   },
   {
+    title: t('nav.savedLists'),
+    caption: t('savedLists.pageSubtitle'),
+    icon: 'bookmark',
+    link: '/saved-lists',
+  },
+  {
     title: t('nav.about'),
     caption: t('drawList.subtitle'),
     icon: 'info',

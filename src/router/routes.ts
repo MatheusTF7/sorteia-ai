@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'prizes', component: () => import('pages/draw-pages/DrawPrizesPage.vue') },
       { path: 'about', component: () => import('pages/AboutPage.vue') },
       { path: 'install', component: () => import('pages/PWAInstall.vue') },
+      { path: 'saved-lists', component: () => import('pages/SavedListsPage.vue') },
     ],
   },
 

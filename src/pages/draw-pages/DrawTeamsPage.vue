@@ -270,9 +270,17 @@ function generateTeams() {
   pickStarter(result);
 }
 function myAutoConfig() {
-  participants.value = ['Matheus', 'Pedro Henrique', 'Caio', 'Rafael', 'Anderson', 'Jefferson'];
+  participants.value = [
+    'Matheus',
+    'Pedro Henrique',
+    'Caio',
+    'Rafael',
+    'Anderson',
+    'Jefferson',
+    'Marcellus',
+  ];
   teamSize.value = 2;
-  teamCount.value = participants.value.length / teamSize.value;
+  teamCount.value = Math.ceil(participants.value.length / teamSize.value);
   defineStarter.value = true;
 }
 </script>

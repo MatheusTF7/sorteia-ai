@@ -31,13 +31,88 @@
         </q-card>
       </div>
 
+      <div class="col-12">
+        <q-card flat class="card shadow-modern q-pa-lg text-left">
+          <div class="text-h6 text-weight-bold q-mb-md">{{ t('bingo.sessionModeTitle') }}</div>
+
+          <q-btn-toggle
+            v-model="sessionMode"
+            spread
+            unelevated
+            rounded
+            toggle-color="primary"
+            toggle-text-color="white"
+            color="white"
+            text-color="grey-7"
+            :options="[
+              { label: t('bingo.playLocal'), value: 'local', icon: 'devices' },
+              { label: t('bingo.playShared'), value: 'shared', icon: 'groups' },
+            ]"
+          />
+
+          <div v-if="isSharedMode" class="q-mt-lg">
+            <template v-if="isSharedHostSetup">
+              <div class="text-subtitle2 text-weight-bold q-mb-sm">
+                {{ t('bingo.sharedHostTitle') }}
+              </div>
+              <div class="text-body2 text-grey-6 q-mb-md">
+                {{ t('bingo.sharedHostDesc') }}
+              </div>
+
+              <q-input
+                v-model="jsonBinApiKey"
+                outlined
+                :type="showJsonBinKey ? 'text' : 'password'"
+                :label="t('bingo.sharedApiKeyLabel')"
+                :hint="t('bingo.sharedApiKeyHint')"
+              >
+                <template #append>
+                  <q-btn
+                    flat
+                    round
+                    size="sm"
+                    :icon="showJsonBinKey ? 'visibility_off' : 'visibility'"
+                    @click="showJsonBinKey = !showJsonBinKey"
+                  />
+                </template>
+              </q-input>
+            </template>
+
+            <template v-else-if="isSharedGuestSetup">
+              <div class="text-subtitle2 text-weight-bold q-mb-sm">
+                {{ t('bingo.sharedGuestTitle') }}
+              </div>
+              <div class="text-body2 text-grey-6 q-mb-md">
+                {{ t('bingo.sharedGuestDesc') }}
+              </div>
+
+              <q-input
+                v-model="sharedRoomInput"
+                outlined
+                :label="t('bingo.sharedRoomInputLabel')"
+                :hint="t('bingo.sharedRoomInputHint')"
+              />
+            </template>
+
+            <div v-else class="text-body2 text-grey-6">
+              {{ t('bingo.sharedSelectRoleFirst') }}
+            </div>
+
+            <div v-if="sharedErrorMessage" class="text-body2 text-negative q-mt-sm">
+              {{ sharedErrorMessage }}
+            </div>
+          </div>
+        </q-card>
+      </div>
+
       <div class="col-12 text-center q-mt-md">
         <q-btn
           color="primary"
           unelevated
           class="q-py-sm q-px-xl text-weight-bold"
           :label="t('bingo.startGame')"
-          :disable="!selectedRole"
+          :disable="!canStartGame"
+          :loading="sharedBusy"
           @click="startGame"
         />
       </div>
@@ -45,6 +120,51 @@
 
     <!-- Game Area -->
     <div v-else class="text-left">
+      <q-card v-if="isSharedGame && sharedRoomId" flat class="card shadow-modern q-mb-lg">
+        <q-card-section class="row q-col-gutter-md items-center">
+          <div class="col-12 col-md">
+            <div class="text-overline text-primary">{{ t('bingo.sharedRoomBadge') }}</div>
+            <div class="text-h6 text-weight-bold">{{ sharedRoomId }}</div>
+            <div class="text-body2 text-grey-6">
+              {{ sharedConnectionText }}
+            </div>
+          </div>
+
+          <div class="col-12 col-md-auto">
+            <div class="row q-col-gutter-sm">
+              <div class="col-auto">
+                <q-btn
+                  outline
+                  color="primary"
+                  icon="tag"
+                  :label="t('bingo.copyRoomCode')"
+                  @click="copyRoomCode"
+                />
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  outline
+                  color="primary"
+                  icon="share"
+                  :label="t('bingo.copyRoomLink')"
+                  @click="copyRoomLink"
+                />
+              </div>
+              <div v-if="isSharedGuestSession" class="col-auto">
+                <q-btn
+                  outline
+                  color="primary"
+                  icon="refresh"
+                  :label="t('bingo.syncNow')"
+                  :loading="sharedManualRefreshing"
+                  @click="refreshSharedRoom(true, true)"
+                />
+              </div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
       <!-- Drawer Controls -->
       <div v-if="isDrawer" class="q-mb-xl">
         <q-card flat class="card shadow-modern">
@@ -155,6 +275,93 @@
         </q-card>
 
         <!-- Called Numbers Board -->
+        <q-card flat class="card shadow-modern q-mt-lg">
+          <q-card-section
+            :class="{
+              'q-pa-lg': $q.screen.gt.sm,
+              'q-pa-md': $q.screen.lt.md,
+            }"
+          >
+            <div class="text-h6 text-weight-bold q-mb-md row items-center">
+              {{ t('bingo.calledNumbers') }}
+              <q-badge class="q-ml-sm" color="primary" :label="calledNumbers.length" rounded />
+            </div>
+
+            <div class="bingo-board">
+              <div v-for="letter in bingoLetters" :key="letter.char" class="bingo-board__column">
+                <div class="bingo-board__header" :class="letter.colorClass">
+                  {{ letter.char }}
+                </div>
+                <div
+                  v-for="n in letter.numbers"
+                  :key="n"
+                  class="bingo-board__cell"
+                  :class="{
+                    'bingo-board__cell--called': calledNumbers.includes(n),
+                    [letter.colorClass]: calledNumbers.includes(n),
+                  }"
+                >
+                  {{ n }}
+                </div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div v-if="showSharedFeed" class="q-mb-xl">
+        <q-card flat class="card shadow-modern">
+          <q-card-section
+            :class="{
+              'q-pa-lg': $q.screen.gt.sm,
+              'q-pa-md': $q.screen.lt.md,
+            }"
+          >
+            <div class="text-h6 text-weight-bold q-mb-lg row items-center">
+              {{ t('bingo.sharedFeedTitle') }}
+              <q-space />
+              <q-badge color="primary" :label="calledNumbers.length" rounded />
+            </div>
+
+            <div class="text-center q-mb-md">
+              <div
+                v-if="lastDrawnNumber !== null"
+                class="bingo-ball q-mx-auto"
+                :class="getBallColorClass(lastDrawnNumber)"
+              >
+                <div class="bingo-ball__letter">{{ getLetterForNumber(lastDrawnNumber) }}</div>
+                <div class="bingo-ball__number">{{ lastDrawnNumber }}</div>
+              </div>
+              <div v-else class="bingo-ball bingo-ball--empty q-mx-auto">
+                <span class="text-grey-5 text-h6">?</span>
+              </div>
+
+              <div class="text-caption text-grey-6 q-mt-sm">
+                {{
+                  lastDrawnNumber === null
+                    ? t('bingo.sharedWaitingNumber')
+                    : t('bingo.sharedStatusConnected', {
+                        time: sharedLastSyncTime,
+                      })
+                }}
+              </div>
+            </div>
+
+            <div class="q-mt-md">
+              <div class="row items-center justify-between q-mb-xs">
+                <span class="text-caption text-grey-6">{{ t('bingo.progress') }}</span>
+                <span class="text-caption text-weight-bold">{{ calledNumbers.length }} / 75</span>
+              </div>
+              <q-linear-progress
+                :value="calledNumbers.length / 75"
+                color="primary"
+                rounded
+                size="8px"
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+
         <q-card flat class="card shadow-modern q-mt-lg">
           <q-card-section
             :class="{
@@ -553,15 +760,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useQuasar } from 'quasar';
+import { copyToClipboard, useQuasar } from 'quasar';
+import { useRoute, useRouter } from 'vue-router';
+import {
+  createSharedBingoRoom,
+  readSharedBingoRoom,
+  updateSharedBingoRoom,
+  type SharedBingoHostRole,
+  type SharedBingoRoomRecord,
+} from 'src/services/jsonbinBingo';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
+const route = useRoute();
+const router = useRouter();
 
-// ─── Role selection ──────────────────────────────────────────────────────────
 type Role = 'drawer' | 'player' | 'both';
+type SessionMode = 'local' | 'shared';
+type SharedSessionOwner = 'host' | 'guest' | null;
+
+interface ValidateResult {
+  called: number[];
+  notCalled: number[];
+  valid: boolean;
+}
+
+const JSONBIN_KEY_STORAGE = 'bingo_jsonbin_api_key';
+const SHARED_POLL_INTERVAL = 3000;
 
 const roles = computed(() => [
   {
@@ -585,17 +812,85 @@ const roles = computed(() => [
 ]);
 
 const selectedRole = ref<Role | null>(null);
+const sessionMode = ref<SessionMode>('local');
 const gameStarted = ref(false);
 
 const isDrawer = computed(() => selectedRole.value === 'drawer' || selectedRole.value === 'both');
 const isPlayer = computed(() => selectedRole.value === 'player' || selectedRole.value === 'both');
+const isSharedMode = computed(() => sessionMode.value === 'shared');
+const isSharedHostSetup = computed(
+  () => isSharedMode.value && (selectedRole.value === 'drawer' || selectedRole.value === 'both'),
+);
+const isSharedGuestSetup = computed(
+  () => isSharedMode.value && selectedRole.value === 'player',
+);
 
-// ─── Drawer state ────────────────────────────────────────────────────────────
 const calledNumbers = ref<number[]>([]);
 const lastDrawnNumber = ref<number | null>(null);
 const ttsEnabled = ref(false);
 const suspenseEnabled = ref(true);
 const suspenseAnimating = ref(false);
+let suspenseTimeoutId: number | null = null;
+
+const jsonBinApiKey = ref('');
+const showJsonBinKey = ref(false);
+const sharedRoomInput = ref('');
+const sharedRoomId = ref('');
+const sharedRoomCreatedAt = ref('');
+const sharedLastSyncedAt = ref('');
+const sharedSessionOwner = ref<SharedSessionOwner>(null);
+const sharedSyncState = ref<'idle' | 'connected' | 'error'>('idle');
+const sharedErrorMessage = ref('');
+const sharedBusy = ref(false);
+const sharedManualRefreshing = ref(false);
+
+let sharedPollTimer: number | null = null;
+let sharedPollInFlight = false;
+let sharedPersistQueue = Promise.resolve();
+
+const isSharedHostSession = computed(
+  () => gameStarted.value && sharedSessionOwner.value === 'host' && sharedRoomId.value.length > 0,
+);
+const isSharedGuestSession = computed(
+  () => gameStarted.value && sharedSessionOwner.value === 'guest' && sharedRoomId.value.length > 0,
+);
+
+const normalizedSharedRoomCode = computed(() => extractRoomCode(sharedRoomInput.value));
+const sharedRoomLink = computed(() =>
+  sharedRoomId.value ? buildRoomLink(sharedRoomId.value) : '',
+);
+const sharedLastSyncTime = computed(() => formatSyncTime(sharedLastSyncedAt.value));
+const sharedConnectionText = computed(() => {
+  if (sharedSyncState.value === 'error') {
+    return sharedErrorMessage.value || t('bingo.sharedStatusError');
+  }
+
+  if (sharedLastSyncedAt.value) {
+    return t('bingo.sharedStatusConnected', { time: sharedLastSyncTime.value });
+  }
+
+  return t('bingo.sharedStatusReady');
+});
+
+const showSharedFeed = computed(() => isSharedGuestSession.value);
+
+const canStartGame = computed(() => {
+  if (!selectedRole.value) return false;
+
+  if (!isSharedMode.value) {
+    return true;
+  }
+
+  if (isSharedHostSetup.value) {
+    return jsonBinApiKey.value.trim().length > 0;
+  }
+
+  if (isSharedGuestSetup.value) {
+    return normalizedSharedRoomCode.value.length > 0;
+  }
+
+  return false;
+});
 
 const availableNumbers = computed(() => {
   const all: number[] = [];
@@ -633,30 +928,183 @@ function getBallColorClass(n: number): string {
   return 'ball-orange';
 }
 
-function drawNumber() {
-  if (availableNumbers.value.length === 0) return;
+function buildRoomLink(roomCode: string): string {
+  if (typeof window === 'undefined') {
+    return roomCode;
+  }
 
-  const idx = Math.floor(Math.random() * availableNumbers.value.length);
-  const number = availableNumbers.value[idx]!;
+  return `${window.location.origin}${window.location.pathname}#/bingo?room=${encodeURIComponent(roomCode)}`;
+}
 
-  if (suspenseEnabled.value) {
-    suspenseAnimating.value = true;
-    setTimeout(() => {
-      suspenseAnimating.value = false;
-      revealNumber(number);
-    }, 1500);
+function extractRoomCode(input: string): string {
+  const trimmed = input.trim();
+
+  if (!trimmed) return '';
+
+  const roomQueryMatch = trimmed.match(/[?&]room=([^&#]+)/i);
+  if (roomQueryMatch?.[1]) {
+    return decodeURIComponent(roomQueryMatch[1]);
+  }
+
+  if (/^[a-zA-Z0-9]+$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  const parts = trimmed.replace(/\/+$/, '').split('/');
+  const lastPart = parts.at(-1) ?? '';
+
+  return /^[a-zA-Z0-9]+$/.test(lastPart) ? lastPart : '';
+}
+
+function getRouteRoomCode(): string {
+  const room = route.query.room;
+
+  if (typeof room === 'string') {
+    return room;
+  }
+
+  if (Array.isArray(room) && typeof room[0] === 'string') {
+    return room[0];
+  }
+
+  return '';
+}
+
+function updateRouteRoom(roomCode: string | null) {
+  const nextQuery = { ...route.query };
+
+  if (roomCode) {
+    nextQuery.room = roomCode;
   } else {
-    revealNumber(number);
+    delete nextQuery.room;
+  }
+
+  void router.replace({ query: nextQuery }).catch(() => undefined);
+}
+
+function formatSyncTime(isoDate: string): string {
+  if (!isoDate) {
+    return '--:--';
+  }
+
+  try {
+    return new Intl.DateTimeFormat(locale.value, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(new Date(isoDate));
+  } catch {
+    return isoDate;
   }
 }
 
-function revealNumber(number: number) {
-  lastDrawnNumber.value = number;
-  calledNumbers.value.push(number);
+function notifySuccess(message: string) {
+  $q.notify({
+    message,
+    color: 'positive',
+    position: 'top',
+    timeout: 2200,
+  });
+}
 
-  if (ttsEnabled.value) {
-    speakNumber(number);
+function notifyError(message: string) {
+  $q.notify({
+    message,
+    color: 'negative',
+    position: 'top',
+    timeout: 2800,
+  });
+}
+
+function resolveSharedError(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return error.message;
   }
+
+  return t('bingo.sharedGenericError');
+}
+
+function handleSharedError(error: unknown, notify = false) {
+  const message = resolveSharedError(error);
+  sharedErrorMessage.value = message;
+  sharedSyncState.value = 'error';
+
+  if (notify) {
+    notifyError(message);
+  }
+}
+
+function clearSuspenseTimeout() {
+  if (suspenseTimeoutId !== null) {
+    window.clearTimeout(suspenseTimeoutId);
+    suspenseTimeoutId = null;
+  }
+
+  suspenseAnimating.value = false;
+}
+
+function clearCurrentGameState() {
+  clearSuspenseTimeout();
+  calledNumbers.value = [];
+  lastDrawnNumber.value = null;
+  markedCells.clear();
+}
+
+function prepareNewGame() {
+  clearCurrentGameState();
+
+  if (isPlayer.value) {
+    generateCard();
+  }
+}
+
+function applySharedRecord(record: SharedBingoRoomRecord) {
+  calledNumbers.value = [...record.calledNumbers];
+  lastDrawnNumber.value = record.lastDrawnNumber ?? record.calledNumbers.at(-1) ?? null;
+  sharedRoomCreatedAt.value = record.createdAt;
+  sharedLastSyncedAt.value = record.updatedAt;
+  sharedSyncState.value = 'connected';
+  sharedErrorMessage.value = '';
+}
+
+function setSharedSession(record: SharedBingoRoomRecord, owner: Exclude<SharedSessionOwner, null>) {
+  sharedSessionOwner.value = owner;
+  sharedRoomId.value = record.roomCode;
+  sharedRoomInput.value = record.roomCode;
+  applySharedRecord(record);
+  updateRouteRoom(record.roomCode);
+}
+
+function clearSharedSession(options?: { clearInput?: boolean }) {
+  stopSharedPolling();
+  sharedSessionOwner.value = null;
+  sharedRoomId.value = '';
+  sharedRoomCreatedAt.value = '';
+  sharedLastSyncedAt.value = '';
+  sharedSyncState.value = 'idle';
+  sharedErrorMessage.value = '';
+  sharedManualRefreshing.value = false;
+  sharedPollInFlight = false;
+
+  if (options?.clearInput) {
+    sharedRoomInput.value = '';
+  }
+
+  updateRouteRoom(null);
+}
+
+function buildSharedSnapshot(): SharedBingoRoomRecord {
+  return {
+    appId: 'sorteia-ai-bingo',
+    version: 1,
+    roomCode: sharedRoomId.value,
+    status: 'active',
+    hostRole: selectedRole.value === 'both' ? 'both' : 'drawer',
+    calledNumbers: [...calledNumbers.value],
+    lastDrawnNumber: lastDrawnNumber.value,
+    createdAt: sharedRoomCreatedAt.value || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function speakNumber(n: number) {
@@ -674,7 +1122,39 @@ function speakNumber(n: number) {
   window.speechSynthesis.speak(utterance);
 }
 
-// ─── Player card state ───────────────────────────────────────────────────────
+function drawNumber() {
+  if (availableNumbers.value.length === 0) return;
+
+  clearSuspenseTimeout();
+
+  const idx = Math.floor(Math.random() * availableNumbers.value.length);
+  const number = availableNumbers.value[idx]!;
+
+  if (suspenseEnabled.value) {
+    suspenseAnimating.value = true;
+    suspenseTimeoutId = window.setTimeout(() => {
+      suspenseTimeoutId = null;
+      suspenseAnimating.value = false;
+      revealNumber(number);
+    }, 1500);
+  } else {
+    revealNumber(number);
+  }
+}
+
+function revealNumber(number: number) {
+  lastDrawnNumber.value = number;
+  calledNumbers.value.push(number);
+
+  if (ttsEnabled.value) {
+    speakNumber(number);
+  }
+
+  if (isSharedHostSession.value) {
+    void persistSharedRoomState();
+  }
+}
+
 const cardColumns = reactive<number[][]>([[], [], [], [], []]);
 const markedCells = reactive(new Set<number>());
 
@@ -715,12 +1195,12 @@ function generateCard() {
     cardColumns[c] = picked;
   }
 
-  // Free space in center (row 2, col 2)
   cardColumns[2]![2] = 0;
 }
 
 function toggleMark(cell: number) {
-  if (cell === 0) return; // free space
+  if (cell === 0) return;
+
   if (markedCells.has(cell)) {
     markedCells.delete(cell);
   } else {
@@ -728,33 +1208,31 @@ function toggleMark(cell: number) {
   }
 }
 
-// ─── Bingo detection ─────────────────────────────────────────────────────────
 const hasBingo = computed(() => {
   const marked = (r: number, c: number) => {
     const val = cardRows.value[r]![c]!;
     return val === 0 || markedCells.has(val);
   };
 
-  // Check rows
   for (let r = 0; r < 5; r++) {
     if ([0, 1, 2, 3, 4].every((c) => marked(r, c))) return true;
   }
-  // Check columns
+
   for (let c = 0; c < 5; c++) {
     if ([0, 1, 2, 3, 4].every((r) => marked(r, c))) return true;
   }
-  // Diagonals
+
   if ([0, 1, 2, 3, 4].every((i) => marked(i, i))) return true;
   if ([0, 1, 2, 3, 4].every((i) => marked(i, 4 - i))) return true;
 
   return false;
 });
 
-// ─── Celebration ─────────────────────────────────────────────────────────────
 const showCelebration = ref(false);
 
 function shoutBingo() {
   if (!hasBingo.value) return;
+
   showCelebration.value = true;
 
   if (ttsEnabled.value && 'speechSynthesis' in window) {
@@ -785,14 +1263,139 @@ function confettiStyle(i: number) {
   };
 }
 
-// ─── Game flow ───────────────────────────────────────────────────────────────
-function startGame() {
-  if (!selectedRole.value) return;
+async function persistSharedRoomState(notifyOnError = false) {
+  if (!isSharedHostSession.value || !sharedRoomId.value) {
+    return;
+  }
+
+  const snapshot = buildSharedSnapshot();
+
+  sharedPersistQueue = sharedPersistQueue
+    .catch(() => undefined)
+    .then(async () => {
+      const updated = await updateSharedBingoRoom(sharedRoomId.value, snapshot, jsonBinApiKey.value);
+      applySharedRecord(updated);
+    });
+
+  try {
+    await sharedPersistQueue;
+  } catch (error) {
+    handleSharedError(error, notifyOnError);
+  }
+}
+
+async function refreshSharedRoom(notifyOnError = false, manual = false) {
+  if (!sharedRoomId.value || sharedPollInFlight) {
+    return;
+  }
+
+  sharedPollInFlight = true;
+
+  if (manual) {
+    sharedManualRefreshing.value = true;
+  }
+
+  try {
+    const room = await readSharedBingoRoom(sharedRoomId.value);
+    applySharedRecord(room);
+  } catch (error) {
+    handleSharedError(error, notifyOnError);
+  } finally {
+    sharedPollInFlight = false;
+
+    if (manual) {
+      sharedManualRefreshing.value = false;
+    }
+  }
+}
+
+function startSharedPolling() {
+  stopSharedPolling();
+  void refreshSharedRoom(false);
+
+  sharedPollTimer = window.setInterval(() => {
+    void refreshSharedRoom(false);
+  }, SHARED_POLL_INTERVAL);
+}
+
+function stopSharedPolling() {
+  if (sharedPollTimer !== null) {
+    window.clearInterval(sharedPollTimer);
+    sharedPollTimer = null;
+  }
+}
+
+function startLocalGame() {
+  clearSharedSession();
+  prepareNewGame();
   gameStarted.value = true;
-  calledNumbers.value = [];
-  lastDrawnNumber.value = null;
-  if (isPlayer.value) {
-    generateCard();
+}
+
+async function startSharedHostGame() {
+  if (!isSharedHostSetup.value) return;
+
+  sharedBusy.value = true;
+  sharedErrorMessage.value = '';
+
+  try {
+    const hostRole: SharedBingoHostRole = selectedRole.value === 'both' ? 'both' : 'drawer';
+    const room = await createSharedBingoRoom(jsonBinApiKey.value, hostRole);
+
+    clearSharedSession();
+    setSharedSession(room, 'host');
+    prepareNewGame();
+    gameStarted.value = true;
+
+    notifySuccess(t('bingo.sharedRoomCreated'));
+  } catch (error) {
+    handleSharedError(error, true);
+  } finally {
+    sharedBusy.value = false;
+  }
+}
+
+async function startSharedGuestGame() {
+  if (!isSharedGuestSetup.value) return;
+
+  const roomCode = normalizedSharedRoomCode.value;
+  if (!roomCode) return;
+
+  sharedBusy.value = true;
+  sharedErrorMessage.value = '';
+
+  try {
+    const room = await readSharedBingoRoom(roomCode);
+
+    clearSharedSession();
+    setSharedSession(room, 'guest');
+    prepareNewGame();
+    applySharedRecord(room);
+    gameStarted.value = true;
+    startSharedPolling();
+
+    notifySuccess(t('bingo.sharedRoomJoined'));
+  } catch (error) {
+    handleSharedError(error, true);
+  } finally {
+    sharedBusy.value = false;
+  }
+}
+
+async function startGame() {
+  if (!selectedRole.value || !canStartGame.value || sharedBusy.value) return;
+
+  if (!isSharedMode.value) {
+    startLocalGame();
+    return;
+  }
+
+  if (isSharedHostSetup.value) {
+    await startSharedHostGame();
+    return;
+  }
+
+  if (isSharedGuestSetup.value) {
+    await startSharedGuestGame();
   }
 }
 
@@ -802,13 +1405,12 @@ function confirmReset() {
   showResetDialog.value = true;
 }
 
-function resetGame() {
+async function resetGame() {
   showResetDialog.value = false;
-  calledNumbers.value = [];
-  lastDrawnNumber.value = null;
-  markedCells.clear();
-  if (isPlayer.value) {
-    generateCard();
+  prepareNewGame();
+
+  if (isSharedHostSession.value) {
+    await persistSharedRoomState(true);
   }
 }
 
@@ -821,17 +1423,31 @@ function confirmChangeRole() {
     persistent: false,
   }).onOk(() => {
     gameStarted.value = false;
-    calledNumbers.value = [];
-    lastDrawnNumber.value = null;
-    markedCells.clear();
+    clearCurrentGameState();
+    clearSharedSession();
   });
 }
 
-// ─── Validate card ────────────────────────────────────────────────────────────
-interface ValidateResult {
-  called: number[];
-  notCalled: number[];
-  valid: boolean;
+async function copyRoomCode() {
+  if (!sharedRoomId.value) return;
+
+  try {
+    await copyToClipboard(sharedRoomId.value);
+    notifySuccess(t('bingo.sharedRoomCodeCopied'));
+  } catch {
+    notifyError(t('bingo.sharedCopyError'));
+  }
+}
+
+async function copyRoomLink() {
+  if (!sharedRoomLink.value) return;
+
+  try {
+    await copyToClipboard(sharedRoomLink.value);
+    notifySuccess(t('bingo.sharedRoomLinkCopied'));
+  } catch {
+    notifyError(t('bingo.sharedCopyError'));
+  }
 }
 
 const showValidateDialog = ref(false);
@@ -844,15 +1460,18 @@ const validateNumbers = computed(() => {
   if (validateMode.value === 'select') {
     return new Set(validateSelected);
   }
+
   const parts = validateInputText.value
     .split(/[,;.\s]+/)
     .map((s) => s.trim())
     .filter(Boolean);
   const nums = new Set<number>();
+
   for (const p of parts) {
     const n = parseInt(p, 10);
     if (!isNaN(n) && n >= 1 && n <= 75) nums.add(n);
   }
+
   return nums;
 });
 
@@ -881,6 +1500,7 @@ function runValidation() {
   const nums = [...validateNumbers.value];
   const called: number[] = [];
   const notCalled: number[] = [];
+
   for (const n of nums) {
     if (calledNumbers.value.includes(n)) {
       called.push(n);
@@ -888,12 +1508,70 @@ function runValidation() {
       notCalled.push(n);
     }
   }
+
   validateResult.value = {
     called,
     notCalled,
     valid: notCalled.length === 0,
   };
 }
+
+watch(
+  jsonBinApiKey,
+  (value) => {
+    const trimmed = value.trim();
+
+    if (trimmed) {
+      localStorage.setItem(JSONBIN_KEY_STORAGE, trimmed);
+    } else {
+      localStorage.removeItem(JSONBIN_KEY_STORAGE);
+    }
+  },
+  { flush: 'post' },
+);
+
+watch(
+  () => route.query.room,
+  () => {
+    if (gameStarted.value) return;
+
+    const routeRoom = getRouteRoomCode();
+    if (!routeRoom) return;
+
+    sessionMode.value = 'shared';
+    sharedRoomInput.value = routeRoom;
+
+    if (!selectedRole.value) {
+      selectedRole.value = 'player';
+    }
+  },
+);
+
+watch(sessionMode, (mode) => {
+  if (mode === 'local' && !gameStarted.value) {
+    sharedErrorMessage.value = '';
+    updateRouteRoom(null);
+  }
+});
+
+onMounted(() => {
+  const storedKey = localStorage.getItem(JSONBIN_KEY_STORAGE);
+  if (storedKey) {
+    jsonBinApiKey.value = storedKey;
+  }
+
+  const routeRoom = getRouteRoomCode();
+  if (routeRoom) {
+    sessionMode.value = 'shared';
+    sharedRoomInput.value = routeRoom;
+    selectedRole.value = 'player';
+  }
+});
+
+onBeforeUnmount(() => {
+  clearSuspenseTimeout();
+  stopSharedPolling();
+});
 </script>
 
 <style scoped lang="scss">

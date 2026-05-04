@@ -174,6 +174,14 @@ const sorteios: Sorteio[] = [
   },
   {
     id: 7,
+    nome: t('drawList.donateTimeDraw.title'),
+    descricao: t('drawList.donateTimeDraw.desc'),
+    icon: 'timer',
+    rgb: '34, 197, 94', // Green
+    route: '/donate-time',
+  },
+  {
+    id: 8,
     nome: t('nav.savedLists'),
     descricao: t('savedLists.pageSubtitle'),
     icon: 'bookmark',
@@ -181,7 +189,7 @@ const sorteios: Sorteio[] = [
     route: '/saved-lists',
   },
   {
-    id: 8,
+    id: 9,
     nome: t('nav.about'),
     descricao: t('nav.aboutSubtitle'),
     icon: 'info',
@@ -189,7 +197,7 @@ const sorteios: Sorteio[] = [
     route: '/about',
   },
   {
-    id: 9,
+    id: 10,
     nome: t('pwa.pageTitle'),
     descricao: t('pwa.subtitle'),
     icon: 'get_app',

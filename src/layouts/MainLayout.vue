@@ -192,6 +192,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/tictactoe',
   },
   {
+    title: t('nav.donateTime'),
+    caption: t('nav.donateTimeSubtitle'),
+    icon: 'timer',
+    link: '/donate-time',
+  },
+  {
     title: t('nav.savedLists'),
     caption: t('savedLists.pageSubtitle'),
     icon: 'bookmark',

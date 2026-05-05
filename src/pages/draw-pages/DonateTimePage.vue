@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-lg text-center" style="max-width: 800px; margin: 0 auto">
-    <div class="q-mb-xl">
-      <div class="text-h4 text-weight-bold q-mb-md text-gradient" style="letter-spacing: -1px">
+    <div class="q-mb-md">
+      <div class="text-h4 text-weight-bold q-mb-sm text-gradient" style="letter-spacing: -1px">
         {{ t('donateTime.pageTitle') }}
       </div>
       <div class="text-h6 text-weight-regular text-grey-6">
@@ -9,18 +9,18 @@
       </div>
     </div>
 
-    <div class="row q-col-gutter-xl text-left justify-center">
+    <div class="row q-col-gutter-lg text-left justify-center">
       <!-- Configurações -->
       <div class="col-12 col-md-8">
         <q-card flat class="card shadow-modern">
           <q-card-section class="q-pa-lg">
-            <div class="text-h6 text-weight-bold q-mb-md">
+            <div class="text-h6 text-weight-bold q-mb-sm">
               {{ t('donateTime.configTitle') }}
             </div>
 
             <!-- Seleção de modo -->
             <div class="q-mb-lg">
-              <div class="text-caption text-grey-6 q-mb-sm">{{ t('donateTime.modeLabel') }}</div>
+              <div class="text-caption text-grey-6 q-mb-xs">{{ t('donateTime.modeLabel') }}</div>
               <q-btn-toggle
                 v-model="mode"
                 spread
@@ -47,25 +47,38 @@
               :hint="t('donateTime.donateValueHint')"
               type="number"
               min="0"
-              step="0.01"
+              :step="!donateValueStr || parseInt(donateValueStr) < 1 ? '1' : '0.01'"
               prefix="R$"
               @update:model-value="calculate"
             />
 
             <!-- Modo: segundos por real -->
-            <q-input
-              v-if="mode === 'seconds'"
-              v-model="secondsPerRealStr"
-              outlined
-              class="q-mb-md"
-              :label="t('donateTime.secondsPerRealLabel')"
-              :hint="t('donateTime.secondsPerRealHint')"
-              type="number"
-              min="0"
-              step="1"
-              :suffix="t('donateTime.secondsSuffix')"
-              @update:model-value="calculate"
-            />
+            <template v-if="mode === 'seconds'">
+              <q-input
+                v-model="referenceValueStr"
+                outlined
+                class="q-mb-md"
+                :label="t('donateTime.referenceValueLabel')"
+                :hint="t('donateTime.referenceValueHint')"
+                type="number"
+                min="0"
+                step="0.01"
+                prefix="R$"
+                @update:model-value="calculate"
+              />
+              <q-input
+                v-model="secondsPerRealStr"
+                outlined
+                class="q-mb-md"
+                :label="t('donateTime.secondsPerRealLabel')"
+                :hint="t('donateTime.secondsPerRealHint')"
+                type="number"
+                min="0"
+                step="1"
+                :suffix="t('donateTime.secondsSuffix')"
+                @update:model-value="calculate"
+              />
+            </template>
 
             <!-- Modo: valor por minuto -->
             <q-input
@@ -197,6 +210,7 @@ const { t } = useI18n();
 
 const mode = ref<Mode>('seconds');
 const donateValueStr = ref<string>('');
+const referenceValueStr = ref<string>('1');
 const secondsPerRealStr = ref<string>('');
 const valuePerMinuteStr = ref<string>('');
 const currentLiveTimeStr = ref<string>('');
@@ -240,7 +254,11 @@ function parseCurrentLiveTime(str: string): number | null {
   if (!trimmed) return null;
   const match = trimmed.match(/^(\d+):([0-5]\d):([0-5]\d)$/);
   if (!match) return null;
-  return parseInt(match[1], 10) * 3600 + parseInt(match[2], 10) * 60 + parseInt(match[3], 10);
+  return (
+    (match[1] ? parseInt(match[1], 10) : 0) * 3600 +
+    (match[2] ? parseInt(match[2], 10) : 0) * 60 +
+    (match[3] ? parseInt(match[3], 10) : 0)
+  );
 }
 
 function calculate() {
@@ -257,15 +275,23 @@ function calculate() {
   let addedSecs = 0;
 
   if (mode.value === 'seconds') {
+    const referenceValue = parseFloat(referenceValueStr.value);
     const secondsPerReal = parseFloat(secondsPerRealStr.value);
-    if (isNaN(secondsPerReal) || secondsPerReal < 0 || secondsPerRealStr.value === '') {
+    if (
+      isNaN(referenceValue) ||
+      referenceValue <= 0 ||
+      referenceValueStr.value === '' ||
+      isNaN(secondsPerReal) ||
+      secondsPerReal < 0 ||
+      secondsPerRealStr.value === ''
+    ) {
       result.value = null;
       finalTime.value = null;
       totalSeconds.value = 0;
       totalFinalSeconds.value = null;
       return;
     }
-    addedSecs = Math.floor(donateValue * secondsPerReal);
+    addedSecs = Math.floor((donateValue / referenceValue) * secondsPerReal);
   } else {
     const valuePerMinute = parseFloat(valuePerMinuteStr.value);
     if (isNaN(valuePerMinute) || valuePerMinute <= 0 || valuePerMinuteStr.value === '') {

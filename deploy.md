@@ -24,7 +24,7 @@ quasar build -m pwa
 cd dist/pwa
 git init
 git branch -M gh-pages
-git remote add origin https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git
+git remote add origin https://github.com/matheustf7/sorteia-ai.git
 git add . -f
 git commit -m "Deploy PWA Quasar"
 git push -f origin gh-pages

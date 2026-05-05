@@ -19,12 +19,14 @@
       </div>
     </div>
 
-    <div class="row justify-end max-width-container">
+    <div class="row justify-end max-width-container" :class="[isCompact ? 'q-mb-xs' : 'q-mb-sm']">
       <q-btn-toggle
         v-model="isCompact"
         dense
         flat
         rounded
+        color="grey-3"
+        text-color="grey-8"
         toggle-color="primary"
         :options="[
           { icon: 'view_module', value: false },
@@ -35,7 +37,7 @@
     </div>
 
     <!-- Normal grid view -->
-    <div v-if="!isCompact" class="row q-col-gutter-xl justify-center max-width-container">
+    <div v-if="!isCompact" class="row q-col-gutter-lg justify-center max-width-container">
       <div v-for="item in sorteios" :key="item.id" class="col-12 col-sm-6 col-md-4">
         <q-card
           class="sorteio-card cursor-pointer full-height flex flex-center text-center q-pa-md"

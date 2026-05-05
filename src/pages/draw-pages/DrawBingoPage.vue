@@ -378,8 +378,8 @@
               { label: t('bingo.validateModeType'), value: 'type', icon: 'edit' },
               { label: t('bingo.validateModeSelect'), value: 'select', icon: 'grid_on' },
             ]"
-            color="white"
-            text-color="grey-7"
+            color="grey-3"
+            text-color="grey-8"
             toggle-color="primary"
             toggle-text-color="white"
             class="q-mb-lg"
@@ -958,7 +958,7 @@ body.body--dark .bingo-ball--empty {
   color: white;
 }
 .ball-white {
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  background: linear-gradient(135deg, #b0bec5, #90a4ae);
   color: #1e293b;
 }
 .ball-green {

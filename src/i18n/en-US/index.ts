@@ -102,6 +102,11 @@ export default {
       teamCount: 'Number of teams',
       teamSize: 'Team size',
       defineStarter: 'Define starter',
+      modeBySize: 'By size',
+      modeByLeaders: 'By leaders',
+      leaderModeInfo: '{count} leader(s) set — {count} team(s) will be created',
+      leaderModeNoLeaders: 'Mark participants as team leaders in the list on the left',
+      leaderSizeModeInfo: '{count} leader(s) marked — each will lead a different team',
     },
     actions: {
       generateTeams: 'Generate Teams',
@@ -109,9 +114,13 @@ export default {
     },
     result: {
       title: 'Result',
+      members: '0 members | 1 member | {n} members',
       none: 'No teams generated yet',
     },
     starterLabel: 'Starter',
+    makeLeader: 'Mark as team leader',
+    removeLeader: 'Remove team leader',
+    leaderLabel: 'Leader',
   },
 
   // Theme

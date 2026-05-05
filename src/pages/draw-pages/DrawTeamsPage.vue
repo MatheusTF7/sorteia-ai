@@ -81,15 +81,41 @@
                     "
                     style="border: 1px solid"
                   >
-                    <span class="text-weight-medium">{{ participant }}</span>
-                    <q-btn
-                      icon="close"
-                      flat
-                      dense
-                      rounded
-                      color="negative"
-                      @click="removeParticipant(index)"
-                    />
+                    <div class="row items-center">
+                      <q-icon
+                        v-if="isLeader(participant)"
+                        name="military_tech"
+                        color="amber-6"
+                        size="18px"
+                        class="q-mr-xs"
+                      />
+                      <span class="text-weight-medium">{{ participant }}</span>
+                    </div>
+                    <div class="row items-center">
+                      <q-btn
+                        flat
+                        dense
+                        rounded
+                        icon="military_tech"
+                        :color="isLeader(participant) ? 'amber-8' : 'grey-5'"
+                        class="q-mr-xs"
+                        @click="toggleLeader(participant)"
+                      >
+                        <q-tooltip>
+                          {{
+                            isLeader(participant) ? t('teams.removeLeader') : t('teams.makeLeader')
+                          }}
+                        </q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        icon="close"
+                        flat
+                        dense
+                        rounded
+                        color="negative"
+                        @click="removeParticipant(index)"
+                      />
+                    </div>
                   </q-card>
                 </div>
               </div>
@@ -104,7 +130,23 @@
           <q-card-section class="q-pa-lg">
             <div class="text-h6 text-weight-bold q-mb-lg">Configuração</div>
 
+            <q-btn-toggle
+              v-model="groupingMode"
+              spread
+              unelevated
+              rounded
+              toggle-color="primary"
+              color="grey-3"
+              text-color="grey-8"
+              class="q-mb-md full-width"
+              :options="[
+                { label: t('teams.config.modeBySize'), value: 'size' },
+                { label: t('teams.config.modeByLeaders'), value: 'leaders' },
+              ]"
+            />
+
             <q-input
+              v-if="groupingMode === 'size'"
               v-model.number="teamSize"
               type="number"
               outlined
@@ -116,6 +158,37 @@
                 <q-icon name="groups" />
               </template>
             </q-input>
+
+            <div
+              v-if="groupingMode === 'leaders' || hasLeaders"
+              class="q-mb-md q-pa-md row items-center"
+              :class="
+                hasLeaders
+                  ? $q.dark.isActive
+                    ? 'bg-amber-900 border-amber-800'
+                    : 'bg-amber-50 border-amber-200'
+                  : $q.dark.isActive
+                    ? 'bg-grey-900 border-grey-800'
+                    : 'bg-grey-100 border-grey-300'
+              "
+              style="border: 1px solid; border-radius: 12px"
+            >
+              <q-icon
+                :name="hasLeaders ? 'military_tech' : 'info'"
+                :color="hasLeaders ? 'amber-8' : 'grey-6'"
+                size="sm"
+                class="q-mr-sm"
+              />
+              <span class="text-caption text-weight-medium">
+                {{
+                  groupingMode === 'leaders'
+                    ? hasLeaders
+                      ? t('teams.config.leaderModeInfo', { count: teamLeaders.length })
+                      : t('teams.config.leaderModeNoLeaders')
+                    : t('teams.config.leaderSizeModeInfo', { count: teamLeaders.length })
+                }}
+              </span>
+            </div>
 
             <q-toggle
               v-model="defineStarter"
@@ -180,6 +253,9 @@
                   >
                     <q-icon name="flag" class="q-mr-sm" size="sm" />
                     Time {{ index + 1 }}
+                    <q-chip dense class="text-caption">{{
+                      t('teams.result.members', { n: team.length })
+                    }}</q-chip>
                   </div>
 
                   <div class="row q-gutter-sm">
@@ -192,6 +268,13 @@
                       style="border-radius: 12px; font-size: 14px"
                     >
                       {{ member }}
+                      <q-icon
+                        v-if="isLeader(member)"
+                        name="military_tech"
+                        color="amber-6"
+                        size="20px"
+                        class="q-ml-sm"
+                      />
                       <q-icon
                         v-if="starter === member"
                         name="star"
@@ -321,6 +404,22 @@ const teamSize = ref<number>(2);
 const teams = ref<string[][]>([]);
 const defineStarter = ref(true);
 const starter = ref<string | null>(null);
+const teamLeaders = ref<string[]>([]);
+const groupingMode = ref<'size' | 'leaders'>('size');
+const hasLeaders = computed(() => teamLeaders.value.length > 0);
+
+function isLeader(name: string) {
+  return teamLeaders.value.includes(name);
+}
+
+function toggleLeader(name: string) {
+  const idx = teamLeaders.value.indexOf(name);
+  if (idx >= 0) {
+    teamLeaders.value.splice(idx, 1);
+  } else {
+    teamLeaders.value.push(name);
+  }
+}
 
 // ─── Saved lists integration ──────────────────────────────────────────────────
 const { data: savedLists } = useSavedConfigs<SavedList[]>('saved_lists', []);
@@ -337,6 +436,8 @@ onMounted(() => {
 
 function loadList(list: SavedList) {
   participants.value = [...list.items];
+  teamLeaders.value = [];
+  groupingMode.value = 'size';
   loadDialogOpen.value = false;
   $q.notify({
     message: t('shared.listLoaded', { name: list.name }),
@@ -371,12 +472,6 @@ function saveCurrentList() {
     timeout: 2000,
   });
 }
-
-// ─── Dynamic team count ───────────────────────────────────────────────────────
-const teamCount = computed(() => {
-  if (!teamSize.value || teamSize.value < 1) return 0;
-  return Math.ceil(participants.value.length / teamSize.value);
-});
 
 // ─── Starter logic ───────────────────────────────────────────────────────────
 function computeStarterCandidates(fromTeams: string[][]) {
@@ -434,38 +529,83 @@ function addParticipant() {
 }
 
 function removeParticipant(index: number) {
+  const name = participants.value[index];
+  if (name) {
+    const leaderIdx = teamLeaders.value.indexOf(name);
+    if (leaderIdx >= 0) teamLeaders.value.splice(leaderIdx, 1);
+  }
   participants.value.splice(index, 1);
 }
 
 const isValidConfiguration = computed(() => {
   if (participants.value.length < 2) return false;
   if (!teamSize.value || teamSize.value < 1) return false;
+  if (groupingMode.value === 'leaders') {
+    return teamLeaders.value.length >= 2;
+  }
   return true;
 });
 
 function generateTeams() {
-  const count = teamCount.value;
-  if (count < 1) return;
+  const leaders = [...teamLeaders.value];
+  const others = participants.value.filter((p) => !teamLeaders.value.includes(p));
 
-  const shuffled = [...participants.value];
-
-  for (let i = shuffled.length - 1; i > 0; i--) {
+  // Shuffle leaders first (they appear first in the result)
+  for (let i = leaders.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    [leaders[i], leaders[j]] = [leaders[j]!, leaders[i]!];
   }
 
-  const result: string[][] = Array.from({ length: count }, () => []);
-  let teamIndex = 0;
+  // Shuffle non-leaders
+  for (let i = others.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [others[i], others[j]] = [others[j]!, others[i]!];
+  }
 
-  shuffled.forEach((participant) => {
-    if (result[teamIndex]!.length >= teamSize.value) {
-      teamIndex++;
+  if (groupingMode.value === 'leaders') {
+    // One team per leader; fill up to teamSize, then overflow round-robin
+    const result: string[][] = leaders.map((leader) => [leader]);
+
+    let othersIdx = 0;
+
+    for (const team of result) {
+      while (team.length < teamSize.value && othersIdx < others.length) {
+        team.push(others[othersIdx++]!);
+      }
     }
-    result[teamIndex]!.push(participant);
-  });
 
-  teams.value = result;
-  pickStarter(result);
+    let teamIdx = 0;
+    while (othersIdx < others.length) {
+      result[teamIdx % result.length]!.push(others[othersIdx++]!);
+      teamIdx++;
+    }
+
+    teams.value = result;
+    pickStarter(result);
+  } else {
+    // Mode: by size — leaders get one slot each, guaranteed on separate teams
+    const baseCount = Math.ceil(participants.value.length / teamSize.value);
+    const count = Math.max(baseCount, leaders.length);
+    if (count < 1) return;
+
+    // Leader teams come first in the result array
+    const result: string[][] = Array.from({ length: count }, () => []);
+    leaders.forEach((leader, i) => {
+      result[i]!.push(leader);
+    });
+
+    // Fill remaining slots with non-leaders, respecting teamSize
+    let teamIndex = 0;
+    for (const participant of others) {
+      while (teamIndex < count && result[teamIndex]!.length >= teamSize.value) {
+        teamIndex++;
+      }
+      result[Math.min(teamIndex, count - 1)]!.push(participant);
+    }
+
+    teams.value = result;
+    pickStarter(result);
+  }
 }
 </script>
 

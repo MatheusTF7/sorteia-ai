@@ -101,6 +101,11 @@ export default {
       teamCount: 'Número de times',
       teamSize: 'Tamanho do time',
       defineStarter: 'Definir iniciante',
+      modeBySize: 'Por tamanho',
+      modeByLeaders: 'Por cabeças',
+      leaderModeInfo: '{count} cabeça(s) definida(s) — {count} time(s) serão criados',
+      leaderModeNoLeaders: 'Marque participantes como cabeças de time na lista ao lado',
+      leaderSizeModeInfo: '{count} cabeça(s) marcada(s) — cada uma liderará um time diferente',
     },
     actions: {
       generateTeams: 'Gerar Times',
@@ -108,9 +113,13 @@ export default {
     },
     result: {
       title: 'Resultado',
+      members: '0 membros | 1 membro | {n} membros',
       none: 'Nenhum time gerado ainda',
     },
     starterLabel: 'Iniciante',
+    makeLeader: 'Marcar como cabeça de time',
+    removeLeader: 'Remover cabeça de time',
+    leaderLabel: 'Cabeça',
   },
 
   // Tema

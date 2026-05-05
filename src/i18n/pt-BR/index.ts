@@ -135,6 +135,16 @@ export default {
     actions: {
       draw: 'Sortear',
     },
+    skipDrawn: 'Sortear apenas nomes não sorteados',
+    drawnCount: 'Já sorteados: {count} de {total}',
+    resetDrawn: 'Reiniciar sorteio',
+    allDrawn: 'Todos os nomes já foram sorteados. Reinicie para continuar.',
+    stackDrawn: 'Empilhar histórico de sorteios',
+    history: {
+      title: 'Histórico de sorteios',
+      round: 'Rodada {round}',
+      clear: 'Limpar histórico',
+    },
     result: {
       title: 'Resultado',
       none: 'Nenhum sorteio realizado ainda',

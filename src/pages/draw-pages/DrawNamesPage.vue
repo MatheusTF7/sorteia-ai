@@ -110,20 +110,68 @@
               v-model.number="quantidade"
               type="number"
               outlined
-              class="q-mb-lg"
+              class="q-mb-md"
               :label="t('names.config.quantity')"
               :min="1"
               :max="nomes.length"
             />
 
-            <q-btn
-              class="full-width q-py-sm text-weight-bold"
+            <q-toggle
+              v-model="skipDrawn"
+              :label="t('names.skipDrawn')"
               color="primary"
-              unelevated
-              :label="t('names.actions.draw')"
-              :disable="nomes.length === 0 || quantidade < 1"
-              @click="sortear"
+              class="q-mb-xs"
             />
+
+            <q-toggle
+              v-model="stackDrawn"
+              :label="t('names.stackDrawn')"
+              color="secondary"
+              class="q-mb-md"
+            />
+
+            <div v-if="skipDrawn && nomes.length > 0" class="q-mb-md">
+              <div class="text-caption text-grey-6 q-mb-xs">
+                {{ t('names.drawnCount', { count: jasorteados.length, total: nomes.length }) }}
+              </div>
+              <q-linear-progress
+                :value="jasorteados.length / nomes.length"
+                color="primary"
+                rounded
+                size="6px"
+              />
+              <div
+                v-if="jasorteados.length === nomes.length"
+                class="text-caption text-warning q-mt-xs"
+              >
+                {{ t('names.allDrawn') }}
+              </div>
+            </div>
+
+            <div class="row q-gutter-sm">
+              <q-btn
+                class="col q-py-sm text-weight-bold"
+                color="primary"
+                unelevated
+                :label="t('names.actions.draw')"
+                :disable="
+                  nomes.length === 0 ||
+                  quantidade < 1 ||
+                  (skipDrawn && jasorteados.length === nomes.length)
+                "
+                @click="sortear"
+              />
+              <q-btn
+                v-if="skipDrawn && jasorteados.length > 0"
+                flat
+                round
+                color="grey-6"
+                icon="refresh"
+                @click="resetDrawn"
+              >
+                <q-tooltip>{{ t('names.resetDrawn') }}</q-tooltip>
+              </q-btn>
+            </div>
           </q-card-section>
 
           <q-separator class="q-mx-lg" />
@@ -163,6 +211,49 @@
               </q-chip>
             </div>
           </q-card-section>
+
+          <template v-if="stackDrawn && historico.length > 0">
+            <q-separator class="q-mx-lg" />
+
+            <q-card-section class="q-pa-lg">
+              <div class="row items-center q-mb-md">
+                <div class="text-h6 text-weight-bold">
+                  {{ t('names.history.title') }}
+                </div>
+                <q-space />
+                <q-btn flat round dense icon="delete_outline" color="grey-6" @click="clearHistory">
+                  <q-tooltip>{{ t('names.history.clear') }}</q-tooltip>
+                </q-btn>
+              </div>
+
+              <div class="column q-gutter-sm">
+                <div
+                  v-for="(rodada, ri) in historicoOrdenado"
+                  :key="ri"
+                  class="br-20 q-pa-sm"
+                  :class="$q.dark.isActive ? 'bg-slate-800' : 'bg-slate-50'"
+                  style="border: 1px solid rgba(0, 0, 0, 0.07)"
+                >
+                  <div class="text-caption text-grey-6 q-mb-xs q-ml-xs">
+                    {{ t('names.history.round', { round: historico.length - ri }) }}
+                  </div>
+                  <div class="row q-gutter-xs">
+                    <q-chip
+                      v-for="(nome, ni) in rodada"
+                      :key="ni"
+                      :color="$q.dark.isActive ? 'indigo-9' : 'indigo-1'"
+                      :text-color="$q.dark.isActive ? 'white' : 'indigo-10'"
+                      dense
+                      class="text-weight-medium"
+                      style="border-radius: 10px; font-size: 13px"
+                    >
+                      {{ nome }}
+                    </q-chip>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </template>
         </q-card>
       </div>
     </div>
@@ -256,7 +347,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { useSavedConfigs } from 'src/composables/useSavedConfigs';
@@ -277,6 +368,12 @@ const novoNome = ref('');
 const nomes = ref<string[]>([]);
 const quantidade = ref<number>(1);
 const resultado = ref<string[]>([]);
+const skipDrawn = ref(false);
+const jasorteados = ref<string[]>([]);
+const stackDrawn = ref(false);
+const historico = ref<string[][]>([]);
+
+const historicoOrdenado = computed(() => [...historico.value].reverse());
 
 // ─── Saved lists integration ──────────────────────────────────────────────────
 const { data: savedLists } = useSavedConfigs<SavedList[]>('saved_lists', []);
@@ -293,6 +390,8 @@ onMounted(() => {
 
 function loadList(list: SavedList) {
   nomes.value = [...list.items];
+  jasorteados.value = [];
+  historico.value = [];
   loadDialogOpen.value = false;
   $q.notify({
     message: t('shared.listLoaded', { name: list.name }),
@@ -348,6 +447,8 @@ function adicionarNome() {
 
 function removerNome(index: number) {
   nomes.value.splice(index, 1);
+  jasorteados.value = [];
+  historico.value = [];
 
   if (quantidade.value > nomes.value.length) {
     quantidade.value = nomes.value.length;
@@ -355,18 +456,36 @@ function removerNome(index: number) {
 }
 
 function sortear() {
-  const copia = [...nomes.value];
-  const sorteados: string[] = [];
+  const pool = skipDrawn.value
+    ? nomes.value.filter((n) => !jasorteados.value.includes(n))
+    : [...nomes.value];
 
-  const qtd = Math.min(quantidade.value, copia.length);
+  const sorteados: string[] = [];
+  const qtd = Math.min(quantidade.value, pool.length);
 
   for (let i = 0; i < qtd; i++) {
-    const index = Math.floor(Math.random() * copia.length);
-    if (copia[index]) sorteados.push(copia[index]);
-    copia.splice(index, 1);
+    const index = Math.floor(Math.random() * pool.length);
+    if (pool[index]) sorteados.push(pool[index]);
+    pool.splice(index, 1);
   }
 
   resultado.value = sorteados;
+
+  if (skipDrawn.value) {
+    jasorteados.value.push(...sorteados);
+  }
+
+  if (stackDrawn.value && sorteados.length > 0) {
+    historico.value.push([...sorteados]);
+  }
+}
+
+function resetDrawn() {
+  jasorteados.value = [];
+}
+
+function clearHistory() {
+  historico.value = [];
 }
 </script>
 

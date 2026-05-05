@@ -136,6 +136,16 @@ export default {
     actions: {
       draw: 'Draw',
     },
+    skipDrawn: 'Draw only names not yet drawn',
+    drawnCount: 'Already drawn: {count} of {total}',
+    resetDrawn: 'Reset draw',
+    allDrawn: 'All names have been drawn. Reset to continue.',
+    stackDrawn: 'Stack draw history',
+    history: {
+      title: 'Draw history',
+      round: 'Round {round}',
+      clear: 'Clear history',
+    },
     result: {
       title: 'Result',
       none: 'No draw performed yet',

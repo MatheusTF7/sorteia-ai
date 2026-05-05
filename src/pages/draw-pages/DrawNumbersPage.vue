@@ -23,6 +23,7 @@
                 <q-input
                   v-model.number="min"
                   type="number"
+                  step="1"
                   outlined
                   :label="t('numbers.minLabel')"
                 />
@@ -32,6 +33,7 @@
                 <q-input
                   v-model.number="max"
                   type="number"
+                  step="1"
                   outlined
                   :label="t('numbers.maxLabel')"
                 />
@@ -46,6 +48,7 @@
               :label="t('numbers.config.quantity')"
               :min="2"
               :max="intervalo"
+              step="1"
             />
 
             <div class="q-mb-md q-gutter-y-sm">
@@ -129,7 +132,7 @@ const { t } = useI18n();
 
 const min = ref<number>(1);
 const max = ref<number>(100);
-const quantidade = ref<number>(2);
+const quantidade = ref<number>(1);
 const permitirRepetidos = ref<boolean>(false);
 const ordenarResultado = ref<boolean>(false);
 const resultado = ref<number[]>([]);

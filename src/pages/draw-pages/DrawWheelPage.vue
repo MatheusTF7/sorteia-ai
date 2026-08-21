@@ -120,7 +120,8 @@
                   <q-input
                     v-model="item.label"
                     dense
-                    borderless
+                    outlined
+                    :bg-color="$q.dark.isActive ? 'blue-grey-10' : 'white'"
                     class="option-name col"
                     :disable="isSpinning"
                     :aria-label="t('wheel.optionName')"
@@ -133,6 +134,7 @@
                       dense
                       outlined
                       type="number"
+                      :bg-color="$q.dark.isActive ? 'blue-grey-10' : 'white'"
                       input-class="text-center text-weight-bold"
                       :min="1"
                       :max="100"
@@ -166,9 +168,11 @@
                         />
                       </template>
                     </q-input>
-                    <div class="text-caption text-center text-grey-6 q-mt-xs">
+                    <!-- TODO: verificar um meio melhor de adicionar
+                     esta informação pois quebra o layout visual -->
+                    <!-- <div class="text-caption text-center text-grey-6 q-mt-xs">
                       {{ formatProbability(item.weight) }}
-                    </div>
+                    </div> -->
                     <q-tooltip>
                       {{ t('wheel.weightHint') }}
                     </q-tooltip>
@@ -189,6 +193,16 @@
               </div>
             </q-scroll-area>
 
+            <q-btn
+              v-if="items.length > 0"
+              outline
+              color="primary"
+              icon-right="south"
+              class="full-width q-mt-md"
+              :label="t('wheel.goToWheel')"
+              @click="scrollToWheel"
+            />
+
             <div v-if="items.length > 0" class="probability-note row no-wrap q-mt-md q-pa-sm">
               <q-icon name="info" size="18px" color="primary" class="q-mr-sm q-mt-xs" />
               <span class="text-caption text-grey-7">{{ t('wheel.probabilityHint') }}</span>
@@ -200,7 +214,18 @@
       <div class="col-12 col-lg-7">
         <q-card flat class="wheel-card wheel-stage-card shadow-modern">
           <q-card-section class="column items-center q-pa-md q-pa-sm-lg">
-            <div class="wheel-stage">
+            <div
+              ref="wheelStageRef"
+              class="wheel-stage"
+              :class="{ 'wheel-stage--clickable': canSpin }"
+              role="button"
+              :tabindex="canSpin ? 0 : -1"
+              :aria-label="t('wheel.spin')"
+              :aria-disabled="!canSpin"
+              @click="spin"
+              @keydown.enter.prevent="spin"
+              @keydown.space.prevent="spin"
+            >
               <div class="wheel-pointer" aria-hidden="true">
                 <div class="pointer-dot" />
               </div>
@@ -242,11 +267,17 @@
                         class="wheel-sector"
                       />
                       <g
-                        v-if="sector.angle >= 8"
+                        v-if="sector.angle >= 5"
                         :transform="`rotate(${sector.midAngle} 160 160)`"
                         class="wheel-label-group"
                       >
-                        <text x="160" y="50" class="wheel-label">
+                        <text
+                          x="194"
+                          y="160"
+                          transform="rotate(-90 160 160)"
+                          class="wheel-label"
+                          :style="{ fontSize: `${wheelLabelFontSize(sector.angle)}px` }"
+                        >
                           {{ truncateLabel(sector.item.label, sector.angle) }}
                         </text>
                       </g>
@@ -299,7 +330,7 @@
               class="spin-button q-mt-md text-weight-bold"
               :label="isSpinning ? t('wheel.spinning') : t('wheel.spin')"
               :loading="isSpinning"
-              :disable="items.length === 0 || isSpinning || hasBlankItem"
+              :disable="!canSpin"
               @click="spin"
             />
           </q-card-section>
@@ -538,6 +569,7 @@ const isSpinning = ref(false);
 const loadDialogOpen = ref(false);
 const saveDialogOpen = ref(false);
 const saveListName = ref('');
+const wheelStageRef = ref<HTMLElement | null>(null);
 const loadTab = ref<'saved' | 'system'>('saved');
 const systemPresets = ref<SystemPreset[]>([]);
 const presetsLoading = ref(false);
@@ -550,6 +582,9 @@ const totalWeight = computed(() =>
   items.value.reduce((total, item) => total + safeWeight(item.weight), 0),
 );
 const hasBlankItem = computed(() => items.value.some((item) => !item.label.trim()));
+const canSpin = computed(
+  () => items.value.length > 0 && !isSpinning.value && !hasBlankItem.value,
+);
 const optionsScrollHeight = computed(() => `${Math.min(items.value.length * 78, 480)}px`);
 const scrollThumbStyle = {
   right: '1px',
@@ -687,8 +722,15 @@ function formatProbability(weight: number): string {
 }
 
 function truncateLabel(label: string, angle: number): string {
-  const maximum = angle < 18 ? 9 : angle < 30 ? 14 : 20;
+  const maximum = angle < 8 ? 6 : angle < 14 ? 9 : angle < 24 ? 12 : 15;
   return label.length > maximum ? `${label.slice(0, maximum - 1)}…` : label;
+}
+
+function wheelLabelFontSize(angle: number): number {
+  if (angle < 8) return 8;
+  if (angle < 14) return 9;
+  if (angle < 24) return 10;
+  return 11;
 }
 
 function resetDrawState() {
@@ -696,6 +738,11 @@ function resetDrawState() {
   winner.value = null;
   pendingWinner.value = null;
   rotation.value = 0;
+}
+
+function scrollToWheel() {
+  wheelStageRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  wheelStageRef.value?.focus({ preventScroll: true });
 }
 
 function spin() {
@@ -1023,6 +1070,24 @@ onBeforeUnmount(() => {
   width: min(100%, 530px);
   aspect-ratio: 1;
   padding: 18px;
+  border-radius: 50%;
+  outline: none;
+}
+
+.wheel-stage--clickable {
+  cursor: pointer;
+}
+
+.wheel-stage--clickable:focus-visible {
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.22);
+}
+
+.wheel-stage--clickable .wheel-svg {
+  transition: transform 0.2s ease;
+}
+
+.wheel-stage--clickable:hover .wheel-svg {
+  transform: scale(1.012);
 }
 
 .wheel-svg {
@@ -1055,9 +1120,8 @@ onBeforeUnmount(() => {
 
 .wheel-label {
   fill: #fff;
-  font-size: 12px;
   font-weight: 700;
-  text-anchor: middle;
+  text-anchor: start;
   dominant-baseline: middle;
   paint-order: stroke;
   stroke: rgba(15, 23, 42, 0.2);

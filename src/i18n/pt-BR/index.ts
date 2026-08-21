@@ -123,9 +123,10 @@ export default {
     emptyWheel: 'Adicione opções',
     wheelAriaLabel: 'Roleta da sorte com {count} opções',
     winner: 'Resultado',
-    ready: 'Tudo pronto. Gire a roleta para sortear.',
+    ready: 'Tudo pronto. Clique na roleta ou no botão para sortear.',
     spinning: 'Girando…',
     spin: 'Girar a roleta',
+    goToWheel: 'Ir para a roleta',
     loadTitle: 'Carregar uma lista',
     loadSubtitle: 'Use uma lista sua ou uma sugestão pronta.',
     saveListHint:

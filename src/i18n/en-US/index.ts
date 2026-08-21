@@ -124,9 +124,10 @@ export default {
     emptyWheel: 'Add options',
     wheelAriaLabel: 'Lucky wheel with {count} options',
     winner: 'Result',
-    ready: 'Everything is ready. Spin the wheel to draw.',
+    ready: 'Everything is ready. Click the wheel or the button to draw.',
     spinning: 'Spinning…',
     spin: 'Spin the wheel',
+    goToWheel: 'Go to the wheel',
     loadTitle: 'Load a list',
     loadSubtitle: 'Use one of your lists or a ready-made suggestion.',
     saveListHint:

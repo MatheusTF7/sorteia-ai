@@ -1,0 +1,14 @@
+{
+    "id": "jogo-da-noite",
+    "name": "Jogo da Noite",
+    "description": "Escolha rapidamente o jogo da vez.",
+    "icon": "sports_esports",
+    "items": [
+        "Mario Kart",
+        "Minecraft",
+        "Fortnite",
+        "Valorant",
+        "Rocket League",
+        "Uno"
+    ]
+}

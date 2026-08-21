@@ -31,6 +31,14 @@ export default {
     installPromptTitle: 'Install prompt',
     installPromptDesc:
       'On supported browsers you may see an "Install" prompt — you can use it to add this app to your device.',
+    installButton: 'Install app',
+    installed: 'App installed',
+    alreadyInstalled: 'Sorteia Aí is already installed on this device.',
+    installUnavailable: 'Installation is currently unavailable',
+    installUnavailableHelp:
+      'The browser has not made automatic installation available yet. Follow the instructions below or open this page in Chrome or Edge.',
+    installAccepted: 'Installation started!',
+    installDismissed: 'Installation canceled.',
     android: {
       title: 'Android (Chrome / Edge)',
       step1: 'Open the browser menu (three dots) while on this page.',

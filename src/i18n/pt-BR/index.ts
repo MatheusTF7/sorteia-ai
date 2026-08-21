@@ -30,6 +30,14 @@ export default {
     installPromptTitle: 'Prompt de instalação',
     installPromptDesc:
       'Em navegadores compatíveis você pode ver um prompt de "Instalar" — use-o para adicionar o app ao dispositivo.',
+    installButton: 'Instalar aplicativo',
+    installed: 'Aplicativo instalado',
+    alreadyInstalled: 'O Sorteia Aí já está instalado neste dispositivo.',
+    installUnavailable: 'Instalação indisponível neste momento',
+    installUnavailableHelp:
+      'O navegador ainda não liberou a instalação automática. Verifique as instruções abaixo ou abra esta página pelo Chrome ou Edge.',
+    installAccepted: 'Instalação iniciada!',
+    installDismissed: 'Instalação cancelada.',
     android: {
       title: 'Android (Chrome / Edge)',
       step1: 'Abra o menu do navegador (três pontos) enquanto estiver nesta página.',

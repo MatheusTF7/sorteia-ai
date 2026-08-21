@@ -26,6 +26,23 @@
 
         <div>
           <q-btn
+            v-if="!isInstalled"
+            color="primary"
+            icon="get_app"
+            round
+            dense
+            flat
+            class="app-icon-btn app-icon-btn--brand q-mr-sm"
+            :loading="isPrompting"
+            :disable="!canInstall"
+            :aria-label="t('pwa.installButton')"
+            @click="requestPwaInstall"
+          >
+            <q-tooltip anchor="top middle" self="bottom middle">
+              {{ canInstall ? t('pwa.installButton') : t('pwa.installUnavailable') }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn
             :color="darkMode ? 'amber-4' : 'slate-8'"
             :icon="darkMode ? 'lightbulb' : 'dark_mode'"
             round
@@ -142,8 +159,10 @@ import { ref, onMounted } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import { usePwaInstall } from 'src/composables/usePwaInstall';
 const $q = useQuasar();
 const { locale, t } = useI18n();
+const { canInstall, isInstalled, isPrompting, promptInstall } = usePwaInstall();
 
 const darkMode = ref($q.dark.isActive);
 const changeLanguageInfo = ref(false);
@@ -244,6 +263,15 @@ function toggleDarkMode() {
   $q.dark.toggle();
   darkMode.value = $q.dark.isActive;
   localStorage.setItem('dark_mode', String($q.dark.isActive));
+}
+
+async function requestPwaInstall() {
+  const outcome = await promptInstall();
+  if (outcome === 'accepted') {
+    $q.notify({ message: t('pwa.installAccepted'), color: 'positive', position: 'bottom' });
+  } else if (outcome === 'dismissed') {
+    $q.notify({ message: t('pwa.installDismissed'), color: 'grey-7', position: 'bottom' });
+  }
 }
 
 function changeLanguage(val?: string) {

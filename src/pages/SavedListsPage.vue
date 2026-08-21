@@ -223,10 +223,11 @@ const { data: lists } = useSavedConfigs<SavedList[]>('saved_lists', []);
 const EASTER_EGG_ITEMS = [
   'Matheus',
   'Pedro Henrique',
-  'Caio',
   'Rafael',
-  'Anderson',
   'Jefferson',
+  'Gilcelio',
+  'Anderson',
+  'Caio',
   'Marcellus',
 ];
 const EASTER_EGG_TOTAL = 8;

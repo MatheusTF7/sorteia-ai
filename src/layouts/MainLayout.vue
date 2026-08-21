@@ -168,6 +168,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/numbers',
   },
   {
+    title: t('nav.coinDice'),
+    caption: t('drawList.coinDiceDraw.desc'),
+    icon: 'toll',
+    link: '/coin-dice',
+  },
+  {
     title: t('nav.teams'),
     caption: t('drawList.teamDraw.desc'),
     icon: 'groups',

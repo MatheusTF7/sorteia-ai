@@ -9,6 +9,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'home', component: () => import('pages/draw-pages/DrawListPage.vue') },
       { path: 'names', component: () => import('pages/draw-pages/DrawNamesPage.vue') },
       { path: 'numbers', component: () => import('pages/draw-pages/DrawNumbersPage.vue') },
+      { path: 'coin-dice', component: () => import('pages/draw-pages/DrawCoinDicePage.vue') },
       { path: 'teams', component: () => import('pages/draw-pages/DrawTeamsPage.vue') },
       { path: 'prizes', component: () => import('pages/draw-pages/DrawPrizesPage.vue') },
       { path: 'bingo', component: () => import('pages/draw-pages/DrawBingoPage.vue') },

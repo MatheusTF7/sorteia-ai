@@ -144,6 +144,14 @@ const sorteios: Sorteio[] = [
   },
   {
     id: 3,
+    nome: t('drawList.coinDiceDraw.title'),
+    descricao: t('drawList.coinDiceDraw.desc'),
+    icon: 'toll',
+    rgb: '139, 92, 246', // Violet
+    route: '/coin-dice',
+  },
+  {
+    id: 4,
     nome: t('drawList.teamDraw.title'),
     descricao: t('drawList.teamDraw.desc'),
     icon: 'groups',
@@ -151,7 +159,7 @@ const sorteios: Sorteio[] = [
     route: '/teams',
   },
   {
-    id: 4,
+    id: 5,
     nome: t('drawList.prizeDraw.title'),
     descricao: t('drawList.prizeDraw.desc'),
     icon: 'emoji_events',
@@ -159,7 +167,7 @@ const sorteios: Sorteio[] = [
     route: '/prizes',
   },
   {
-    id: 5,
+    id: 6,
     nome: t('drawList.bingoDraw.title'),
     descricao: t('drawList.bingoDraw.desc'),
     icon: 'grid_on',
@@ -167,7 +175,7 @@ const sorteios: Sorteio[] = [
     route: '/bingo',
   },
   {
-    id: 6,
+    id: 7,
     nome: t('drawList.tictactoeDraw.title'),
     descricao: t('drawList.tictactoeDraw.desc'),
     icon: 'grid_3x3',
@@ -175,7 +183,7 @@ const sorteios: Sorteio[] = [
     route: '/tictactoe',
   },
   {
-    id: 7,
+    id: 8,
     nome: t('drawList.donateTimeDraw.title'),
     descricao: t('drawList.donateTimeDraw.desc'),
     icon: 'timer',
@@ -183,7 +191,7 @@ const sorteios: Sorteio[] = [
     route: '/donate-time',
   },
   {
-    id: 8,
+    id: 9,
     nome: t('nav.savedLists'),
     descricao: t('savedLists.pageSubtitle'),
     icon: 'bookmark',
@@ -191,7 +199,7 @@ const sorteios: Sorteio[] = [
     route: '/saved-lists',
   },
   {
-    id: 9,
+    id: 10,
     nome: t('nav.about'),
     descricao: t('nav.aboutSubtitle'),
     icon: 'info',
@@ -199,7 +207,7 @@ const sorteios: Sorteio[] = [
     route: '/about',
   },
   {
-    id: 10,
+    id: 11,
     nome: t('pwa.pageTitle'),
     descricao: t('pwa.subtitle'),
     icon: 'get_app',

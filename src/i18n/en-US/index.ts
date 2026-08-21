@@ -9,6 +9,7 @@ export default {
   nav: {
     home: 'Home',
     names: 'Names',
+    wheel: 'Lucky Wheel',
     numbers: 'Numbers',
     coinDice: 'Coin & Dice',
     teams: 'Teams',
@@ -63,6 +64,10 @@ export default {
       title: 'Name Draw',
       desc: 'Good for raffles, classrooms or events',
     },
+    wheelDraw: {
+      title: 'Lucky Wheel',
+      desc: 'Spin a visual wheel with custom odds',
+    },
     numberDraw: {
       title: 'Number Draw',
       desc: 'Perfect for lotteries and numeric draws',
@@ -93,6 +98,44 @@ export default {
     },
     compactView: 'Compact view',
     normalView: 'Normal view',
+  },
+
+  wheel: {
+    pageTitle: 'Lucky Wheel',
+    pageSubtitle: 'Add options, tune their odds and let the wheel decide',
+    optionsTitle: 'Wheel options',
+    optionCount: '{count} option | {count} options',
+    addOption: 'Add option',
+    add: 'Add',
+    noOptions: 'Your wheel is empty',
+    noOptionsHint: 'Add options or load a ready-made list.',
+    optionName: 'Option name',
+    weight: 'Option weight',
+    weightHint: 'Relative weight from 1 to 100',
+    decreaseWeight: 'Decrease weight',
+    increaseWeight: 'Increase weight',
+    probabilityHint:
+      'Weight defines the relative chance. The actual percentage is recalculated automatically across all options.',
+    changeColor: 'Change color',
+    removeOption: 'Remove {name}',
+    loadOptions: 'Load options',
+    shuffle: 'Shuffle options',
+    shuffled: 'Options shuffled!',
+    emptyWheel: 'Add options',
+    wheelAriaLabel: 'Lucky wheel with {count} options',
+    winner: 'Result',
+    ready: 'Everything is ready. Spin the wheel to draw.',
+    spinning: 'Spinning…',
+    spin: 'Spin the wheel',
+    loadTitle: 'Load a list',
+    loadSubtitle: 'Use one of your lists or a ready-made suggestion.',
+    saveListHint:
+      '{count} option and its settings will be saved to My Lists. | {count} options and their settings will be saved to My Lists.',
+    myLists: 'My lists',
+    systemLists: 'Suggestions',
+    loadingPresets: 'Loading suggestions…',
+    presetsError: 'Could not load the suggestions.',
+    tryAgain: 'Try again',
   },
 
   // Draw teams page

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "prendas-divertidas",
+      "file": "prendas-divertidas.json"
+    },
+    {
+      "id": "tarefas-de-casa",
+      "file": "tarefas-de-casa.json"
+    }
+  ]
+}

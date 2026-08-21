@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', redirect: 'home' },
       { path: 'home', component: () => import('pages/draw-pages/DrawListPage.vue') },
       { path: 'names', component: () => import('pages/draw-pages/DrawNamesPage.vue') },
+      { path: 'wheel', component: () => import('pages/draw-pages/DrawWheelPage.vue') },
       { path: 'numbers', component: () => import('pages/draw-pages/DrawNumbersPage.vue') },
       { path: 'coin-dice', component: () => import('pages/draw-pages/DrawCoinDicePage.vue') },
       { path: 'teams', component: () => import('pages/draw-pages/DrawTeamsPage.vue') },

@@ -8,6 +8,7 @@ export default {
   nav: {
     home: 'Início',
     names: 'Nomes',
+    wheel: 'Roleta da Sorte',
     numbers: 'Números',
     coinDice: 'Moeda e Dados',
     teams: 'Times',
@@ -62,6 +63,10 @@ export default {
       title: 'Sorteio de Nomes',
       desc: 'Ideal para rifas, salas de aula ou eventos',
     },
+    wheelDraw: {
+      title: 'Roleta da Sorte',
+      desc: 'Gire uma roleta visual com chances personalizadas',
+    },
     numberDraw: {
       title: 'Sorteio de Números',
       desc: 'Perfeito para loterias e sorteios numéricos',
@@ -92,6 +97,44 @@ export default {
     },
     compactView: 'Modo compacto',
     normalView: 'Modo normal',
+  },
+
+  wheel: {
+    pageTitle: 'Roleta da Sorte',
+    pageSubtitle: 'Adicione opções, ajuste as chances e deixe a roleta decidir',
+    optionsTitle: 'Opções da roleta',
+    optionCount: '{count} opção | {count} opções',
+    addOption: 'Adicionar opção',
+    add: 'Adicionar',
+    noOptions: 'Sua roleta está vazia',
+    noOptionsHint: 'Adicione opções ou carregue uma lista pronta.',
+    optionName: 'Nome da opção',
+    weight: 'Peso da opção',
+    weightHint: 'Peso relativo de 1 a 100',
+    decreaseWeight: 'Diminuir peso',
+    increaseWeight: 'Aumentar peso',
+    probabilityHint:
+      'O peso define a chance relativa. A porcentagem real é recalculada automaticamente entre todas as opções.',
+    changeColor: 'Alterar cor',
+    removeOption: 'Remover {name}',
+    loadOptions: 'Carregar opções',
+    shuffle: 'Embaralhar opções',
+    shuffled: 'Opções embaralhadas!',
+    emptyWheel: 'Adicione opções',
+    wheelAriaLabel: 'Roleta da sorte com {count} opções',
+    winner: 'Resultado',
+    ready: 'Tudo pronto. Gire a roleta para sortear.',
+    spinning: 'Girando…',
+    spin: 'Girar a roleta',
+    loadTitle: 'Carregar uma lista',
+    loadSubtitle: 'Use uma lista sua ou uma sugestão pronta.',
+    saveListHint:
+      '{count} opção e sua configuração serão salvas em Minhas Listas. | {count} opções e suas configurações serão salvas em Minhas Listas.',
+    myLists: 'Minhas listas',
+    systemLists: 'Sugestões',
+    loadingPresets: 'Carregando sugestões…',
+    presetsError: 'Não foi possível carregar as sugestões.',
+    tryAgain: 'Tentar novamente',
   },
 
   // Página de times

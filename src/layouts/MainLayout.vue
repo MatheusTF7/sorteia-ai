@@ -162,6 +162,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/names',
   },
   {
+    title: t('nav.wheel'),
+    caption: t('drawList.wheelDraw.desc'),
+    icon: 'donut_large',
+    link: '/wheel',
+  },
+  {
     title: t('nav.numbers'),
     caption: t('drawList.numberDraw.desc'),
     icon: 'casino',

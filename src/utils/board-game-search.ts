@@ -30,13 +30,21 @@ export function getGameEntries(game: BoardGame): BoardGameEntry[] {
 export function createGameSearch(
   entries: BoardGameEntry[],
   synonyms: Record<string, string[]>,
-): (query: string, category?: string) => BoardGameEntry[] {
+): (query: string, category?: string, module?: string) => BoardGameEntry[] {
   const groups = Object.entries(synonyms).map(([term, aliases]) =>
     [term, ...aliases].map(normalizeSearch),
   );
   const index = entries.map((entry) => {
     const text = normalizeSearch(
-      [entry.title, entry.subtitle ?? '', entry.summary, ...entry.details, ...entry.tags].join(' '),
+      [
+        entry.title,
+        entry.subtitle ?? '',
+        entry.summary,
+        ...entry.details,
+        ...entry.tags,
+        entry.module ?? '',
+        entry.moduleName ?? '',
+      ].join(' '),
     );
     // Expand each original document, so aliases work in both directions without
     // chaining unrelated synonym groups through previously expanded terms.
@@ -44,12 +52,14 @@ export function createGameSearch(
     return { entry, text: [text, ...aliases].join(' ') };
   });
 
-  return (query, category) => {
+  return (query, category, module) => {
     const terms = normalizeSearch(query).split(' ').filter(Boolean);
     return index
       .filter(
         ({ entry, text }) =>
-          (!category || entry.category === category) && terms.every((term) => text.includes(term)),
+          (!category || entry.category === category) &&
+          (!module || entry.module === module) &&
+          terms.every((term) => text.includes(term)),
       )
       .map(({ entry }) => entry);
   };

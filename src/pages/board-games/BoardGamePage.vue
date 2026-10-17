@@ -22,9 +22,13 @@
               {{ t('boardGames.players', { min: game.players.min, max: game.players.max }) }}
             </q-chip>
             <q-chip icon="schedule" outline>
-              {{ game.durationMinutes.min }}–{{ game.durationMinutes.max }} min
+              {{ game.durationMinutes.min
+              }}<template v-if="game.durationMinutes.min !== game.durationMinutes.max"
+                >–{{ game.durationMinutes.max }}</template
+              >
+              min
             </q-chip>
-            <q-chip outline>{{ game.edition }}</q-chip>
+            <q-chip outline class="edition-chip">{{ game.edition }}</q-chip>
           </div>
         </header>
 
@@ -52,7 +56,12 @@
                   </li>
                 </ul>
               </div>
-              <q-expansion-item :label="t('boardGames.ingredients')" icon="science" dense>
+              <q-expansion-item
+                v-if="game.ingredients.length"
+                :label="t('boardGames.ingredients')"
+                icon="science"
+                dense
+              >
                 <ul :lang="game.language" class="ingredient-list" role="list">
                   <li
                     v-for="ingredient in game.ingredients"
@@ -68,9 +77,25 @@
                   </li>
                 </ul>
               </q-expansion-item>
+              <q-expansion-item
+                v-if="game.racingReference && selectedModule === game.racingReference.module"
+                :label="t('boardGames.racingReference')"
+                icon="sports_motorsports"
+              >
+                <RacingReferenceTables
+                  :reference="game.racingReference"
+                  :content-language="game.language"
+                  :images="boardGameImages[game.id] ?? {}"
+                  class="q-pa-sm"
+                />
+              </q-expansion-item>
             </q-card-section>
           </q-expansion-item>
         </q-card>
+
+        <q-banner v-if="game.modules?.length" rounded class="language-notice q-mb-md" role="note">
+          {{ t('boardGames.referenceOnlyNotice') }}
+        </q-banner>
 
         <section :aria-label="t('boardGames.searchTitle')" class="search-panel">
           <q-input
@@ -79,12 +104,24 @@
             clearable
             clear-icon="close"
             type="search"
-            :label="t('boardGames.search')"
+            :label="t(game.potions?.length ? 'boardGames.search' : 'boardGames.searchRules')"
             :hint="t('boardGames.searchHint')"
             :debounce="150"
           >
             <template #prepend><q-icon name="search" /></template>
           </q-input>
+          <q-select
+            v-if="moduleOptions.length"
+            v-model="selectedModule"
+            outlined
+            emit-value
+            map-options
+            :options="moduleOptions"
+            :label="t('boardGames.module')"
+            :hint="t('boardGames.moduleHint')"
+            class="q-mt-md"
+            @update:model-value="category = ''"
+          />
           <q-select
             v-model="category"
             outlined
@@ -99,7 +136,7 @@
               {{ t('boardGames.results', { count: results.length }) }}
             </p>
             <q-btn
-              v-if="query || category"
+              v-if="query || category || selectedModule !== defaultModule"
               flat
               color="primary"
               :label="t('boardGames.clear')"
@@ -107,6 +144,15 @@
             />
           </div>
         </section>
+
+        <q-banner
+          v-if="selectedModule && selectedModule !== defaultModule"
+          rounded
+          class="language-notice q-mt-md"
+          role="note"
+        >
+          {{ t('boardGames.moduleSummaryNotice') }}
+        </q-banner>
 
         <nav
           v-if="results.length"
@@ -172,6 +218,7 @@
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import RuleEntrySection from 'components/board-games/RuleEntrySection.vue';
+import RacingReferenceTables from 'components/board-games/RacingReferenceTables.vue';
 import { boardGames } from 'src/data/board-games';
 import { boardGameImages } from 'src/data/board-game-images';
 import { createGameSearch, getGameEntries } from 'src/utils/board-game-search';
@@ -184,6 +231,14 @@ const loading = ref<boolean>(false);
 const error = ref<string>('');
 const query = ref<string | null>('');
 const category = ref<string>('');
+const selectedModule = ref<string>('');
+const defaultModule = computed(() => {
+  const modules = game.value?.modules ?? [];
+  return modules.find((module) => module.defaultEnabled)?.id ?? modules[0]?.id ?? '';
+});
+const moduleOptions = computed(() =>
+  (game.value?.modules ?? []).map((module) => ({ label: module.name, value: module.id })),
+);
 const registration = computed(() =>
   Object.prototype.hasOwnProperty.call(boardGames, props.gameId)
     ? boardGames[props.gameId]
@@ -204,7 +259,10 @@ async function loadGame(): Promise<void> {
       return;
     }
     const data = await loader.load();
-    if (version === loadVersion) game.value = data;
+    if (version === loadVersion) {
+      game.value = data;
+      selectedModule.value = defaultModule.value;
+    }
   } catch {
     if (version === loadVersion) error.value = 'boardGames.loadError';
   } finally {
@@ -223,11 +281,19 @@ const entries = computed<BoardGameEntry[]>(() => {
   });
 });
 const search = computed(() => createGameSearch(entries.value, game.value?.searchSynonyms ?? {}));
-const results = computed(() => search.value(query.value ?? '', category.value));
+const results = computed(() =>
+  search.value(query.value ?? '', category.value, selectedModule.value),
+);
 const categoryOptions = computed(() => [
   { label: t('boardGames.allCategories'), value: '' },
-  ...[...new Set(entries.value.map((entry) => entry.category))].map((value) => ({
-    label: ['preparacao', 'turno', 'pocoes', 'pontuacao'].includes(value)
+  ...[
+    ...new Set(
+      entries.value
+        .filter((entry) => !selectedModule.value || entry.module === selectedModule.value)
+        .map((entry) => entry.category),
+    ),
+  ].map((value) => ({
+    label: ['preparacao', 'turno', 'pocoes', 'pontuacao', 'regras'].includes(value)
       ? t(`boardGames.categories.${value}`)
       : value,
     value,
@@ -245,7 +311,11 @@ const sections = computed<EntrySection[]>(() => {
   const potionIds = new Set(game.value?.potions?.map((entry) => entry.id));
   const groups: EntrySection[] = [
     { id: 'setup', title: t('boardGames.setup'), entries: [] },
-    { id: 'turn', title: t('boardGames.turn'), entries: [] },
+    {
+      id: 'turn',
+      title: t(game.value?.modules?.length ? 'boardGames.playerAid' : 'boardGames.turn'),
+      entries: [],
+    },
     { id: 'potions', title: t('boardGames.potions'), entries: [] },
     { id: 'rules', title: t('boardGames.rules'), entries: [] },
   ];
@@ -265,6 +335,7 @@ const sections = computed<EntrySection[]>(() => {
 function clearFilters(): void {
   query.value = '';
   category.value = '';
+  selectedModule.value = defaultModule.value;
 }
 
 function goToSection(id: string): void {
@@ -290,6 +361,14 @@ function goToSection(id: string): void {
 .language-notice {
   color: var(--sa-text);
   background: var(--sa-primary-soft);
+}
+.edition-chip {
+  max-width: 100%;
+  height: auto;
+  min-height: 2em;
+}
+.edition-chip :deep(.q-chip__content) {
+  white-space: normal;
 }
 .ingredient-list {
   list-style: none;

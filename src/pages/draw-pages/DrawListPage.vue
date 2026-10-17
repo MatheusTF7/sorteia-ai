@@ -214,11 +214,19 @@ const sorteios: Sorteio[] = [
   },
   {
     id: 13,
-    nome: t('boardGames.title'),
+    nome: 'Potion Explosion',
     descricao: t('boardGames.homeDescription'),
     icon: 'menu_book',
     rgb: '79, 70, 229',
     route: '/board-games/potion-explosion',
+  },
+  {
+    id: 14,
+    nome: 'Heat: Pedal to the Metal',
+    descricao: t('boardGames.heatDescription'),
+    icon: 'sports_motorsports',
+    rgb: '244, 63, 94',
+    route: '/board-games/heat-pedal-to-the-metal',
   },
   {
     id: 11,

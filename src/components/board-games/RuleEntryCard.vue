@@ -12,6 +12,12 @@
         class="entry-image q-mb-md"
       />
       <h3 class="text-subtitle1 text-weight-bold q-my-none">{{ entry.title }}</h3>
+      <p v-if="entry.moduleName" class="text-caption entry-subtitle q-mt-xs q-mb-none">
+        {{ entry.moduleName }}
+      </p>
+      <q-badge v-if="entry.mandatory !== undefined" outline color="primary" class="q-mt-sm">
+        {{ t(entry.mandatory ? 'boardGames.mandatory' : 'boardGames.optional') }}
+      </q-badge>
       <p v-if="entry.subtitle" class="text-caption entry-subtitle q-mt-xs q-mb-sm">
         {{ entry.subtitle }}
       </p>
@@ -33,6 +39,9 @@
 
 <script setup lang="ts">
 import type { BoardGameEntry } from 'src/types/board-games';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps<{ entry: BoardGameEntry; detailsLabel: string; contentLanguage: string }>();
 </script>

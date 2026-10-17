@@ -1,4 +1,5 @@
 import type { BoardGame } from '../types/board-games';
+import { normalizeHeatDataset } from './normalize-heat';
 
 interface BoardGameRegistration {
   load: () => Promise<BoardGame>;
@@ -11,6 +12,13 @@ export const boardGames: Record<string, BoardGameRegistration> = {
     load: async (): Promise<BoardGame> => {
       const { default: game } = await import('../../public/data/board-games/potion-explosion.json');
       return game;
+    },
+  },
+  'heat-pedal-to-the-metal': {
+    load: async (): Promise<BoardGame> => {
+      const { default: game } =
+        await import('../../public/data/board-games/heat-pedal-to-the-metal.json');
+      return normalizeHeatDataset(game);
     },
   },
 };

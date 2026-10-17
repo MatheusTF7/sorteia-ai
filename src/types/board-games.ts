@@ -5,6 +5,32 @@ export interface BoardGameRule {
   summary: string;
   details: string[];
   tags: string[];
+  module?: string;
+  moduleName?: string;
+  step?: number;
+  mandatory?: boolean;
+}
+
+export interface BoardGameModule {
+  id: string;
+  name: string;
+  defaultEnabled: boolean;
+}
+
+export interface GearReference {
+  id: string;
+  gear: number;
+  cards: number;
+  cooldown: number;
+}
+
+export interface CircuitReference {
+  id: string;
+  name: string;
+  laps: number;
+  corners: number;
+  heat: number;
+  stress: number;
 }
 
 export interface BoardGamePotion {
@@ -39,6 +65,12 @@ export interface BoardGame {
   endGameSkillTokensByPlayerCount?: Record<string, number>;
   searchSynonyms: Record<string, string[]>;
   sourceNotes: Record<string, string>;
+  modules?: BoardGameModule[];
+  racingReference?: {
+    module: string;
+    gears: GearReference[];
+    circuits: CircuitReference[];
+  };
 }
 
 /** Presentation model shared by rules and game-specific catalogs. */
@@ -51,4 +83,8 @@ export interface BoardGameEntry {
   summary: string;
   details: string[];
   tags: string[];
+  module?: string;
+  moduleName?: string;
+  step?: number;
+  mandatory?: boolean;
 }

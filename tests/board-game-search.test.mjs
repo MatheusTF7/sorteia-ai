@@ -76,3 +76,103 @@ test('combines query and category and handles empty results', () => {
   assert.deepEqual(ids('', 'inexistente'), []);
   assert.equal(search('   ').length, entries.length);
 });
+
+const heatSource = JSON.parse(
+  await readFile(
+    new URL('../public/data/board-games/heat-pedal-to-the-metal.json', import.meta.url),
+    'utf8',
+  ),
+);
+const { outputText: adapterCode } = ts.transpileModule(
+  await readFile(new URL('../src/data/normalize-heat.ts', import.meta.url), 'utf8'),
+  { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } },
+);
+const { normalizeHeatDataset } = await import(
+  `data:text/javascript;base64,${Buffer.from(adapterCode).toString('base64')}`
+);
+const heat = normalizeHeatDataset(heatSource);
+const heatEntries = getGameEntries(heat);
+const heatSearch = createGameSearch(heatEntries, heat.searchSynonyms);
+
+test('adapts Heat metadata, rules, circuits and reference values without changing the source', () => {
+  assert.equal(heat.title, heatSource.name);
+  assert.equal(heat.language, heatSource.locale);
+  assert.deepEqual(heat.durationMinutes, { min: 60, max: 60 });
+  assert.equal(heatEntries.length, heatSource.playerAid.rules.length);
+  assert.equal(new Set(heatEntries.map((entry) => entry.id)).size, heatEntries.length);
+  assert.deepEqual(heat.modules, heatSource.modules);
+  assert.deepEqual(heat.racingReference.gears, heatSource.quickReference);
+  assert.deepEqual(heat.racingReference.circuits, heatSource.circuits);
+  for (const rule of heatSource.playerAid.rules) {
+    const entry = heatEntries.find((candidate) => candidate.id === rule.id);
+    assert.equal(entry.summary, rule.summary);
+    assert.deepEqual(entry.details, rule.details ?? []);
+    assert.deepEqual(entry.tags, [rule.tags]);
+  }
+  assert.equal(heatSource.playerAid.rules.find((rule) => rule.id === 'gear').category, undefined);
+});
+
+test('builds the nine Heat turn steps from referenced ids, order and mandatory flags', () => {
+  const turn = heatEntries.filter((entry) => entry.category === 'turno');
+  assert.equal(turn.length, 9);
+  assert.deepEqual(
+    turn.map((entry) => entry.id),
+    heatSource.playerAid.turnSteps.map((step) => step.ruleId),
+  );
+  for (const step of heatSource.playerAid.turnSteps) {
+    const entry = turn.find((candidate) => candidate.id === step.ruleId);
+    assert.equal(entry.step, step.step);
+    assert.equal(entry.mandatory, step.mandatory);
+  }
+  // Source array order and duplicate rule.step metadata must not determine the guide.
+  const reordered = structuredClone(heatSource);
+  reordered.playerAid.rules.reverse();
+  reordered.playerAid.rules.forEach((rule) => {
+    rule.step = 99;
+  });
+  assert.deepEqual(
+    normalizeHeatDataset(reordered)
+      .rules.filter((rule) => rule.category === 'turno')
+      .map((rule) => rule.id),
+    turn.map((entry) => entry.id),
+  );
+});
+
+test('searches Heat titles, descriptions, details, keywords and module names without accents', () => {
+  for (const [query, id] of [
+    ['VACUO', 'slipstream'],
+    ['resfriar', 'react'],
+    ['superaquecimento', 'heat'],
+    ['bloqueio', 'reveal-move'],
+    ['condicoes', 'weather'],
+    ['weather-road', 'road'],
+  ])
+    assert.ok(heatSearch(query).some((entry) => entry.id === id));
+  assert.deepEqual(heatSearch('vácuo'), heatSearch('vacuo'));
+  assert.deepEqual(heatSearch('CONDIÇÕES'), heatSearch('condicoes'));
+});
+
+test('isolates Heat modules and combines module, category and query filters', () => {
+  const defaultModule = heat.modules.find((module) => module.defaultEnabled).id;
+  assert.equal(defaultModule, 'base');
+  const base = heatSearch('', '', defaultModule);
+  assert.ok(base.length > 0);
+  assert.ok(base.every((entry) => entry.module === 'base'));
+  assert.ok(!base.some((entry) => entry.id === 'championship'));
+  for (const module of heat.modules) {
+    const results = heatSearch('', '', module.id);
+    assert.equal(
+      results.length,
+      heatSource.playerAid.rules.filter((rule) => rule.module === module.id).length,
+    );
+    assert.ok(results.every((entry) => entry.module === module.id));
+  }
+  assert.equal(heatSearch('', 'turno', 'base').length, 9);
+  assert.deepEqual(heatSearch('campeonato', '', 'base'), []);
+  assert.deepEqual(
+    heatSearch('campeonato', '', 'championship').map((entry) => entry.id),
+    ['championship'],
+  );
+  assert.deepEqual(heatSearch('inexistente', '', 'garage'), []);
+  assert.deepEqual(heatSearch('', '', 'missing-module'), []);
+});

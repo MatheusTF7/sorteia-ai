@@ -1,16 +1,14 @@
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useSavedConfigs } from './useSavedConfigs';
+import { useSetupParticipants } from './useSetupParticipants';
 import type { HeatDataset } from 'src/types/heat';
-import type { SavedParticipantList } from 'src/types/saved-lists';
 import type { CircuitReference } from 'src/types/board-games';
 import {
   assignPlayerColors,
   changePlayerColor,
   drawCircuit,
   drawStartingGrid,
-  initialParticipantListId,
   playerKey,
-  uniquePlayerNames,
   validColorPreferences,
   type HeatPlayer,
   type HeatGridPosition,
@@ -38,17 +36,22 @@ export function useHeatSetup(data: HeatDataset) {
     colors.length &&
     data.circuits.length,
   );
-  const { data: savedLists } = useSavedConfigs<SavedParticipantList[]>('saved_lists', []);
+  const { savedLists, selectedListId, names, selectedNames, loadList, addNames } =
+    useSetupParticipants(maxPlayers);
   const { data: preferences, save } = useSavedConfigs<Record<string, string>>(
     COLOR_STORAGE_KEY,
     {},
   );
-  const selectedListId = ref<string>('');
-  const names = ref<string[]>([]);
-  const selectedNames = ref<string[]>([]);
   const players = ref<HeatPlayer[]>([]);
   const grid = ref<HeatGridPosition[]>([]);
   const circuit = ref<CircuitReference | null>(null);
+  watch(
+    selectedListId,
+    () => {
+      players.value = [];
+    },
+    { flush: 'sync' },
+  );
   const canDrawGrid = computed(
     () => available && players.value.length >= minPlayers && players.value.length <= maxPlayers,
   );
@@ -73,26 +76,6 @@ export function useHeatSetup(data: HeatDataset) {
     },
     { deep: true, flush: 'sync' },
   );
-
-  function loadList(id: string): void {
-    const list = savedLists.value.find((candidate) => candidate.id === id);
-    if (!list) return;
-    selectedListId.value = id;
-    names.value = uniquePlayerNames(list.items);
-    players.value = [];
-    selectedNames.value = names.value.length <= maxPlayers ? [...names.value] : [];
-  }
-
-  function addNames(raw: string): void {
-    const incoming = uniquePlayerNames(raw.split(/[,;\n]+/));
-    const existing = new Set(names.value.map(playerKey));
-    const additions = incoming.filter((name) => !existing.has(playerKey(name)));
-    names.value = [...names.value, ...additions];
-    selectedNames.value = [
-      ...selectedNames.value,
-      ...additions.slice(0, Math.max(0, maxPlayers - selectedNames.value.length)),
-    ];
-  }
 
   function setColor(name: string, color: string): void {
     if (colors.includes(color)) players.value = changePlayerColor(players.value, name, color);
@@ -119,11 +102,6 @@ export function useHeatSetup(data: HeatDataset) {
   function randomizeCircuit(): void {
     if (available) circuit.value = drawCircuit(data.circuits) ?? null;
   }
-
-  onMounted(() => {
-    const initialId = initialParticipantListId(savedLists.value);
-    if (initialId) loadList(initialId);
-  });
 
   return {
     available,

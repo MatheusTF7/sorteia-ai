@@ -24,6 +24,10 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/board-games/BoardGameHubPage.vue'),
       },
       {
+        path: 'board-games/potion-explosion/setup',
+        component: () => import('pages/board-games/PotionSetupPage.vue'),
+      },
+      {
         path: 'board-games/heat-pedal-to-the-metal/setup',
         component: () => import('pages/board-games/HeatSetupPage.vue'),
       },

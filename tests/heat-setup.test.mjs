@@ -15,7 +15,12 @@ async function moduleUrl(relativePath, imports = {}) {
   return `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`;
 }
 
-const utilityUrl = await moduleUrl('../src/utils/heat-setup.ts');
+const participantUrl = await moduleUrl('../src/utils/participants.ts');
+const randomUrl = await moduleUrl('../src/utils/random.ts');
+const utilityUrl = await moduleUrl('../src/utils/heat-setup.ts', {
+  './participants': participantUrl,
+  './random': randomUrl,
+});
 const {
   assignPlayerColors,
   changePlayerColor,
@@ -145,9 +150,15 @@ test('draws only real circuits, permits repeats and handles an empty pool', () =
 
 const vueUrl = import.meta.resolve('vue');
 const savedConfigsUrl = await moduleUrl('../src/composables/useSavedConfigs.ts', { vue: vueUrl });
+const setupParticipantsUrl = await moduleUrl('../src/composables/useSetupParticipants.ts', {
+  vue: vueUrl,
+  './useSavedConfigs': savedConfigsUrl,
+  'src/utils/participants': participantUrl,
+});
 const composableUrl = await moduleUrl('../src/composables/useHeatSetup.ts', {
   vue: vueUrl,
   './useSavedConfigs': savedConfigsUrl,
+  './useSetupParticipants': setupParticipantsUrl,
   'src/utils/heat-setup': utilityUrl,
 });
 const { useHeatSetup } = await import(composableUrl);

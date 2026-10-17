@@ -4,6 +4,44 @@ export default {
   // Generic
   failed: 'Action failed',
   success: 'Action was successful',
+  boardSetup: {
+    players: 'Players',
+    noLists: 'Add names below or create a list in Saved Lists.',
+    addPlayers: 'Add players',
+    addHint: 'Separate names with commas or semicolons.',
+    selectedCount: '{count} of {max} players selected',
+    choosePlayers: 'Select up to {max} players from this list.',
+    emptyPlayers: 'Load a list or add the players for this game.',
+  },
+  potionSetup: {
+    backToGuide: 'Potion Explosion guide',
+    subtitle: 'Select {min} to {max} players to set up a game.',
+    unavailable: 'The required setup data is not available.',
+    selectFirst: 'Select {min} to {max} players to draw the setup.',
+    drawAll: 'Draw the complete setup',
+    starter: 'Who starts',
+    drawStarter: 'Draw the starting player',
+    orderHint:
+      'The order follows the sequence of selected players, starting with the drawn player.',
+    starts: '{name} starts!',
+    noStarter: 'No starting player drawn yet.',
+    activeTypes: 'Potion types in this game',
+    typesHint: 'Draw {active} of the {total} available types.',
+    drawTypes: 'Draw potion types',
+    activeCount: '{count} active potion types drawn',
+    excluded: 'Types excluded from this game',
+    startingPotions: 'Each player’s starting potions',
+    stockHint:
+      'Each player receives {each} potions. There are only {copies} starting tiles of each active type.',
+    optionalDraw:
+      'Random distribution is an optional app feature. To choose physical tiles at the table, follow the normal and reverse order described in the rules below.',
+    drawHands: 'Draw starting potions',
+    dealFirst:
+      'Select players and draw the starting player and active types before distributing potions.',
+    dealtCount: '{count} players with starting potions assigned',
+    physicalTiles:
+      'Images identify potion types. Use the matching physical starting tiles. Changing players, the starting player or active types clears the previous distribution.',
+  },
   heatSetup: {
     title: 'Set up a game',
     backToGuide: 'Heat guide',

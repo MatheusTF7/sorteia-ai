@@ -1,3 +1,7 @@
+import { playerKey, uniquePlayerNames } from './participants';
+import { shuffleItems } from './random';
+export { playerKey, uniquePlayerNames, initialParticipantListId } from './participants';
+
 export interface HeatPlayer {
   name: string;
   color: string;
@@ -5,26 +9,6 @@ export interface HeatPlayer {
 
 export interface HeatGridPosition extends HeatPlayer {
   position: number;
-}
-
-export function playerKey(name: string): string {
-  return name.trim().normalize('NFC').replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
-}
-
-export function uniquePlayerNames(names: string[]): string[] {
-  const seen = new Set<string>();
-  return names
-    .map((name) => name.trim())
-    .filter((name) => {
-      const key = playerKey(name);
-      if (!key || seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-}
-
-export function initialParticipantListId(lists: { id: string; isDefault: boolean }[]): string {
-  return (lists.length === 1 ? lists[0]?.id : lists.find((list) => list.isDefault)?.id) ?? '';
 }
 
 export function validColorPreferences(value: unknown, colors: string[]): Record<string, string> {
@@ -90,16 +74,7 @@ export function drawStartingGrid(
   players: HeatPlayer[],
   random: () => number = Math.random,
 ): HeatGridPosition[] {
-  const shuffled = players.map((player) => ({ ...player }));
-  for (let index = shuffled.length - 1; index > 0; index--) {
-    const other = Math.floor(random() * (index + 1));
-    const player = shuffled[index];
-    const otherPlayer = shuffled[other];
-    if (player && otherPlayer) {
-      shuffled[index] = otherPlayer;
-      shuffled[other] = player;
-    }
-  }
+  const shuffled = shuffleItems(players, random);
   return shuffled.map((player, index) => ({ ...player, position: index + 1 }));
 }
 

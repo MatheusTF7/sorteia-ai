@@ -6,9 +6,49 @@ busca sem acentos e abre cada guia, como `/#/board-games/potion-explosion`.
 Os guias têm um link “Todos os jogos” para retornar ao hub. No GitHub Pages,
 o endereço completo inclui `/sorteia-ai/` antes do hash.
 
+## Preparação de Potion Explosion
+
+O botão “Preparar partida” do guia abre
+`/#/board-games/potion-explosion/setup`. Reutiliza o seletor de listas e jogadores
+de Heat, agora compartilhado em `SetupPlayerPicker.vue` e
+`useSetupParticipants.ts`. A única lista disponível ou a lista padrão é carregada
+automaticamente. Listas maiores que quatro não são truncadas: o usuário seleciona
+de duas a quatro pessoas. Nomes também podem ser adicionados manualmente.
+
+É possível sortear toda a preparação ou repetir individualmente:
+
+- **Quem começa:** escolhe uma pessoa aleatoriamente e mantém a sequência dos
+  jogadores selecionados, rotacionada a partir dela.
+- **Tipos ativos:** escolhe seis tipos distintos dos oito e mostra os dois
+  excluídos, com os nomes e imagens já disponíveis no catálogo.
+- **Poções iniciais:** embaralha um estoque finito com duas peças de cada tipo
+  ativo e distribui duas por jogador, passando na ordem normal e depois na inversa.
+  Nenhum tipo pode ser distribuído mais de duas vezes no total. Não foi criada
+  uma restrição que proíba duas peças do mesmo tipo para uma pessoa.
+
+Esse sorteio é uma opção da plataforma, claramente distinguida da escolha de
+peças prevista no regulamento. A página exibe a entrada `setup-starters` do JSON
+e suas observações. As imagens identificam tipos; receitas de peças iniciais
+continuam fora do dataset e devem ser conferidas nas peças físicas.
+
+O bloco numérico `potionSetup` acrescenta ao JSON os seis tipos ativos e as duas
+poções por pessoa já descritos no conteúdo, além do limite de duas peças iniciais
+por tipo informado pelo usuário. Os textos de regras anteriores foram preservados.
+O código não extrai números de frases nem duplica esses limites nos componentes.
+
+Alterar jogadores limpa quem começa e a distribuição, preservando os tipos ativos.
+Sortear novamente quem começa ou os tipos limpa as poções distribuídas. O botão
+de distribuir fica desabilitado até os pré-requisitos estarem completos.
+As listas salvas não são alteradas e os resultados da preparação não são persistidos.
+
+`utils/participants.ts` e `utils/random.ts` compartilham identidade de jogadores,
+seleção da lista inicial e Fisher–Yates entre os dois jogos. As preferências de
+cores e os sorteios de Heat mantêm os testes existentes.
+
 ## Dados e extensão
 
-- A fonte é `public/data/board-games/potion-explosion.json`, preservada sem alterações.
+- A fonte é `public/data/board-games/potion-explosion.json`, com regras preservadas
+  e configuração numérica de preparação em `potionSetup`.
 - `src/types/board-games.ts` descreve o dataset e o modelo comum de apresentação.
 - `src/data/board-games.ts` registra loaders explícitos com imports dinâmicos de JSON.
   Para outro jogo compatível, adicione o dataset e seu registro com título,
@@ -70,6 +110,12 @@ Execute `npm run test:board-games`, `npm run lint` e
 acentos, caixa, Unicode decomposto, nomes originais, efeitos, observações, tags,
 sinônimos, filtros combinados e ausência de resultados.
 
+`tests/potion-setup.test.mjs` cobre os 28 conjuntos possíveis de seis tipos,
+distribuições para duas, três e quatro pessoas, estoque máximo de duas peças por
+tipo, ausência de tipos excluídos, ordem normal/inversa, sorteio completo,
+carregamento de listas e invalidação de resultados após mudanças. Ao todo, são
+23 testes incluindo as verificações de Heat e busca.
+
 Para verificar visualmente: abrir a rota em viewport estreito e desktop, alternar
 tema/idioma, navegar com Tab/Enter, abrir observações, combinar busca e categoria,
 limpar os filtros e testar um id de jogo inexistente. Para offline, servir o build
@@ -77,8 +123,8 @@ PWA sob `/sorteia-ai/`, aguardar o service worker ativar, desligar a rede e reca
 
 ### Resultado nesta implementação
 
-- Os cinco testes de busca passaram (neste sandbox, executados com
-  `node --test --test-isolation=none tests/board-game-search.test.mjs`, pois o runner
+- Os 23 testes passaram (neste sandbox, executados com
+  `node --test --test-isolation=none` com os três arquivos de teste, pois o runner
   padrão não conseguiu criar subprocessos).
 - `tsc --noEmit` e ESLint dos arquivos alterados passaram.
 - O lint geral encontrou um erro preexistente de `no-floating-promises` em

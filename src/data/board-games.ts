@@ -16,6 +16,7 @@ export const boardGames: Record<string, BoardGameRegistration> = {
     title: 'Potion Explosion',
     descriptionKey: 'boardGames.homeDescription',
     icon: 'science',
+    setupRoute: '/board-games/potion-explosion/setup',
     load: async (): Promise<BoardGame> => {
       const { default: game } = await import('../../public/data/board-games/potion-explosion.json');
       return game;

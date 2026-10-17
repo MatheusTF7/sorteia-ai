@@ -28,7 +28,7 @@
           <q-btn
             v-if="registration?.setupRoute"
             color="primary"
-            icon="sports_motorsports"
+            :icon="registration.icon"
             :to="registration.setupRoute"
             :label="t('boardGames.prepareMatch')"
             class="q-mb-md"

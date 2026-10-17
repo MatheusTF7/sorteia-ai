@@ -27,106 +27,49 @@
         <q-card flat bordered class="q-mb-lg">
           <q-card-section>
             <h2 class="text-h6 q-mt-none">1. {{ t('heatSetup.players') }}</h2>
-            <q-select
-              v-if="savedLists.length"
-              :model-value="selectedListId"
-              :options="listOptions"
-              outlined
-              emit-value
-              map-options
-              :label="t('shared.loadList')"
-              :bg-color="$q.dark.isActive ? 'dark' : 'white'"
-              class="q-mb-md"
-              @update:model-value="loadList"
-            />
-            <p v-else class="text-body2">{{ t('heatSetup.noLists') }}</p>
-            <q-btn
-              flat
-              icon="list_alt"
-              color="primary"
-              to="/saved-lists"
-              :label="t('savedLists.pageTitle')"
-              class="q-mb-md"
-            />
-
-            <q-input
-              v-model="nameInput"
-              outlined
-              :label="t('heatSetup.addPlayers')"
-              :hint="t('heatSetup.addHint')"
-              :bg-color="$q.dark.isActive ? 'dark' : 'white'"
-              class="q-mb-lg"
-              @keyup.enter="addPlayers"
+            <SetupPlayerPicker
+              v-model="selectedNames"
+              :saved-lists="savedLists"
+              :selected-list-id="selectedListId"
+              :names="names"
+              :max-players="maxPlayers"
+              @load-list="loadList"
+              @add-names="addNames"
             >
-              <template #append>
-                <q-btn
-                  flat
-                  round
-                  icon="add"
-                  color="primary"
-                  :aria-label="t('heatSetup.addPlayers')"
-                  :disable="!nameInput.trim()"
-                  @click="addPlayers"
-                />
+              <template #player="{ playerName: name }">
+                <q-select
+                  :model-value="playerColor(name)"
+                  :options="colorOptions"
+                  emit-value
+                  map-options
+                  outlined
+                  dense
+                  :label="t('heatSetup.colorFor', { name })"
+                  :bg-color="$q.dark.isActive ? 'dark' : 'white'"
+                  @update:model-value="setColor(name, $event)"
+                >
+                  <template #selected>
+                    <span
+                      class="car-color q-mr-sm"
+                      :style="{ backgroundColor: colorCss(playerColor(name)) }"
+                      aria-hidden="true"
+                    />
+                    {{ colorLabel(playerColor(name)) }}
+                  </template>
+                  <template #option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section avatar
+                        ><span
+                          class="car-color"
+                          :style="{ backgroundColor: colorCss(scope.opt.value) }"
+                          aria-hidden="true"
+                      /></q-item-section>
+                      <q-item-section>{{ scope.opt.label }}</q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </template>
-            </q-input>
-
-            <p role="status" aria-live="polite" class="text-body2">
-              {{ t('heatSetup.selectedCount', { count: selectedNames.length, max: maxPlayers }) }}
-            </p>
-            <p v-if="names.length > maxPlayers" class="text-body2">
-              {{ t('heatSetup.choosePlayers', { max: maxPlayers }) }}
-            </p>
-            <p v-if="!names.length" class="text-body2">{{ t('heatSetup.emptyPlayers') }}</p>
-            <ul v-else class="players-list" role="list">
-              <li
-                v-for="name in names"
-                :key="name"
-                class="player-row row items-center q-col-gutter-sm"
-              >
-                <div class="col-12 col-sm-6">
-                  <q-checkbox
-                    v-model="selectedNames"
-                    :val="name"
-                    :label="name"
-                    :disable="selectedNames.length >= maxPlayers && !selectedNames.includes(name)"
-                  />
-                </div>
-                <div v-if="selectedNames.includes(name)" class="col-12 col-sm-6">
-                  <q-select
-                    :model-value="playerColor(name)"
-                    :options="colorOptions"
-                    emit-value
-                    map-options
-                    outlined
-                    dense
-                    :label="t('heatSetup.colorFor', { name })"
-                    :bg-color="$q.dark.isActive ? 'dark' : 'white'"
-                    @update:model-value="setColor(name, $event)"
-                  >
-                    <template #selected>
-                      <span
-                        class="car-color q-mr-sm"
-                        :style="{ backgroundColor: colorCss(playerColor(name)) }"
-                        aria-hidden="true"
-                      />
-                      {{ colorLabel(playerColor(name)) }}
-                    </template>
-                    <template #option="scope">
-                      <q-item v-bind="scope.itemProps">
-                        <q-item-section avatar
-                          ><span
-                            class="car-color"
-                            :style="{ backgroundColor: colorCss(scope.opt.value) }"
-                            aria-hidden="true"
-                        /></q-item-section>
-                        <q-item-section>{{ scope.opt.label }}</q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
-                </div>
-              </li>
-            </ul>
+            </SetupPlayerPicker>
             <p class="text-caption q-mt-md">{{ t('heatSetup.colorHint') }}</p>
             <q-btn
               outline
@@ -223,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import heatJson from '../../../public/data/board-games/heat-pedal-to-the-metal.json';
@@ -231,6 +174,7 @@ import type { HeatDataset } from 'src/types/heat';
 import { useHeatSetup } from 'src/composables/useHeatSetup';
 import { boardGameImages } from 'src/data/board-game-images';
 import { heatColors } from 'src/data/heat-colors';
+import SetupPlayerPicker from 'components/board-games/SetupPlayerPicker.vue';
 
 const heat: HeatDataset = heatJson;
 const { t } = useI18n();
@@ -255,12 +199,8 @@ const {
   randomizeGrid,
   randomizeCircuit,
 } = useHeatSetup(heat);
-const nameInput = ref<string>('');
 const baseModule = heat.modules.find((module) => module.id === 'base');
 const circuitImages = boardGameImages[heat.id] ?? {};
-const listOptions = computed(() =>
-  savedLists.value.map((list) => ({ label: list.name, value: list.id })),
-);
 const colorOptions = computed(() =>
   colors.map((color) => ({ label: colorLabel(color), value: color })),
 );
@@ -274,10 +214,6 @@ function colorLabel(color: string): string {
 }
 function playerColor(name: string): string {
   return players.value.find((player) => player.name === name)?.color ?? '';
-}
-function addPlayers(): void {
-  addNames(nameInput.value);
-  nameInput.value = '';
 }
 function persistColors(): void {
   const saved = saveColors();
@@ -297,15 +233,6 @@ function persistColors(): void {
 }
 .setup-page {
   color: var(--sa-text);
-}
-.players-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.player-row {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--sa-border);
 }
 .car-color {
   display: inline-block;

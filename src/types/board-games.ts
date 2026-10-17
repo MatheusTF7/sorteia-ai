@@ -57,6 +57,11 @@ export interface BoardGame {
   setup: BoardGameRule[];
   rules: BoardGameRule[];
   potions?: BoardGamePotion[];
+  potionSetup?: {
+    activeTypeCount: number;
+    startingPotionsPerPlayer: number;
+    startingCopiesPerType: number;
+  };
   scoring?: {
     skillTokenPoints: number;
     professorHelpPenalty: number;

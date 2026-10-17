@@ -3,6 +3,43 @@ export default {
   // Genérico
   failed: 'Ação falhou',
   success: 'A ação foi bem sucedida',
+  boardSetup: {
+    players: 'Jogadores',
+    noLists: 'Você pode adicionar nomes abaixo ou criar uma lista em Minhas Listas.',
+    addPlayers: 'Adicionar jogadores',
+    addHint: 'Separe nomes por vírgula ou ponto e vírgula.',
+    selectedCount: '{count} de {max} jogadores selecionados',
+    choosePlayers: 'Selecione até {max} jogadores desta lista.',
+    emptyPlayers: 'Carregue uma lista ou adicione os jogadores da partida.',
+  },
+  potionSetup: {
+    backToGuide: 'Guia de Potion Explosion',
+    subtitle: 'Selecione de {min} a {max} jogadores para preparar a partida.',
+    unavailable: 'Os dados necessários à preparação não estão disponíveis.',
+    selectFirst: 'Selecione de {min} a {max} jogadores para sortear a preparação.',
+    drawAll: 'Sortear toda a preparação',
+    starter: 'Quem começa',
+    drawStarter: 'Sortear quem começa',
+    orderHint: 'A ordem segue a sequência dos jogadores selecionados, a partir de quem começa.',
+    starts: '{name} começa!',
+    noStarter: 'Ninguém sorteado ainda.',
+    activeTypes: 'Tipos de poções da partida',
+    typesHint: 'Sorteie {active} dos {total} tipos disponíveis.',
+    drawTypes: 'Sortear tipos de poções',
+    activeCount: '{count} tipos ativos sorteados',
+    excluded: 'Tipos fora desta partida',
+    startingPotions: 'Poções iniciais de cada jogador',
+    stockHint:
+      'Cada jogador recebe {each} poções. O estoque contém apenas {copies} peças iniciais de cada tipo ativo.',
+    optionalDraw:
+      'A distribuição aleatória é uma opção da plataforma. Para escolher as peças na mesa, siga a ordem normal e depois a ordem inversa indicadas nas regras abaixo.',
+    drawHands: 'Sortear poções iniciais',
+    dealFirst:
+      'Selecione os jogadores, sorteie quem começa e os tipos ativos antes de distribuir as poções.',
+    dealtCount: '{count} jogadores com poções iniciais distribuídas',
+    physicalTiles:
+      'As imagens identificam os tipos. Use as peças físicas iniciais correspondentes. Mudar os jogadores, quem começa ou os tipos ativos limpa a distribuição anterior.',
+  },
   heatSetup: {
     title: 'Preparar partida',
     backToGuide: 'Guia de Heat',

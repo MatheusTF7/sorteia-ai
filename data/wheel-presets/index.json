@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "prendas-divertidas",
+      "file": "prendas-divertidas.json"
+    },
+    {
+      "id": "tarefas-de-casa",
+      "file": "tarefas-de-casa.json"
+    },
+    {
+      "id": "fim-de-semana",
+      "file": "fim-de-semana.json"
+    },
+    {
+      "id": "quem-paga",
+      "file": "quem-paga.json"
+    },
+    {
+      "id": "proxima-tarefa",
+      "file": "proxima-tarefa.json"
+    },
+    {
+      "id": "comida-delivery",
+      "file": "comida-delivery.json"
+    },
+    {
+      "id": "desafio-rapido",
+      "file": "desafio-rapido.json"
+    },
+    {
+      "id": "jogo-da-noite",
+      "file": "jogo-da-noite.json"
+    }
+  ]
+}

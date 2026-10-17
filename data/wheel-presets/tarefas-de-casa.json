@@ -1,0 +1,15 @@
+{
+  "id": "tarefas-de-casa",
+  "name": "Tarefas de casa",
+  "description": "Distribua a próxima tarefa doméstica de forma leve.",
+  "icon": "home",
+  "items": [
+    "Lavar a louça",
+    "Varrer a casa",
+    "Tirar o lixo",
+    "Organizar a sala",
+    "Limpar o banheiro",
+    "Dobrar as roupas",
+    "Preparar o jantar"
+  ]
+}

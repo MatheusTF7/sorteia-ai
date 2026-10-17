@@ -1,0 +1,38 @@
+{
+  "id": "prendas-divertidas",
+  "name": "Prendas divertidas",
+  "description": "Desafios rápidos e leves para animar o grupo.",
+  "icon": "celebration",
+  "items": [
+    {
+      "label": "Dance por 30 segundos",
+      "weight": 2,
+      "color": "#4F46E5"
+    },
+    {
+      "label": "Conte uma piada",
+      "weight": 2,
+      "color": "#EC4899"
+    },
+    {
+      "label": "Imite um personagem",
+      "weight": 2,
+      "color": "#F59E0B"
+    },
+    {
+      "label": "Cante um refrão",
+      "weight": 2,
+      "color": "#10B981"
+    },
+    {
+      "label": "Faça uma pose engraçada",
+      "weight": 2,
+      "color": "#06B6D4"
+    },
+    {
+      "label": "Escolha outra pessoa",
+      "weight": 1,
+      "color": "#8B5CF6"
+    }
+  ]
+}

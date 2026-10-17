@@ -5,6 +5,11 @@ export default {
   success: 'A ação foi bem sucedida',
   boardGames: {
     title: 'Jogos de tabuleiro',
+    hubDescription: 'Escolha um jogo para consultar seu guia e suas regras.',
+    searchGames: 'Buscar jogos',
+    gameCount: '{count} jogo(s) encontrado(s)',
+    noGames: 'Nenhum jogo encontrado',
+    backToHub: 'Todos os jogos',
     homeDescription: 'Consulte regras e poções de Potion Explosion durante a partida.',
     heatDescription: 'Consulte as etapas do turno, circuitos e regras de Heat.',
     searchRules: 'Buscar regras ou palavras-chave',

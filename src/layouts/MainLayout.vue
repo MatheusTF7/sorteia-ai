@@ -235,16 +235,10 @@ const linksList: EssentialLinkProps[] = [
     link: '/saved-lists',
   },
   {
-    title: 'Potion Explosion',
-    caption: t('boardGames.title'),
+    title: t('boardGames.title'),
+    caption: t('boardGames.hubDescription'),
     icon: 'menu_book',
-    link: '/board-games/potion-explosion',
-  },
-  {
-    title: 'Heat: Pedal to the Metal',
-    caption: t('boardGames.title'),
-    icon: 'sports_motorsports',
-    link: '/board-games/heat-pedal-to-the-metal',
+    link: '/board-games',
   },
   {
     title: t('nav.about'),

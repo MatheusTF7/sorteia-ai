@@ -1,7 +1,8 @@
 # Heat: Pedal to the Metal — guia de consulta
 
 Rota: `/sorteia-ai/#/board-games/heat-pedal-to-the-metal` no GitHub Pages.
-A página inicial e o menu lateral oferecem acesso separado aos dois jogos.
+A página inicial e o menu lateral oferecem uma única entrada para o hub em
+`/sorteia-ai/#/board-games`, onde cada jogo pode ser selecionado.
 
 ## Escopo desta etapa
 

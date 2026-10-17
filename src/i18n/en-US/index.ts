@@ -6,6 +6,11 @@ export default {
   success: 'Action was successful',
   boardGames: {
     title: 'Board game companion',
+    hubDescription: 'Choose a game to explore its guide and rules.',
+    searchGames: 'Search games',
+    gameCount: '{count} game(s) found',
+    noGames: 'No games found',
+    backToHub: 'All games',
     homeDescription: 'Look up Potion Explosion rules and potions during your game.',
     heatDescription: 'Look up Heat turn steps, circuits and rules.',
     searchRules: 'Search rules or keywords',

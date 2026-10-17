@@ -1,15 +1,20 @@
 # Board Game Companion
 
-A rota `/#/board-games/potion-explosion` usa o layout existente. No GitHub Pages,
-o endereço completo inclui `/sorteia-ai/` antes do hash. A página inicial e o menu
-lateral oferecem acesso ao guia.
+A página inicial e o menu lateral têm uma única entrada “Jogos de tabuleiro”,
+que abre o hub em `/#/board-games`. O hub lista os jogos registrados, oferece
+busca sem acentos e abre cada guia, como `/#/board-games/potion-explosion`.
+Os guias têm um link “Todos os jogos” para retornar ao hub. No GitHub Pages,
+o endereço completo inclui `/sorteia-ai/` antes do hash.
 
 ## Dados e extensão
 
 - A fonte é `public/data/board-games/potion-explosion.json`, preservada sem alterações.
 - `src/types/board-games.ts` descreve o dataset e o modelo comum de apresentação.
 - `src/data/board-games.ts` registra loaders explícitos com imports dinâmicos de JSON.
-  Para outro jogo compatível, adicione o dataset e seu loader; a rota recebe `gameId`.
+  Para outro jogo compatível, adicione o dataset e seu registro com título,
+  ícone, chave de descrição traduzida e loader; a rota recebe `gameId`.
+  O hub deriva a lista desse registro sem carregar o conteúdo completo dos jogos.
+  Não é necessário acrescentar entradas no menu nem na página inicial.
   Jogos com mecânicas diferentes podem exigir extensão do contrato. O catálogo de
   poções, pontuação e contagem regressiva são opcionais.
 - `RuleEntryCard` e `RuleEntrySection` apresentam títulos, resumos e detalhes de

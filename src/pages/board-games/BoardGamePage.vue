@@ -1,6 +1,14 @@
 <template>
   <q-page class="q-pa-md companion-page">
     <div class="companion-container">
+      <q-btn
+        flat
+        color="primary"
+        icon="arrow_back"
+        to="/board-games"
+        :label="t('boardGames.backToHub')"
+        class="q-mb-md"
+      />
       <div v-if="loading" role="status" class="text-center q-pa-xl">
         <q-spinner color="primary" size="32px" aria-hidden="true" />
         <p>{{ t('boardGames.loading') }}</p>
@@ -9,7 +17,7 @@
         {{ t(error) }}
         <template #action>
           <q-btn v-if="registration" flat :label="t('boardGames.retry')" @click="loadGame" />
-          <q-btn flat to="/home" :label="t('nav.home')" />
+          <q-btn flat to="/board-games" :label="t('boardGames.title')" />
         </template>
       </q-banner>
       <template v-else-if="game">

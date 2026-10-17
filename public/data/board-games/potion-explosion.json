@@ -1,0 +1,417 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "potion-explosion",
+  "title": "Potion Explosion",
+  "edition": "jogo-base",
+  "language": "pt-BR",
+  "players": {
+    "min": 2,
+    "max": 4
+  },
+  "durationMinutes": {
+    "min": 30,
+    "max": 45
+  },
+  "sources": [
+    {
+      "id": "official",
+      "label": "Horrible Guild — página oficial e manuais (inclui BR)",
+      "url": "https://horribleguild.com/eu/product/potion-explosion/"
+    }
+  ],
+  "disclaimer": "Resumo independente e parafraseado das regras do jogo-base. Em caso de divergência, prevalece o manual da edição usada na mesa.",
+  "ingredients": [
+    {
+      "id": "unicorn-tears",
+      "name": "Lágrimas de unicórnio",
+      "color": "blue"
+    },
+    {
+      "id": "ogre-mucus",
+      "name": "Muco de ogro",
+      "color": "black"
+    },
+    {
+      "id": "dragon-smoke",
+      "name": "Fumaça de dragão",
+      "color": "red"
+    },
+    {
+      "id": "fairy-dandruff",
+      "name": "Caspa de fada",
+      "color": "yellow"
+    }
+  ],
+  "setup": [
+    {
+      "id": "setup-types",
+      "title": "Escolher tipos de poção",
+      "category": "preparacao",
+      "summary": "Remova 2 dos 8 tipos de poções; jogue com os 6 restantes.",
+      "details": [
+        "A escolha dos dois tipos excluídos pode ser aleatória ou combinada."
+      ],
+      "tags": [
+        "preparação",
+        "tipos"
+      ]
+    },
+    {
+      "id": "setup-starters",
+      "title": "Selecionar poções iniciais",
+      "category": "preparacao",
+      "summary": "Cada jogador começa com 2 poções iniciais.",
+      "details": [
+        "Separe duas peças iniciais por jogador dentre os seis tipos ativos.",
+        "Os jogadores escolhem uma peça em ordem de turno e a segunda em ordem inversa."
+      ],
+      "tags": [
+        "preparação",
+        "iniciais"
+      ]
+    },
+    {
+      "id": "setup-dispenser",
+      "title": "Preparar dispensador",
+      "category": "preparacao",
+      "summary": "Coloque os ingredientes no dispensador e organize as pilhas restantes de poções.",
+      "details": [
+        "Distribua as peças restantes em cinco pilhas com as receitas visíveis.",
+        "Prepare as fichas de ajuda e a pilha de contagem regressiva das fichas de habilidade."
+      ],
+      "tags": [
+        "preparação",
+        "dispensador"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "turn",
+      "title": "Turno",
+      "category": "turno",
+      "summary": "Você deve retirar 1 ingrediente visível do dispensador com sua coleta normal.",
+      "details": [
+        "Durante o turno, você também pode usar poções concluídas e pedir ajuda ao professor.",
+        "Ao encerrar, descarte excedentes, reponha as poções em preparação, verifique fichas de habilidade e fim de jogo."
+      ],
+      "tags": [
+        "turno",
+        "ordem",
+        "coleta"
+      ]
+    },
+    {
+      "id": "regular-pick",
+      "title": "Coleta normal",
+      "category": "turno",
+      "summary": "Retire 1 bolinha visível do dispensador, exceto a nona bolinha de cada trilho.",
+      "details": [
+        "A coleta normal pode provocar uma sequência de explosões."
+      ],
+      "tags": [
+        "coleta",
+        "dispensador",
+        "bolinha"
+      ]
+    },
+    {
+      "id": "explosion",
+      "title": "Explosões",
+      "category": "turno",
+      "summary": "Após sua coleta normal, se bolinhas da mesma cor se chocarem, retire todo o grupo contíguo dessa cor.",
+      "details": [
+        "Depois da remoção, novas colisões podem causar explosões em cadeia.",
+        "Bolinhas que apenas permanecem encostadas, sem colisão causada pela remoção, não explodem.",
+        "Somente a coleta normal provoca explosões."
+      ],
+      "tags": [
+        "explosão",
+        "colisão",
+        "cadeia"
+      ]
+    },
+    {
+      "id": "professor",
+      "title": "Ajuda do professor",
+      "category": "turno",
+      "summary": "Uma vez por turno, você pode pegar 1 ingrediente adicional e receber uma ficha de ajuda.",
+      "details": [
+        "Essa retirada nunca causa explosões.",
+        "Cada ficha de ajuda desconta 2 pontos no final.",
+        "Pode ser usada antes ou depois da coleta normal."
+      ],
+      "tags": [
+        "professor",
+        "ajuda",
+        "penalidade"
+      ]
+    },
+    {
+      "id": "ingredients",
+      "title": "Usar ingredientes",
+      "category": "turno",
+      "summary": "Preencha primeiro os espaços compatíveis das poções em preparação, se houver.",
+      "details": [
+        "Ingredientes sem encaixe podem ir para sua reserva, que comporta até 3 bolinhas.",
+        "Durante seu turno, você pode mover bolinhas entre a reserva e a mão.",
+        "Ingredientes encaixados numa poção não podem ser reposicionados antes de ela ficar pronta."
+      ],
+      "tags": [
+        "reserva",
+        "ingredientes",
+        "bolinhas"
+      ]
+    },
+    {
+      "id": "complete",
+      "title": "Concluir poção",
+      "category": "pocoes",
+      "summary": "Quando todos os espaços da receita estiverem preenchidos, a poção fica pronta.",
+      "details": [
+        "Devolva seus ingredientes ao dispensador.",
+        "Vire e mova a poção para sua área de poções concluídas.",
+        "Ela continua valendo pontos mesmo depois de usada."
+      ],
+      "tags": [
+        "concluir",
+        "poção",
+        "pontuação"
+      ]
+    },
+    {
+      "id": "drink",
+      "title": "Beber poção",
+      "category": "pocoes",
+      "summary": "Você pode ativar efeitos de poções prontas durante seu turno.",
+      "details": [
+        "Cada poção só pode ser bebida uma vez, salvo efeitos específicos de reativação.",
+        "Retiradas de ingredientes por efeitos não provocam explosões.",
+        "A poção usada continua contando para pontos e conquistas."
+      ],
+      "tags": [
+        "efeito",
+        "usar",
+        "beber"
+      ]
+    },
+    {
+      "id": "end-turn",
+      "title": "Fim do turno",
+      "category": "turno",
+      "summary": "Descarte ingredientes que não couberem na reserva; depois, reponha suas poções em preparação.",
+      "details": [
+        "Se tiver menos de duas poções em preparação, compre novas peças do topo das pilhas.",
+        "Não é permitido usar a reserva para preencher as poções recém-compradas nesse encerramento.",
+        "Por fim, confira conquistas e condição de encerramento."
+      ],
+      "tags": [
+        "fim do turno",
+        "reposição"
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "Fichas de habilidade",
+      "category": "pontuacao",
+      "summary": "Ganhe 1 ficha (4 pontos) ao concluir 3 poções de um mesmo tipo ou 5 tipos diferentes.",
+      "details": [
+        "Cada conquista específica só rende uma ficha uma única vez.",
+        "Uma mesma poção pode contribuir para mais de uma conquista.",
+        "Fichas adicionais podem vir da reserva geral quando acabar a pilha de contagem regressiva."
+      ],
+      "tags": [
+        "ficha",
+        "habilidade",
+        "conquista",
+        "pontos"
+      ]
+    },
+    {
+      "id": "end-game",
+      "title": "Fim do jogo",
+      "category": "pontuacao",
+      "summary": "O encerramento é ativado ao acabar a pilha de contagem regressiva de fichas de habilidade ou as poções disponíveis.",
+      "details": [
+        "Termine a rodada para que todos tenham o mesmo número de turnos.",
+        "Some pontos das poções e das fichas; desconte 2 por ficha de ajuda."
+      ],
+      "tags": [
+        "fim de jogo",
+        "encerramento"
+      ]
+    },
+    {
+      "id": "tie",
+      "title": "Desempate",
+      "category": "pontuacao",
+      "summary": "Os jogadores empatados tentam provocar explosões com uma retirada do dispensador.",
+      "details": [
+        "Em ordem de turno, cada empatado retira uma bolinha e conta quantas conseguiu obter nessa jogada.",
+        "Vence o empatado que recolher mais bolinhas."
+      ],
+      "tags": [
+        "empate",
+        "desempate"
+      ]
+    }
+  ],
+  "potions": [
+    {
+      "id": "wisdom",
+      "name": "Poção da Sabedoria",
+      "originalName": "Potion of Wisdom",
+      "effect": "Retire 1 ingrediente à escolha do dispensador.",
+      "notes": [
+        "Não causa explosões."
+      ],
+      "tags": [
+        "retirar",
+        "qualquer ingrediente"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "blind-love",
+      "name": "Elixir do Amor Cego",
+      "originalName": "Elixir of Blind Love",
+      "effect": "Pegue todos os ingredientes da reserva de 1 adversário.",
+      "notes": [
+        "O alvo é a reserva do adversário, não ingredientes já colocados nas receitas."
+      ],
+      "tags": [
+        "roubar",
+        "reserva",
+        "adversário"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "magnetic-attraction",
+      "name": "Poção da Atração Magnética",
+      "originalName": "Potion of Magnetical Attraction",
+      "effect": "Retire 2 ingredientes adjacentes de cores diferentes do mesmo trilho.",
+      "notes": [
+        "Não causa explosões."
+      ],
+      "tags": [
+        "adjacentes",
+        "cores diferentes",
+        "trilho"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "prismatic-joy",
+      "name": "Poção da Alegria Prismática",
+      "originalName": "Potion of Prismatic Joy",
+      "effect": "Você pode colocar ingredientes da sua reserva em quaisquer espaços vazios de poções incompletas, sem exigir correspondência de cor.",
+      "notes": [
+        "O efeito se refere aos ingredientes da reserva."
+      ],
+      "tags": [
+        "cores",
+        "reserva",
+        "coringa"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "abyssal-draft",
+      "name": "Destilado Abissal",
+      "originalName": "Abyssal Draft",
+      "effect": "Retire até 1 ingrediente de cada cor da fileira inferior do dispensador.",
+      "notes": [
+        "Retire no máximo 1 ingrediente por trilho.",
+        "Não causa explosões."
+      ],
+      "tags": [
+        "base",
+        "inferior",
+        "cada cor"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "sands-of-time",
+      "name": "Areias do Tempo",
+      "originalName": "Sands of Time",
+      "effect": "Ative novamente o efeito de 1 poção que você já utilizou.",
+      "notes": [
+        "Siga as regras do efeito reativado.",
+        "A reativação não cria explosões."
+      ],
+      "tags": [
+        "reutilizar",
+        "reativar",
+        "efeito"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "stickiness",
+      "name": "Bálsamo da Viscosidade Extrema",
+      "originalName": "Balm of Uttermost Stickiness",
+      "effect": "Retire um grupo de 2 ou mais ingredientes adjacentes da mesma cor de um mesmo trilho.",
+      "notes": [
+        "Não causa explosões."
+      ],
+      "tags": [
+        "adjacentes",
+        "mesma cor"
+      ],
+      "causesExplosion": false
+    },
+    {
+      "id": "lavamancing",
+      "name": "Filtro da Lavamancia",
+      "originalName": "Filter of Lavamancing",
+      "effect": "Devolva ao dispensador até 5 ingredientes da mesma cor de um mesmo trilho.",
+      "notes": [
+        "Não causa explosões."
+      ],
+      "tags": [
+        "devolver",
+        "trilho",
+        "mesma cor"
+      ],
+      "causesExplosion": false
+    }
+  ],
+  "scoring": {
+    "skillTokenPoints": 4,
+    "professorHelpPenalty": -2,
+    "formula": "soma dos pontos impressos nas poções concluídas + 4 × fichas de habilidade − 2 × fichas de ajuda"
+  },
+  "endGameSkillTokensByPlayerCount": {
+    "2": 4,
+    "3": 5,
+    "4": 6
+  },
+  "searchSynonyms": {
+    "explosão": [
+      "colisão",
+      "bolinhas iguais",
+      "reação em cadeia"
+    ],
+    "ajuda": [
+      "professor",
+      "penalidade"
+    ],
+    "reserva": [
+      "frasco",
+      "pool",
+      "ingredientes guardados"
+    ],
+    "habilidade": [
+      "conquista",
+      "ficha",
+      "token"
+    ]
+  },
+  "sourceNotes": {
+    "tileRecipes": "Não catalogadas neste dataset; variam por peça física.",
+    "potionNames": "Nomes em português são rótulos de referência; confirmar tradução oficial da edição brasileira antes de apresentar como terminologia oficial.",
+    "verification": "Validar regras e exceções com o PDF brasileiro oficial antes de publicar."
+  }
+}

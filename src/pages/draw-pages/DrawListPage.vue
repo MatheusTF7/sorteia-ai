@@ -41,8 +41,11 @@
       <div v-for="item in sorteios" :key="item.id" class="col-12 col-sm-6 col-md-4">
         <q-card
           class="sorteio-card cursor-pointer full-height flex flex-center text-center q-pa-md"
+          :tabindex="item.route ? 0 : undefined"
+          :role="item.route ? 'link' : undefined"
           flat
           @click="item.route ? $router.push(item.route) : null"
+          @keydown.enter="item.route ? $router.push(item.route) : null"
         >
           <q-card-section class="column items-center q-pa-none w-full">
             <div
@@ -71,8 +74,11 @@
         v-for="item in sorteios"
         :key="item.id"
         class="sorteio-card-compact cursor-pointer"
+        :tabindex="item.route ? 0 : undefined"
+        :role="item.route ? 'link' : undefined"
         flat
         @click="item.route ? $router.push(item.route) : null"
+        @keydown.enter="item.route ? $router.push(item.route) : null"
       >
         <q-card-section class="row items-center q-pa-sm">
           <div
@@ -205,6 +211,14 @@ const sorteios: Sorteio[] = [
     icon: 'bookmark',
     rgb: '102, 126, 234', // Blue
     route: '/saved-lists',
+  },
+  {
+    id: 13,
+    nome: t('boardGames.title'),
+    descricao: t('boardGames.homeDescription'),
+    icon: 'menu_book',
+    rgb: '79, 70, 229',
+    route: '/board-games/potion-explosion',
   },
   {
     id: 11,

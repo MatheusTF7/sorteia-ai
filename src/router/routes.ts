@@ -19,6 +19,11 @@ const routes: RouteRecordRaw[] = [
       { path: 'about', component: () => import('pages/AboutPage.vue') },
       { path: 'install', component: () => import('pages/PWAInstall.vue') },
       { path: 'saved-lists', component: () => import('pages/SavedListsPage.vue') },
+      {
+        path: 'board-games/:gameId',
+        component: () => import('pages/board-games/BoardGamePage.vue'),
+        props: true,
+      },
     ],
   },
 

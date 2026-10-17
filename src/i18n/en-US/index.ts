@@ -4,6 +4,43 @@ export default {
   // Generic
   failed: 'Action failed',
   success: 'Action was successful',
+  boardGames: {
+    title: 'Board game companion',
+    homeDescription: 'Look up Potion Explosion rules and potions during your game.',
+    subtitle: 'A quick reference for your game.',
+    players: '{min}–{max} players',
+    languageNotice:
+      'This game’s content is only available in Brazilian Portuguese ({language}), regardless of the app language.',
+    overview: 'Overview',
+    scoring: 'Scoring',
+    countdown: 'Tokens in the countdown stack',
+    countdownValue: '{players} players: {tokens} tokens',
+    ingredients: 'Ingredients',
+    searchTitle: 'Look up rules and potions',
+    search: 'Search rules or potions',
+    searchHint: 'Search by name, effect or keyword, with or without accents.',
+    category: 'Category',
+    allCategories: 'All categories',
+    categories: { preparacao: 'Setup', turno: 'Turn', pocoes: 'Potions', pontuacao: 'Scoring' },
+    results: '{count} result(s)',
+    clear: 'Clear search and filters',
+    sections: 'Jump to a section',
+    setup: 'Setup',
+    turn: 'Turn guide',
+    potions: 'Potion catalog',
+    rules: 'Other rules',
+    details: 'Notes and exceptions',
+    empty: 'No results found',
+    emptyHint: 'Try another word or select all categories.',
+    sources: 'Official rulebook',
+    externalNotice:
+      'The publisher’s page provides the rulebooks. Visiting the external site requires internet.',
+    sourceNotes: 'Content limitations and review',
+    loading: 'Loading the guide…',
+    loadError: 'The guide could not be loaded. Connect to the internet and try again.',
+    notFound: 'This game is not available yet.',
+    retry: 'Try again',
+  },
 
   // Main layout / navigation
   nav: {

@@ -3,6 +3,48 @@ export default {
   // Genérico
   failed: 'Ação falhou',
   success: 'A ação foi bem sucedida',
+  boardGames: {
+    title: 'Jogos de tabuleiro',
+    homeDescription: 'Consulte regras e poções de Potion Explosion durante a partida.',
+    subtitle: 'Consulta rápida para acompanhar sua partida.',
+    players: '{min}–{max} jogadores',
+    languageNotice:
+      'O conteúdo deste jogo está disponível apenas em português do Brasil ({language}), independentemente do idioma do aplicativo.',
+    overview: 'Visão geral',
+    scoring: 'Pontuação',
+    countdown: 'Fichas na pilha de contagem regressiva',
+    countdownValue: '{players} jogadores: {tokens} fichas',
+    ingredients: 'Ingredientes',
+    searchTitle: 'Consultar regras e poções',
+    search: 'Buscar regras ou poções',
+    searchHint: 'Busque por nome, efeito ou palavra-chave, com ou sem acentos.',
+    category: 'Categoria',
+    allCategories: 'Todas as categorias',
+    categories: {
+      preparacao: 'Preparação',
+      turno: 'Turno',
+      pocoes: 'Poções',
+      pontuacao: 'Pontuação',
+    },
+    results: '{count} resultado(s)',
+    clear: 'Limpar busca e filtros',
+    sections: 'Ir para uma seção',
+    setup: 'Preparação',
+    turn: 'Guia do turno',
+    potions: 'Catálogo de poções',
+    rules: 'Outras regras',
+    details: 'Observações e exceções',
+    empty: 'Nenhum resultado encontrado',
+    emptyHint: 'Tente outra palavra ou selecione todas as categorias.',
+    sources: 'Regulamento oficial',
+    externalNotice:
+      'A página da editora reúne os manuais. O acesso ao site externo requer internet.',
+    sourceNotes: 'Limitações e revisão do conteúdo',
+    loading: 'Carregando o guia…',
+    loadError: 'Não foi possível carregar o guia. Conecte-se à internet e tente novamente.',
+    notFound: 'Este jogo ainda não está disponível.',
+    retry: 'Tentar novamente',
+  },
 
   // Layout / navegação
   nav: {

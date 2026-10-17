@@ -53,9 +53,18 @@
                 </ul>
               </div>
               <q-expansion-item :label="t('boardGames.ingredients')" icon="science" dense>
-                <ul :lang="game.language">
-                  <li v-for="ingredient in game.ingredients" :key="ingredient.id">
-                    {{ ingredient.name }}
+                <ul :lang="game.language" class="ingredient-list" role="list">
+                  <li
+                    v-for="ingredient in game.ingredients"
+                    :key="ingredient.id"
+                    class="ingredient-item"
+                  >
+                    <span
+                      class="ingredient-marble"
+                      :style="{ backgroundColor: ingredient.color }"
+                      aria-hidden="true"
+                    />
+                    <span>{{ ingredient.name }}</span>
                   </li>
                 </ul>
               </q-expansion-item>
@@ -281,6 +290,24 @@ function goToSection(id: string): void {
 .language-notice {
   color: var(--sa-text);
   background: var(--sa-primary-soft);
+}
+.ingredient-list {
+  list-style: none;
+  padding-left: 16px;
+}
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.ingredient-marble {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--sa-text-muted);
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35);
 }
 .search-panel {
   padding: 16px;

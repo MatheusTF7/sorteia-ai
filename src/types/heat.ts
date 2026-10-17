@@ -30,4 +30,16 @@ export interface HeatDataset {
   circuits: CircuitReference[];
   weatherReference: { physicalTokensRequired: boolean; notes: string };
   implementationNotes: string[];
+  randomizers: {
+    id: string;
+    title: string;
+    type: string;
+    module: string;
+    enabled: boolean;
+    input?: { playersMin: number; playersMax: number; uniquePlayers?: boolean };
+    options?: string[];
+    optionsSource?: string;
+    result?: string;
+    implementationNote?: string;
+  }[];
 }

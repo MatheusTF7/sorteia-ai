@@ -5,6 +5,7 @@ interface BoardGameRegistration {
   title: string;
   descriptionKey: string;
   icon: string;
+  setupRoute?: string;
   load: () => Promise<BoardGame>;
 }
 
@@ -24,6 +25,7 @@ export const boardGames: Record<string, BoardGameRegistration> = {
     title: 'Heat: Pedal to the Metal',
     descriptionKey: 'boardGames.heatDescription',
     icon: 'sports_motorsports',
+    setupRoute: '/board-games/heat-pedal-to-the-metal/setup',
     load: async (): Promise<BoardGame> => {
       const { default: game } =
         await import('../../public/data/board-games/heat-pedal-to-the-metal.json');

@@ -25,6 +25,14 @@
           <p class="text-overline text-primary q-mb-xs">{{ t('boardGames.title') }}</p>
           <h1 class="text-h4 text-weight-bold text-gradient q-mt-none q-mb-sm">{{ game.title }}</h1>
           <p class="q-mb-sm">{{ t('boardGames.subtitle') }}</p>
+          <q-btn
+            v-if="registration?.setupRoute"
+            color="primary"
+            icon="sports_motorsports"
+            :to="registration.setupRoute"
+            :label="t('boardGames.prepareMatch')"
+            class="q-mb-md"
+          />
           <div class="row q-gutter-sm">
             <q-chip icon="groups" outline>
               {{ t('boardGames.players', { min: game.players.min, max: game.players.max }) }}

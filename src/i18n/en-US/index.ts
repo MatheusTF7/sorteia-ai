@@ -4,8 +4,49 @@ export default {
   // Generic
   failed: 'Action failed',
   success: 'Action was successful',
+  heatSetup: {
+    title: 'Set up a game',
+    backToGuide: 'Heat guide',
+    subtitle: 'Select {min} to {max} players to set up a basic race.',
+    unavailable: 'Basic setup is not enabled in this game’s data.',
+    players: 'Players and colors',
+    noLists: 'Add names below or create a list in Saved Lists.',
+    addPlayers: 'Add players',
+    addHint: 'Separate names with commas or semicolons.',
+    selectedCount: '{count} of {max} players selected',
+    choosePlayers: 'Select up to {max} players from this list.',
+    emptyPlayers: 'Load a list or add the players for this game.',
+    colorFor: 'Color for {name}',
+    colorHint:
+      'Each player has a unique color. Choosing an occupied color swaps colors between the two players.',
+    saveColors: 'Save colors for future games',
+    storageHint:
+      'Preferences are saved by name in this browser only. A free color is used if saved preferences conflict.',
+    colorsSaved: 'Color preferences saved.',
+    saveError: 'Could not save colors in this browser.',
+    circuit: 'Circuit',
+    drawCircuit: 'Draw a circuit',
+    redrawCircuit: 'Draw another circuit',
+    circuitHint:
+      'Optional draw from the {count} base-game circuits. A new draw may repeat a circuit.',
+    noCircuit: 'No circuit drawn yet.',
+    grid: 'Starting grid',
+    drawGrid: 'Draw the grid',
+    redrawGrid: 'Draw the grid again',
+    selectFirst: 'Select {min} to {max} players to draw the grid.',
+    noGrid: 'No grid drawn. Changing players or colors clears the previous grid.',
+    colors: {
+      black: 'Black',
+      silver: 'Silver',
+      red: 'Red',
+      blue: 'Blue',
+      green: 'Green',
+      yellow: 'Yellow',
+    },
+  },
   boardGames: {
     title: 'Board game companion',
+    prepareMatch: 'Set up a game',
     hubDescription: 'Choose a game to explore its guide and rules.',
     searchGames: 'Search games',
     gameCount: '{count} game(s) found',
@@ -17,7 +58,7 @@ export default {
     module: 'Reference module',
     moduleHint: 'Only rules for the selected module are shown.',
     referenceOnlyNotice:
-      'This is a reference guide. Setup randomizers and interactive tools will be added to dedicated pages in a future stage.',
+      'This is the reference guide. Open game setup to choose players and draw a circuit and starting grid for a basic race.',
     moduleSummaryNotice:
       'This module contains a reference summary. Consult the advanced rulebook for details; Championship content has not been fully transcribed yet.',
     playerAid: 'Player Aid — turn steps',

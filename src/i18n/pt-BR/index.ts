@@ -3,8 +3,49 @@ export default {
   // Genérico
   failed: 'Ação falhou',
   success: 'A ação foi bem sucedida',
+  heatSetup: {
+    title: 'Preparar partida',
+    backToGuide: 'Guia de Heat',
+    subtitle: 'Selecione de {min} a {max} jogadores para preparar uma corrida básica.',
+    unavailable: 'A preparação básica não está habilitada nos dados deste jogo.',
+    players: 'Jogadores e cores',
+    noLists: 'Você pode adicionar nomes abaixo ou criar uma lista em Minhas Listas.',
+    addPlayers: 'Adicionar jogadores',
+    addHint: 'Separe nomes por vírgula ou ponto e vírgula.',
+    selectedCount: '{count} de {max} jogadores selecionados',
+    choosePlayers: 'Selecione até {max} jogadores desta lista.',
+    emptyPlayers: 'Carregue uma lista ou adicione os jogadores da partida.',
+    colorFor: 'Cor de {name}',
+    colorHint:
+      'Cada jogador usa uma cor. Escolher uma cor ocupada troca as cores entre os dois jogadores.',
+    saveColors: 'Salvar cores para próximas partidas',
+    storageHint:
+      'As preferências são salvas por nome, apenas neste navegador. Se houver conflito ao carregar, será usada uma cor livre.',
+    colorsSaved: 'Preferências de cores salvas.',
+    saveError: 'Não foi possível salvar as cores neste navegador.',
+    circuit: 'Circuito',
+    drawCircuit: 'Sortear pista',
+    redrawCircuit: 'Sortear pista novamente',
+    circuitHint:
+      'Sorteio opcional entre as {count} pistas do jogo-base. Um novo sorteio pode repetir a pista.',
+    noCircuit: 'Nenhuma pista sorteada ainda.',
+    grid: 'Grid inicial',
+    drawGrid: 'Sortear grid',
+    redrawGrid: 'Sortear grid novamente',
+    selectFirst: 'Selecione de {min} a {max} jogadores para sortear o grid.',
+    noGrid: 'Nenhum grid sorteado. Alterar jogadores ou cores limpa o grid anterior.',
+    colors: {
+      black: 'Preto',
+      silver: 'Prata',
+      red: 'Vermelho',
+      blue: 'Azul',
+      green: 'Verde',
+      yellow: 'Amarelo',
+    },
+  },
   boardGames: {
     title: 'Jogos de tabuleiro',
+    prepareMatch: 'Preparar partida',
     hubDescription: 'Escolha um jogo para consultar seu guia e suas regras.',
     searchGames: 'Buscar jogos',
     gameCount: '{count} jogo(s) encontrado(s)',
@@ -16,7 +57,7 @@ export default {
     module: 'Módulo de consulta',
     moduleHint: 'As regras são exibidas apenas para o módulo selecionado.',
     referenceOnlyNotice:
-      'Este é um guia de consulta. Sorteios de preparação e ferramentas interativas ficarão em páginas próprias, em uma etapa futura.',
+      'Este é o guia de consulta. Use a preparação da partida para escolher jogadores e sortear pista e grid da corrida básica.',
     moduleSummaryNotice:
       'Este módulo contém um resumo de consulta. Confira os detalhes no manual avançado; o conteúdo de Campeonato ainda não foi transcrito integralmente.',
     playerAid: 'Player Aid — etapas do turno',

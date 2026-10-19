@@ -49,6 +49,40 @@ Não há resultados aleatórios de cartas, clima, condições da pista ou campeo
 
 ## Arquitetura e dados
 
+### Playmat interativo
+
+O guia de corrida básica e a preparação compartilham `HeatPlaymatReference.vue`.
+Sobre `playmat.jpg`, botões com coordenadas percentuais abrem ajuda para as nove
+ações, resfriamento, impulso, símbolo +, baralho, motor, descarte, marchas e
+derrapagem. A ajuda apresenta o resumo do JSON para as ações, instruções práticas
+e exemplos em pt-BR. As ligações com regras e etapas usam os IDs existentes; a
+geometria e os exemplos ficam em `src/data/heat-playmat.ts`.
+
+Na visualização normal, a imagem aparece apenas em telas com pelo menos 1024px,
+ponteiro preciso e hover, quando o card tem os 792px necessários para acomodá-la
+sem rolagem horizontal. Nos demais casos, ficam os botões das etapas e a ajuda;
+a imagem continua disponível no modo ampliado.
+
+No modo ampliado, o celular em retrato começa com a imagem e os botões girados
+90°. O botão de girar alterna entre 0° e 90°, e a imagem se ajusta ao espaço
+disponível sem cortes. A ajuda permanece legível abaixo ou ao lado. A navegação
+por botões e o seletor de tópicos permitem consultar áreas pequenas sem precisar
+acertar o símbolo na imagem. O seletor nativo também funciona dentro de fullscreen.
+
+“Tela cheia e fixar orientação” tenta entrar em fullscreen e fixar a orientação
+atual com a Screen Orientation API. Se o navegador não permitir, há uma mensagem
+para usar a trava do aparelho; a consulta continua disponível. Fechar o viewer,
+sair de fullscreen ou desmontar o componente libera os recursos adquiridos por
+ele. O manifesto global da aplicação não é alterado.
+
+`tests/heat-playmat.test.mjs` cobre vínculos de regras, alvos sem sobreposição,
+encaixe em ambos os ângulos e o ciclo de fullscreen/bloqueio, incluindo recusas
+e fechamento durante operações pendentes. Conferir em aparelho real a rotação,
+o bloqueio e o toque nos símbolos; a sessão de implementação não disponibilizou
+um navegador para a revisão visual.
+
+### Estrutura compartilhada
+
 - O JSON original é preservado e importado dinamicamente pelo registro existente.
 - `src/types/heat.ts` descreve o formato de origem; `src/data/normalize-heat.ts`
   converte seus metadados e regras para o contrato comum do Companion.

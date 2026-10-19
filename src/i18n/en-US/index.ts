@@ -42,6 +42,28 @@ export default {
     physicalTiles:
       'Images identify potion types. Use the matching physical starting tiles. Changing players, the starting player or active types clears the previous distribution.',
   },
+  heatInteractive: {
+    title: 'Interactive player mat',
+    hint: 'Select a step for instructions and an example. Steps 1 and 2 are simultaneous; then resolve from the frontmost car to the rearmost.',
+    scrollHint:
+      'Open the expanded view to explore actions and symbols directly on the image. On small screens, the image appears only in that view.',
+    open: 'Open expanded view',
+    map: 'Interactive areas of the Heat player mat',
+    help: 'Help for the selected area',
+    how: 'How to do it',
+    example: 'Example',
+    related: 'Related help',
+    previous: 'Previous step',
+    next: 'Next step',
+    choose: 'Choose an action or symbol',
+    rotate: 'Rotate mat 90°',
+    lock: 'Fullscreen and lock orientation',
+    unlock: 'Unlock orientation',
+    lockedHint:
+      'Orientation locked. Turn the device to read the mat; the screen will keep its orientation. Closing the viewer releases the lock.',
+    lockUnavailable:
+      'This browser could not lock orientation. Use your device’s rotation lock. The mat and rotate button remain available.',
+  },
   heatVisuals: {
     heat: 'Heat',
     stress: 'Stress',

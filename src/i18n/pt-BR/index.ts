@@ -40,6 +40,28 @@ export default {
     physicalTiles:
       'As imagens identificam os tipos. Use as peças físicas iniciais correspondentes. Mudar os jogadores, quem começa ou os tipos ativos limpa a distribuição anterior.',
   },
+  heatInteractive: {
+    title: 'Playmat interativo',
+    hint: 'Selecione uma etapa para ver o que fazer, como executar e um exemplo. As etapas 1 e 2 são simultâneas; depois, resolva do carro mais à frente ao mais atrás.',
+    scrollHint:
+      'Para explorar as ações e os símbolos diretamente na imagem, abra o modo ampliado. Em telas pequenas, a imagem aparece apenas nesse modo.',
+    open: 'Abrir modo ampliado',
+    map: 'Áreas interativas do tabuleiro de Heat',
+    help: 'Ajuda da área selecionada',
+    how: 'Como executar',
+    example: 'Exemplo',
+    related: 'Ajudas relacionadas',
+    previous: 'Etapa anterior',
+    next: 'Próxima etapa',
+    choose: 'Consultar ação ou símbolo',
+    rotate: 'Girar playmat 90°',
+    lock: 'Tela cheia e fixar orientação',
+    unlock: 'Liberar orientação',
+    lockedHint:
+      'Orientação fixada. Gire o aparelho para ler o playmat; a tela manterá a orientação. Ao fechar, a orientação será liberada.',
+    lockUnavailable:
+      'Este navegador não permitiu fixar a orientação. Use a trava de rotação do aparelho. Você pode continuar usando o playmat e o botão de girar.',
+  },
   heatVisuals: {
     heat: 'Calor (Heat)',
     stress: 'Estresse',

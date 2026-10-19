@@ -46,11 +46,8 @@
               <dd>{{ circuit.laps }}</dd>
               <dt>{{ t('boardGames.corners') }}</dt>
               <dd>{{ circuit.corners }}</dd>
-              <dt>Heat</dt>
-              <dd>{{ circuit.heat }}</dd>
-              <dt>{{ t('boardGames.stress') }}</dt>
-              <dd>{{ circuit.stress }}</dd>
             </dl>
+            <HeatCardSupply :circuit="circuit" class="q-mt-md" />
           </q-card-section>
         </q-card>
       </div>
@@ -61,6 +58,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import type { BoardGame } from 'src/types/board-games';
+import HeatCardSupply from './HeatCardSupply.vue';
 
 defineProps<{
   reference: NonNullable<BoardGame['racingReference']>;

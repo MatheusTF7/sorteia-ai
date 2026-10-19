@@ -60,7 +60,7 @@ Não há resultados aleatórios de cartas, clima, condições da pista ou campeo
   rota lazy e reutiliza os mesmos dados e imagens precacheados.
 - `RacingReferenceTables.vue` apresenta dados de marchas e circuitos, com tabela
   de três colunas e cards que ocupam uma coluna em telas pequenas.
-- Os quatro circuitos exibem as imagens fornecidas em `src/assets/`: `eua.webp`,
+- Os quatro circuitos exibem as imagens fornecidas em `src/assets/heat-pedal-to-the-metal/`: `eua.webp`,
   `gra-bretanha.png`, `franca.webp` e `italia.jpg`. O mapa em
   `src/data/board-game-images.ts` associa os arquivos pelos IDs do JSON, separado
   das regras. As imagens são responsivas, sem cortes, com texto alternativo e

@@ -42,6 +42,26 @@ export default {
     physicalTiles:
       'Images identify potion types. Use the matching physical starting tiles. Changing players, the starting player or active types clears the previous distribution.',
   },
+  heatVisuals: {
+    heat: 'Heat',
+    stress: 'Stress',
+    perPlayer: 'cards per player',
+    playmat: 'Player mat',
+    playmatHint: 'Match the areas on your mat to the cards and turn steps.',
+    playmatAlt:
+      'Heat player mat with turn steps at the top, deck on the left, engine in the center, discard on the right and gears along the right edge.',
+    enlarge: 'Enlarge player mat',
+    close: 'Close enlarged view',
+    deck: 'Deck · left',
+    deckHint: 'The checkered flag area: draw cards from here.',
+    engine: 'Engine · center',
+    engineHint:
+      'Heat reserve. Paying Heat moves cards from here to the discard; cooldown returns Heat from your hand to the engine.',
+    discard: 'Discard · right',
+    discardHint: 'The trash can area: receives discarded cards and paid Heat.',
+    gears: 'Gears · right edge',
+    gearsHint: 'Your gear determines how many cards to play. Blue symbols show available cooldown.',
+  },
   heatSetup: {
     title: 'Set up a game',
     backToGuide: 'Heat guide',

@@ -117,11 +117,8 @@
                       <dd>{{ circuit.laps }}</dd>
                       <dt>{{ t('boardGames.corners') }}</dt>
                       <dd>{{ circuit.corners }}</dd>
-                      <dt>Heat</dt>
-                      <dd>{{ circuit.heat }}</dd>
-                      <dt>{{ t('boardGames.stress') }}</dt>
-                      <dd>{{ circuit.stress }}</dd>
                     </dl>
+                    <HeatCardSupply :circuit="circuit" class="q-mt-md" />
                   </template>
                   <p v-else class="q-mt-md">{{ t('heatSetup.noCircuit') }}</p>
                 </div>
@@ -160,6 +157,7 @@
             </q-card>
           </section>
         </div>
+        <HeatPlaymatReference class="q-mt-lg" />
       </template>
     </div>
   </q-page>
@@ -175,6 +173,8 @@ import { useHeatSetup } from 'src/composables/useHeatSetup';
 import { boardGameImages } from 'src/data/board-game-images';
 import { heatColors } from 'src/data/heat-colors';
 import SetupPlayerPicker from 'components/board-games/SetupPlayerPicker.vue';
+import HeatCardSupply from 'components/board-games/HeatCardSupply.vue';
+import HeatPlaymatReference from 'components/board-games/HeatPlaymatReference.vue';
 
 const heat: HeatDataset = heatJson;
 const { t } = useI18n();

@@ -113,6 +113,11 @@
           {{ t('boardGames.referenceOnlyNotice') }}
         </q-banner>
 
+        <HeatPlaymatReference
+          v-if="game.id === 'heat-pedal-to-the-metal' && selectedModule === 'base'"
+          class="q-mb-lg"
+        />
+
         <section :aria-label="t('boardGames.searchTitle')" class="search-panel">
           <q-input
             v-model="query"
@@ -235,6 +240,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import RuleEntrySection from 'components/board-games/RuleEntrySection.vue';
 import RacingReferenceTables from 'components/board-games/RacingReferenceTables.vue';
+import HeatPlaymatReference from 'components/board-games/HeatPlaymatReference.vue';
 import { boardGames } from 'src/data/board-games';
 import { boardGameImages } from 'src/data/board-game-images';
 import { createGameSearch, getGameEntries } from 'src/utils/board-game-search';

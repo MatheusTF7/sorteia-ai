@@ -74,7 +74,7 @@ absoluta de dados. Após concluir a instalação do service worker, a consulta p
 funcionar sem rede. O primeiro acesso/instalação e os manuais externos exigem rede.
 O build SPA continua disponível, mas não oferece cache offline por service worker.
 
-O catálogo utiliza as oito imagens fornecidas em `src/assets/pocao-*.png`,
+O catálogo utiliza as oito imagens fornecidas em `src/assets/potion-explosion/pocao-*.png`,
 associadas pelos IDs das poções em `src/data/board-game-images.ts`. Esse mapa
 permanece separado das regras do JSON. Os imports geram URLs compatíveis com o
 `publicPath` e assets incluídos no precache. Os cards exibem as imagens inteiras,

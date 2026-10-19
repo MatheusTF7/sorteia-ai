@@ -40,6 +40,27 @@ export default {
     physicalTiles:
       'As imagens identificam os tipos. Use as peças físicas iniciais correspondentes. Mudar os jogadores, quem começa ou os tipos ativos limpa a distribuição anterior.',
   },
+  heatVisuals: {
+    heat: 'Calor (Heat)',
+    stress: 'Estresse',
+    perPlayer: 'cartas por jogador',
+    playmat: 'Tabuleiro do jogador',
+    playmatHint: 'Associe as áreas do seu tabuleiro às cartas e às etapas do turno.',
+    playmatAlt:
+      'Tabuleiro de Heat com etapas do turno no topo, baralho à esquerda, motor ao centro, descarte à direita e marchas na lateral direita.',
+    enlarge: 'Ampliar tabuleiro',
+    close: 'Fechar ampliação',
+    deck: 'Baralho · esquerda',
+    deckHint: 'Área com a bandeira quadriculada: de onde você compra cartas.',
+    engine: 'Motor · centro',
+    engineHint:
+      'Reserva de Calor. Pagar Calor move cartas daqui ao descarte; resfriar devolve Calor da mão ao motor.',
+    discard: 'Descarte · direita',
+    discardHint: 'Área com a lixeira: recebe cartas descartadas e o Calor pago.',
+    gears: 'Marchas · lateral direita',
+    gearsHint:
+      'A marcha indica quantas cartas jogar. Os símbolos azuis indicam o resfriamento disponível.',
+  },
   heatSetup: {
     title: 'Preparar partida',
     backToGuide: 'Guia de Heat',

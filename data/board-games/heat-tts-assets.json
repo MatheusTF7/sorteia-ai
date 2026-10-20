@@ -1,0 +1,95 @@
+{
+  "source": "2911921628.json",
+  "note": "URLs originais do mod. Cartas usam atlas: index, column e row com base zero, leitura da esquerda para direita e de cima para baixo. Disponibilidade remota nao confirmada.",
+  "tracks": [
+    {
+      "name": "USA",
+      "guid": "dcbeb1",
+      "url": "https://steamusercontent-a.akamaihd.net/ugc/2283954541480248721/07A21825AAF5056493BF29843992217B572F432F/"
+    },
+    {
+      "name": "France",
+      "guid": "bce841",
+      "url": "https://steamusercontent-a.akamaihd.net/ugc/2283954541479967101/A540B4703F34408849C5F37CEE73922BFDED76E6/"
+    },
+    {
+      "name": "Great Britain",
+      "guid": "f7f630",
+      "url": "https://steamusercontent-a.akamaihd.net/ugc/2283954541480208278/1C8C793D667D04CB858CD97A90B4FA9E943A61F5/"
+    },
+    {
+      "name": "Italia",
+      "guid": "fc0e07",
+      "url": "https://steamusercontent-a.akamaihd.net/ugc/2283954541480220791/9FF277FEB5A21B5B23D774C366B862598F0C2393/"
+    }
+  ],
+  "playerMat": {
+    "name": "Silver",
+    "ttsPlayerColor": "White",
+    "guid": "031593",
+    "url": "https://steamusercontent-a.akamaihd.net/ugc/2005821799703585880/8EB498CEFC357DB96C6EA2AB63E3901F1BE734FA/",
+    "backUrl": "https://steamusercontent-a.akamaihd.net/ugc/2005821799703586285/AFC82BA8B55E9B59B2E506FA25D82AFBF8E31E1C/",
+    "note": "Identificado pelo playerBoard de White no LuaScript; cor silver ainda sem confirmacao visual."
+  },
+  "cards": {
+    "heat": {
+      "guid": "efa428",
+      "cardId": 747,
+      "url": "https://steamusercontent-a.akamaihd.net/ugc/2005821799703875099/2817A28DA075B45E79E90074BF06A42DA154C879/",
+      "columns": 10,
+      "rows": 5,
+      "index": 47,
+      "column": 7,
+      "row": 4
+    },
+    "stress": {
+      "guid": "7bcdd9",
+      "cardId": 836,
+      "url": "https://steamusercontent-a.akamaihd.net/ugc/2005821799703880870/CA67DEF9D20D18A19E93A5D0B231CA7798AAC276/",
+      "columns": 8,
+      "rows": 5,
+      "index": 36,
+      "column": 4,
+      "row": 4
+    }
+  },
+  "trackCards": {
+    "name": "Tracks Cards",
+    "guid": "46ba53",
+    "url": "https://steamusercontent-a.akamaihd.net/ugc/5068270035101072040/5F676543CDB1907F02400F6C49362AA88B06219E/",
+    "backUrl": "https://steamusercontent-a.akamaihd.net/ugc/5068270035101077836/17505AF70747BC611D587883184971922879F588/",
+    "columns": 2,
+    "rows": 2,
+    "note": "Cartas sem nomes no JSON; associacao de cada recorte a uma pista depende de inspecao visual. Coordenadas com base zero.",
+    "cards": [
+      {
+        "guid": "fc770b",
+        "cardId": 19100,
+        "index": 0,
+        "column": 0,
+        "row": 0
+      },
+      {
+        "guid": "4c892c",
+        "cardId": 19101,
+        "index": 1,
+        "column": 1,
+        "row": 0
+      },
+      {
+        "guid": "8a7323",
+        "cardId": 19102,
+        "index": 2,
+        "column": 0,
+        "row": 1
+      },
+      {
+        "guid": "21a87c",
+        "cardId": 19103,
+        "index": 3,
+        "column": 1,
+        "row": 1
+      }
+    ]
+  }
+}

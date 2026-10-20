@@ -17,14 +17,13 @@
           </q-tooltip>
         </q-btn>
 
-        <q-toolbar-title
-          class="text-weight-bold text-gradient"
-          style="font-size: 1.5rem; letter-spacing: -0.5px"
-        >
-          Sorteia Aí
+        <q-toolbar-title class="brand-toolbar-title q-px-none">
+          <router-link to="/home" class="brand-home-link">
+            <BrandLogo variant="header" />
+          </router-link>
         </q-toolbar-title>
 
-        <div>
+        <div class="row no-wrap items-center">
           <q-btn
             v-if="!isInstalled"
             color="primary"
@@ -133,7 +132,12 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above :width="280">
-      <q-list class="q-pt-lg">
+      <!-- <div class="text-center q-pt-lg q-px-lg">
+        <router-link to="/home" class="brand-home-link">
+          <BrandLogo />
+        </router-link>
+      </div> -->
+      <q-list>
         <q-item-label header class="text-weight-bold text-uppercase text-grey-5 q-mb-sm q-px-lg">
           {{ t('nav.home') }}
         </q-item-label>
@@ -157,6 +161,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import BrandLogo from 'components/BrandLogo.vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { usePwaInstall } from 'src/composables/usePwaInstall';
@@ -305,3 +310,20 @@ onMounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.brand-toolbar-title {
+  display: flex;
+  align-items: center;
+}
+
+.brand-home-link {
+  display: inline-flex;
+  border-radius: 12px;
+}
+
+.brand-home-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+</style>

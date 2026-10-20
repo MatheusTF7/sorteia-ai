@@ -3,6 +3,7 @@
     <div class="container">
       <q-card flat bordered class="card">
         <q-card-section>
+          <div class="text-center q-mb-lg"><BrandLogo /></div>
           <div class="text-h5 text-weight-bold q-mb-md">{{ t('title') }}</div>
 
           <div class="text-subtitle1 text-weight-medium q-mb-sm">
@@ -55,6 +56,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import BrandLogo from 'components/BrandLogo.vue';
 
 const { t } = useI18n({
   locale: 'pt-BR',

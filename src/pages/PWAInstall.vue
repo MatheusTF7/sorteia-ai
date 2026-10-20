@@ -3,6 +3,7 @@
     <div class="container">
       <q-card flat bordered class="card">
         <q-card-section>
+          <div class="text-center q-mb-lg"><BrandLogo /></div>
           <div class="text-h5 text-weight-bold q-mb-md">{{ t('pwa.pageTitle') }}</div>
           <div class="text-subtitle2 text-grey-7 q-mb-lg">{{ t('pwa.subtitle') }}</div>
 
@@ -88,6 +89,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import BrandLogo from 'components/BrandLogo.vue';
 import { useQuasar } from 'quasar';
 import { usePwaInstall } from 'src/composables/usePwaInstall';
 

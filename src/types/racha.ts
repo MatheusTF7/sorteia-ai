@@ -21,4 +21,15 @@ export type RachaState = {
   config: RachaConfig;
   teams: string[][];
   starter: string | null;
+  drawChanged: boolean;
+  ui: {
+    newNames: string;
+    search: string;
+    filter: 'all' | 'goalkeepers' | 'seeds' | 'unpaid';
+    detailsOpen: boolean;
+    editPlayerId: string;
+    editName: string;
+    exportOpen: boolean;
+    importOpen: boolean;
+  };
 };

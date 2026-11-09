@@ -36,6 +36,19 @@ const composableUrl = await moduleUrl('../src/composables/useRacha.ts', {
   'src/utils/racha': rachaUrl,
 });
 const { useRacha, RACHA_STORAGE_KEY } = await import(composableUrl);
+const { formatRachaMessage } = await import(await moduleUrl('../src/utils/racha-message.ts'));
+const { default: ptRacha } = await import(await moduleUrl('../src/i18n/pt-BR/racha.ts'));
+const { default: enRacha } = await import(await moduleUrl('../src/i18n/en-US/racha.ts'));
+function translate(messages) {
+  return (key, values = {}) => {
+    const value = key
+      .split('.')
+      .slice(1)
+      .reduce((entry, part) => entry?.[part], messages);
+    assert.equal(typeof value, 'string', `missing message: ${key}`);
+    return value.replace(/\{(\w+)\}/g, (_, name) => String(values[name]));
+  };
+}
 const players = (count) =>
   Array.from({ length: count }, (_, index) => ({
     id: `player-${index}`,
@@ -239,4 +252,141 @@ test('keeps the match usable when browser storage is corrupt or unavailable', as
     if (previous) Object.defineProperty(globalThis, 'localStorage', previous);
     else delete globalThis.localStorage;
   }
+});
+
+test('immediately saves changes and drafts, restoring them without waiting for a Vue tick', () => {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  const memory = new Map();
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: {
+      getItem: (key) => memory.get(key) ?? null,
+      setItem: (key, value) => memory.set(key, value),
+    },
+  });
+  let scope = effectScope();
+  try {
+    let match = scope.run(useRacha);
+    match.addNames('Ana;Bruno;Caio');
+    match.state.value.title = 'Racha de quinta';
+    match.state.value.location = 'Quadra 1';
+    match.state.value.date = '2026-11-12T19:30';
+    match.state.value.fee = 15;
+    match.state.value.config.mode = 'seeds';
+    match.state.value.config.teamSize = 7;
+    match.state.value.players[0].goalkeeper = true;
+    match.state.value.players[1].seed = true;
+    match.state.value.players[1].paid = true;
+    match.generateTeams();
+    match.state.value.config.defineStarter = false;
+    assert.equal(JSON.parse(memory.get(RACHA_STORAGE_KEY)).starter, null);
+    Object.assign(match.state.value.ui, {
+      newNames: 'Davi\nEva',
+      search: 'Bruno',
+      filter: 'unpaid',
+      detailsOpen: true,
+      editPlayerId: match.state.value.players[0].id,
+      editName: 'Ana Maria (rascunho)',
+      exportOpen: true,
+      importOpen: false,
+    });
+    const saved = JSON.parse(memory.get(RACHA_STORAGE_KEY));
+    assert.deepEqual(saved, JSON.parse(JSON.stringify(match.state.value)));
+    scope.stop();
+    scope = effectScope();
+    match = scope.run(useRacha);
+    assert.deepEqual(match.state.value, saved);
+    match.state.value.players[2].seed = true;
+    assert.equal(JSON.parse(memory.get(RACHA_STORAGE_KEY)).drawChanged, true);
+    scope.stop();
+    scope = effectScope();
+    match = scope.run(useRacha);
+    assert.equal(match.drawChanged.value, true);
+    assert.deepEqual(match.state.value.teams, []);
+    match.reset();
+    assert.deepEqual(JSON.parse(memory.get(RACHA_STORAGE_KEY)), emptyRacha());
+  } finally {
+    scope.stop();
+    if (previous) Object.defineProperty(globalThis, 'localStorage', previous);
+    else delete globalThis.localStorage;
+  }
+});
+
+test('loads existing matches without UI data and drops drafts for removed players', () => {
+  const old = { ...emptyRacha(), players: players(10) };
+  old.teams = drawRachaTeams(old.players, old.config);
+  delete old.ui;
+  delete old.drawChanged;
+  const restored = restoreRacha(old);
+  assert.deepEqual(restored.teams, old.teams);
+  assert.deepEqual(restored.ui, emptyRacha().ui);
+  assert.equal(restored.drawChanged, false);
+  restored.ui = { ...restored.ui, filter: 'invalid', editPlayerId: 'removed', editName: 'Draft' };
+  assert.deepEqual(restoreRacha(restored).ui, emptyRacha().ui);
+});
+
+test('exports a complete WhatsApp roster and payments before any team draw', () => {
+  const state = emptyRacha();
+  Object.assign(state, {
+    title: 'Racha de quinta',
+    location: 'Quadra 1',
+    date: '2026-11-12T19:30',
+    fee: 12.35,
+  });
+  state.players = [
+    { id: 'a', name: 'Ana', goalkeeper: true, seed: true, paid: true },
+    { id: 'b', name: 'Bruno', goalkeeper: false, seed: true, paid: false },
+    { id: 'c', name: 'Caio', goalkeeper: false, seed: false, paid: false },
+  ];
+  state.ui.search = 'Ana';
+  state.ui.filter = 'goalkeepers';
+  const before = structuredClone(state);
+  const message = formatRachaMessage(state, translate(ptRacha)).replace(/\u00a0/g, ' ');
+  assert.equal(
+    message,
+    [
+      '⚽ *Racha de quinta*',
+      '📍 Quadra 1',
+      '📅 12/11/2026, 19:30',
+      '💰 *Valor por jogador:* R$ 12,35',
+      '',
+      '*Participantes (3)*',
+      '1. Ana — 🧤 Goleiro · ✅ Pago',
+      '2. Bruno — ⭐ Cabeça de chave · ⏳ Pendente',
+      '3. Caio — ⏳ Pendente',
+      '',
+      '*Pagamentos*',
+      '✅ 1 de 3 pagos',
+      '⏳ Pendentes: 2',
+      '💵 Recebido: R$ 12,35',
+      '💰 A receber: R$ 24,70',
+    ].join('\n'),
+  );
+  assert.deepEqual(state, before, 'export does not create teams or modify the match');
+  state.teams = drawRachaTeams(state.players, state.config);
+  assert.equal(
+    formatRachaMessage(state, translate(ptRacha)).replace(/\u00a0/g, ' '),
+    message,
+    'roster message does not depend on teams',
+  );
+  state.players[1].paid = true;
+  const updated = formatRachaMessage(state, translate(ptRacha)).replace(/\u00a0/g, ' ');
+  assert.match(updated, /2\. Bruno — ⭐ Cabeça de chave · ✅ Pago/);
+  assert.match(updated, /Recebido: R\$ 24,70/);
+  assert.match(updated, /A receber: R\$ 12,35/);
+});
+
+test('exports optional details cleanly and respects the selected language', () => {
+  const state = emptyRacha();
+  state.players = players(2);
+  const message = formatRachaMessage(state, translate(enRacha), 'en-US');
+  assert.match(message, /^⚽ \*Pickup football\*/);
+  assert.match(message, /\*Participants \(2\)\*/);
+  assert.match(message, /Goalkeeper · ✅ Paid/);
+  assert.match(message, /⏳ Unpaid/);
+  assert.doesNotMatch(message, /📍|📅|💰|💵|undefined|NaN/);
+  state.fee = -1;
+  assert.doesNotMatch(formatRachaMessage(state, translate(enRacha), 'en-US'), /💰|💵/);
+  state.date = 'unfinished date';
+  assert.match(formatRachaMessage(state, translate(enRacha), 'en-US'), /📅 unfinished date/);
 });

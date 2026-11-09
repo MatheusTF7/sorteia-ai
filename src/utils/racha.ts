@@ -12,6 +12,17 @@ export function emptyRacha(): RachaState {
     config: { mode: 'size', teamSize: 5, defineStarter: true },
     teams: [],
     starter: null,
+    drawChanged: false,
+    ui: {
+      newNames: '',
+      search: '',
+      filter: 'all',
+      detailsOpen: false,
+      editPlayerId: '',
+      editName: '',
+      exportOpen: false,
+      importOpen: false,
+    },
   };
 }
 
@@ -118,6 +129,27 @@ export function restoreRacha(raw: unknown): RachaState {
         seed: player.seed === true,
         paid: player.paid === true,
       });
+    }
+  }
+  state.drawChanged = raw.drawChanged === true;
+  if (isRecord(raw.ui)) {
+    for (const key of ['newNames', 'search', 'editName'] as const) {
+      if (typeof raw.ui[key] === 'string') state.ui[key] = raw.ui[key];
+    }
+    if (
+      raw.ui.filter === 'goalkeepers' ||
+      raw.ui.filter === 'seeds' ||
+      raw.ui.filter === 'unpaid'
+    ) {
+      state.ui.filter = raw.ui.filter;
+    }
+    state.ui.detailsOpen = raw.ui.detailsOpen === true;
+    state.ui.exportOpen = raw.ui.exportOpen === true;
+    state.ui.importOpen = raw.ui.importOpen === true;
+    if (typeof raw.ui.editPlayerId === 'string' && ids.has(raw.ui.editPlayerId)) {
+      state.ui.editPlayerId = raw.ui.editPlayerId;
+    } else {
+      state.ui.editName = '';
     }
   }
   if (!Array.isArray(raw.teams) || rachaDrawIssue(state.players, state.config)) return state;

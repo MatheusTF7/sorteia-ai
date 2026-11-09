@@ -26,7 +26,12 @@ export function useRacha() {
     }
   }
   const state = ref(load());
-  const drawChanged = ref(false);
+  const drawChanged = computed({
+    get: () => state.value.drawChanged,
+    set: (value: boolean) => {
+      state.value.drawChanged = value;
+    },
+  });
   const seeds = computed(() => state.value.players.filter(isRachaSeed));
   const goalkeepers = computed(() => state.value.players.filter((player) => player.goalkeeper));
   const paid = computed(() => state.value.players.filter((player) => player.paid));
@@ -70,6 +75,7 @@ export function useRacha() {
     (enabled) => {
       if (!enabled) state.value.starter = null;
     },
+    { flush: 'sync' },
   );
   watch(
     state,
@@ -81,7 +87,7 @@ export function useRacha() {
         storageError.value = true;
       }
     },
-    { deep: true },
+    { deep: true, flush: 'sync' },
   );
 
   function addNames(raw: string) {

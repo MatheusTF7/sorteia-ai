@@ -57,6 +57,7 @@
 
       <q-card flat class="match-details q-mb-lg">
         <q-expansion-item
+          v-model="state.ui.detailsOpen"
           icon="event_note"
           :label="state.title || t('racha.matchDetails')"
           :caption="t('racha.matchDetailsHint')"
@@ -102,13 +103,23 @@
                 <h2 id="roster-title">{{ t('racha.roster') }}</h2>
                 <p>{{ t('racha.rosterHint') }}</p>
               </div>
-              <q-btn
-                flat
-                color="primary"
-                icon="playlist_add"
-                :label="t('racha.importList')"
-                @click="importOpen = true"
-              />
+              <div class="roster-actions">
+                <q-btn
+                  flat
+                  color="primary"
+                  icon="playlist_add"
+                  :label="t('racha.importList')"
+                  @click="importOpen = true"
+                />
+                <q-btn
+                  outline
+                  color="positive"
+                  icon="content_copy"
+                  :label="t('racha.whatsapp.export')"
+                  :disable="!state.players.length"
+                  @click="state.ui.exportOpen = true"
+                />
+              </div>
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-form class="add-form" @submit="addPlayers">
@@ -465,6 +476,31 @@
       </section>
     </div>
 
+    <q-dialog v-model="state.ui.exportOpen">
+      <q-card class="racha-dialog whatsapp-dialog">
+        <q-card-section class="row items-center no-wrap">
+          <h2 class="dialog-title">{{ t('racha.whatsapp.title') }}</h2>
+          <q-space />
+          <q-btn v-close-popup flat round icon="close" :aria-label="t('shared.cancel')" />
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <p class="muted">{{ t('racha.whatsapp.hint') }}</p>
+          <pre class="whatsapp-preview" tabindex="0" :aria-label="t('racha.whatsapp.preview')">{{
+            whatsappMessage
+          }}</pre>
+        </q-card-section>
+        <q-card-actions align="right" class="q-px-md q-pb-md">
+          <q-btn v-close-popup flat :label="t('shared.cancel')" />
+          <q-btn
+            unelevated
+            color="positive"
+            icon="content_copy"
+            :label="t('racha.whatsapp.copy')"
+            @click="copyRoster"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-dialog v-model="importOpen"
       ><q-card class="racha-dialog"
         ><q-card-section class="row items-center"
@@ -528,8 +564,9 @@ import { useI18n } from 'vue-i18n';
 import { useRacha } from 'src/composables/useRacha';
 import { useSavedConfigs } from 'src/composables/useSavedConfigs';
 import type { SavedParticipantList } from 'src/types/saved-lists';
-import type { RachaPlayer } from 'src/types/racha';
+import type { RachaPlayer, RachaState } from 'src/types/racha';
 import { isRachaSeed } from 'src/utils/racha';
+import { formatRachaMessage } from 'src/utils/racha-message';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -554,25 +591,52 @@ const {
   reset,
 } = useRacha();
 const { data: savedLists } = useSavedConfigs<SavedParticipantList[]>('saved_lists', []);
-const newNames = ref('');
-const search = ref<string | null>('');
-const filter = ref('all');
-const importOpen = ref(false);
-const editOpen = ref(false);
-const editName = ref('');
-const editId = ref('');
+function uiField<K extends keyof RachaState['ui']>(key: K) {
+  return computed({
+    get: () => state.value.ui[key],
+    set: (value: RachaState['ui'][K]) => {
+      state.value.ui[key] = value;
+    },
+  });
+}
+const newNames = uiField('newNames');
+const search = computed({
+  get: () => state.value.ui.search,
+  set: (value: string | null) => {
+    state.value.ui.search = value ?? '';
+  },
+});
+const filter = uiField('filter');
+const importOpen = uiField('importOpen');
+const editName = uiField('editName');
+const editId = uiField('editPlayerId');
+const editOpen = computed({
+  get: () => !!editId.value,
+  set: (open: boolean) => {
+    if (!open) {
+      editId.value = '';
+      editName.value = '';
+    }
+  },
+});
+const whatsappMessage = computed(() =>
+  formatRachaMessage(state.value, (key, values) => t(key, values ?? {}), locale.value),
+);
 const editError = ref(false);
 const resultsSection = ref<HTMLElement>();
 const teamColors = ['#4f46e5', '#059669', '#d97706', '#db2777', '#0284c7', '#9333ea'];
-const filters = computed(() => [
-  { value: 'all', label: `${t('racha.all')} (${state.value.players.length})` },
-  { value: 'goalkeepers', label: `${t('racha.goalkeepers')} (${goalkeepers.value.length})` },
-  { value: 'seeds', label: `${t('racha.seeds')} (${seeds.value.length})` },
-  {
-    value: 'unpaid',
-    label: `${t('racha.unpaidFilter')} (${state.value.players.length - paid.value.length})`,
-  },
-]);
+const filters = computed(
+  () =>
+    [
+      { value: 'all', label: `${t('racha.all')} (${state.value.players.length})` },
+      { value: 'goalkeepers', label: `${t('racha.goalkeepers')} (${goalkeepers.value.length})` },
+      { value: 'seeds', label: `${t('racha.seeds')} (${seeds.value.length})` },
+      {
+        value: 'unpaid',
+        label: `${t('racha.unpaidFilter')} (${state.value.players.length - paid.value.length})`,
+      },
+    ] as const,
+);
 function searchKey(value: string) {
   return value
     .normalize('NFD')
@@ -690,6 +754,14 @@ function requestDraw() {
     cancel: t('shared.cancel'),
     ok: t('racha.redraw'),
   }).onOk(drawAndReveal);
+}
+async function copyRoster() {
+  try {
+    await copyToClipboard(whatsappMessage.value);
+    $q.notify({ message: t('racha.whatsapp.copied'), color: 'positive' });
+  } catch {
+    $q.notify({ message: t('racha.whatsapp.copyError'), color: 'negative' });
+  }
 }
 async function copyTeams() {
   const lines = [state.value.title || t('racha.nav')];
@@ -1246,6 +1318,31 @@ h2 {
 .racha-dialog {
   width: 460px;
   max-width: 94vw;
+}
+.roster-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.whatsapp-dialog {
+  width: 580px;
+}
+.whatsapp-preview {
+  margin: 0;
+  padding: 18px;
+  max-height: 50vh;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--sa-text);
+  background: var(--sa-surface-muted);
+  border: 1px solid var(--sa-border);
+  border-radius: 12px;
+  user-select: text;
 }
 .dialog-title {
   font-size: 20px;

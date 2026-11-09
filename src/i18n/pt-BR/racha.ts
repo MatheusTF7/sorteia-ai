@@ -27,6 +27,18 @@ export default {
   pendingAmount: 'A receber',
   roster: 'Lista de jogadores',
   rosterHint: 'Marque as funções e confirme os pagamentos com um toque.',
+  whatsapp: {
+    export: 'Lista para WhatsApp',
+    title: 'Mensagem para WhatsApp',
+    hint: 'Copie a mensagem e cole no grupo para atualizar os participantes sobre a organização do racha.',
+    preview: 'Prévia da mensagem',
+    copy: 'Copiar mensagem',
+    copied: 'Lista copiada! Cole a mensagem no grupo do WhatsApp.',
+    copyError: 'Não foi possível copiar automaticamente. Selecione e copie o texto da prévia.',
+    fee: 'Valor por jogador',
+    players: 'Participantes ({count})',
+    pending: 'Pendentes: {count}',
+  },
   importList: 'Importar lista',
   importHint:
     'Os nomes serão adicionados ao racha. Quem já está na lista será mantido com suas marcações.',

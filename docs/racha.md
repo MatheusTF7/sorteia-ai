@@ -2,6 +2,8 @@
 
 Acesse **Meu racha** no menu ou na tela inicial (`#/racha`). O módulo mantém um racha atual, salvo no `localStorage` deste navegador, na chave `sorteia-ai-racha-v1`. Não há sincronização entre dispositivos.
 
+As mudanças são gravadas imediatamente: jogadores, funções, pagamentos, detalhes, configuração e resultado do sorteio. A página também restaura nomes ainda não adicionados, busca, filtro, detalhes abertos e rascunho de edição de um jogador. Recarregar ou fechar o aplicativo não exige salvar manualmente. Rachas salvos em versões anteriores continuam compatíveis.
+
 ## Jogadores e pagamentos
 
 - Adicione nomes separados por vírgula, ponto e vírgula ou quebra de linha. A importação de listas salvas adiciona nomes sem substituir a lista atual ou suas marcações.
@@ -9,6 +11,12 @@ Acesse **Meu racha** no menu ou na tela inicial (`#/racha`). O módulo mantém u
 - Cada jogador tem marcações independentes de goleiro, cabeça de chave e pagamento. Marcar goleiro também o torna cabeça de chave automaticamente.
 - A busca e os filtros afetam apenas a visualização. Todos os jogadores, inclusive os pendentes de pagamento, participam do sorteio.
 - O valor por jogador, opcional nos detalhes do racha, permite calcular recebido e a receber. Os valores são calculados em centavos.
+
+## Atualização para WhatsApp
+
+Use **Lista para WhatsApp**, ao lado de **Importar lista**, para abrir a prévia e **Copiar mensagem**. A mensagem contém nome do racha, local, data e valor quando preenchidos, lista numerada com goleiros e outros cabeças de chave, status de pagamento individual e resumo de pagamentos. Com valor definido, também inclui recebido e a receber.
+
+A exportação usa a lista completa, independentemente da busca e dos filtros. Funciona antes do sorteio e não cria nem altera os times. A mensagem é copiada para você colar no grupo; o aplicativo não envia mensagens automaticamente.
 
 ## Sorteio
 

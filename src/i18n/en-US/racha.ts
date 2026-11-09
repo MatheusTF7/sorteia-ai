@@ -26,6 +26,18 @@ export default {
   pendingAmount: 'Outstanding',
   roster: 'Player list',
   rosterHint: 'Tap to set roles and confirm payments.',
+  whatsapp: {
+    export: 'List for WhatsApp',
+    title: 'WhatsApp message',
+    hint: 'Copy the message and paste it into the group to update everyone on the match arrangements.',
+    preview: 'Message preview',
+    copy: 'Copy message',
+    copied: 'List copied! Paste the message into your WhatsApp group.',
+    copyError: 'Could not copy automatically. Select and copy the preview text.',
+    fee: 'Fee per player',
+    players: 'Participants ({count})',
+    pending: 'Outstanding: {count}',
+  },
   importList: 'Import list',
   importHint:
     'Names will be added to this match. Existing players keep their current roles and payment status.',

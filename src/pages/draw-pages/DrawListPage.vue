@@ -173,6 +173,14 @@ const sorteios: Sorteio[] = [
     route: '/teams',
   },
   {
+    id: 14,
+    nome: t('racha.nav'),
+    descricao: t('racha.description'),
+    icon: 'sports_soccer',
+    rgb: '5, 150, 105',
+    route: '/racha',
+  },
+  {
     id: 6,
     nome: t('drawList.prizeDraw.title'),
     descricao: t('drawList.prizeDraw.desc'),

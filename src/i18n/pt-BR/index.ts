@@ -1,5 +1,8 @@
+import racha from './racha';
+
 // Portuguese (Brazil) translations
 export default {
+  racha,
   // Genérico
   failed: 'Ação falhou',
   success: 'A ação foi bem sucedida',

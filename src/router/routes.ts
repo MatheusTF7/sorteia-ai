@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'numbers', component: () => import('pages/draw-pages/DrawNumbersPage.vue') },
       { path: 'coin-dice', component: () => import('pages/draw-pages/DrawCoinDicePage.vue') },
       { path: 'teams', component: () => import('pages/draw-pages/DrawTeamsPage.vue') },
+      { path: 'racha', component: () => import('pages/racha/RachaPage.vue') },
       { path: 'prizes', component: () => import('pages/draw-pages/DrawPrizesPage.vue') },
       { path: 'bingo', component: () => import('pages/draw-pages/DrawBingoPage.vue') },
       { path: 'tictactoe', component: () => import('pages/draw-pages/DrawTicTacToePage.vue') },

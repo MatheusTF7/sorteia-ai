@@ -210,6 +210,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/teams',
   },
   {
+    title: t('racha.nav'),
+    caption: t('racha.description'),
+    icon: 'sports_soccer',
+    link: '/racha',
+  },
+  {
     title: t('nav.prizes'),
     caption: t('drawList.prizeDraw.desc'),
     icon: 'card_giftcard',

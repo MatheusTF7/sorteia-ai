@@ -126,6 +126,7 @@
                 <q-input
                   v-model="newNames"
                   outlined
+                  dense
                   type="textarea"
                   autogrow
                   :rows="1"
@@ -137,6 +138,7 @@
                   color="primary"
                   unelevated
                   icon="add"
+                  padding="sm md"
                   :label="t('racha.add')"
                   :disable="!newNames.trim()"
                 />
@@ -260,9 +262,13 @@
                       dense
                       class="role-button payment-button"
                       :class="{ 'role-button--paid': player.paid }"
-                      :icon="player.paid ? 'check_circle' : 'radio_button_unchecked'"
+                      :icon="player.paid ? 'check_circle' : 'payments'"
                       :label="t(player.paid ? 'racha.paid' : 'racha.unpaid')"
-                      :aria-label="t('racha.paidFor', { name: player.name })"
+                      :aria-label="
+                        t(player.paid ? 'racha.undoPaymentFor' : 'racha.confirmPaymentFor', {
+                          name: player.name,
+                        })
+                      "
                       :aria-pressed="player.paid"
                       @click="player.paid = !player.paid"
                     />
@@ -292,16 +298,30 @@
                   { label: t('racha.bySeeds'), value: 'seeds' },
                 ]"
               />
+              <q-select
+                v-if="state.config.mode === 'size'"
+                :model-value="state.config.sport"
+                :options="sportOptions"
+                :label="t('racha.sport')"
+                dense
+                outlined
+                emit-value
+                map-options
+                class="q-mb-md"
+                @update:model-value="selectSport"
+              />
               <q-input
                 v-if="state.config.mode === 'size'"
                 v-model.number="state.config.teamSize"
                 type="number"
+                dense
                 outlined
                 min="1"
                 step="1"
                 :label="t('racha.teamSize')"
                 :hint="t('racha.includesGoalkeeper')"
                 class="q-mb-lg"
+                @update:model-value="state.config.sport = 'custom'"
               />
               <p v-else class="muted text-body2">{{ t('racha.seedModeHint') }}</p>
               <div class="seed-notice">
@@ -312,6 +332,9 @@
                 :label="t('racha.defineStarter')"
                 class="q-my-md"
               />
+              <p v-if="state.config.defineStarter" class="muted text-body2">
+                {{ t('racha.starterHint') }}
+              </p>
               <div class="draw-preview" role="status" aria-live="polite">
                 <template v-if="!drawIssue"
                   ><strong>{{
@@ -417,6 +440,12 @@
                   }}</span>
                 </div>
               </div>
+              <div v-if="index < 2" class="team-badges">
+                <q-badge outline color="primary" :label="t('racha.openingMatch')" />
+                <q-badge v-if="state.startingTeam === index" color="positive">
+                  <q-icon name="sports_soccer" class="q-mr-xs" />{{ t('racha.kickoff') }}
+                </q-badge>
+              </div>
               <ul class="team-members">
                 <li v-for="player in team" :key="player.id">
                   <span class="result-player-name">{{ player.name }}</span
@@ -436,13 +465,8 @@
                       :aria-label="t('racha.seed')"
                       role="img"
                       ><q-tooltip>{{ t('racha.seed') }}</q-tooltip></q-icon
-                    ><q-icon
-                      v-if="state.starter === player.id"
-                      name="sports_soccer"
-                      size="19px"
-                      :aria-label="t('racha.starts', { name: player.name })"
-                      role="img"
-                  /></span>
+                    ></span
+                  >
                 </li>
               </ul>
               <div
@@ -461,16 +485,17 @@
           aria-live="polite"
         >
           <div>
-            <q-icon name="sports_soccer" size="24px" /><strong v-if="starter">{{
-              t('racha.starts', { name: starter.name })
+            <q-icon name="sports_soccer" size="24px" /><strong v-if="state.startingTeam !== null">{{
+              t('racha.starts', { team: t('racha.team', { number: state.startingTeam + 1 }) })
             }}</strong>
+            <span v-else>{{ t('racha.starterHint') }}</span>
           </div>
           <q-btn
             flat
             color="primary"
             icon="shuffle"
             :label="t('racha.pickStarter')"
-            @click="pickStarter"
+            @click="pickStartingTeam"
           />
         </div>
       </section>
@@ -565,7 +590,7 @@ import { useRacha } from 'src/composables/useRacha';
 import { useSavedConfigs } from 'src/composables/useSavedConfigs';
 import type { SavedParticipantList } from 'src/types/saved-lists';
 import type { RachaPlayer, RachaState } from 'src/types/racha';
-import { isRachaSeed } from 'src/utils/racha';
+import { isRachaSeed, RACHA_SPORT_PRESETS } from 'src/utils/racha';
 import { formatRachaMessage } from 'src/utils/racha-message';
 
 const { t, locale } = useI18n();
@@ -580,14 +605,14 @@ const {
   teamCount,
   drawIssue,
   resultTeams,
-  starter,
   received,
   pending,
   addNames,
   renamePlayer,
   removePlayer,
   generateTeams,
-  pickStarter,
+  pickStartingTeam,
+  selectSport,
   reset,
 } = useRacha();
 const { data: savedLists } = useSavedConfigs<SavedParticipantList[]>('saved_lists', []);
@@ -625,6 +650,10 @@ const whatsappMessage = computed(() =>
 const editError = ref(false);
 const resultsSection = ref<HTMLElement>();
 const teamColors = ['#4f46e5', '#059669', '#d97706', '#db2777', '#0284c7', '#9333ea'];
+const sportOptions = computed(() => [
+  ...RACHA_SPORT_PRESETS.map(({ sport }) => ({ value: sport, label: t(`racha.sports.${sport}`) })),
+  { value: 'custom', label: t('racha.sports.custom') },
+]);
 const filters = computed(
   () =>
     [
@@ -777,7 +806,13 @@ async function copyTeams() {
       lines.push(`• ${player.name}${roles.length ? ` (${roles.join(', ')})` : ''}`);
     });
   });
-  if (starter.value) lines.push('', t('racha.starts', { name: starter.value.name }));
+  if (state.value.startingTeam !== null)
+    lines.push(
+      '',
+      t('racha.starts', {
+        team: t('racha.team', { number: state.value.startingTeam + 1 }),
+      }),
+    );
   try {
     await copyToClipboard(lines.join('\n'));
     $q.notify({ message: t('racha.copied'), color: 'positive' });
@@ -982,12 +1017,14 @@ h2 {
   padding: 0 24px 24px;
 }
 .add-form {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  width: 100%;
   align-items: flex-start;
   gap: 10px;
 }
-.add-form .q-input {
-  flex: 1;
+.add-form > .q-field {
+  width: 100%;
   min-width: 0;
 }
 .add-form > .q-btn {
@@ -1266,6 +1303,12 @@ h2 {
   margin: 0;
   font-weight: 700;
 }
+.team-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
 .team-members {
   list-style: none;
   padding: 0;
@@ -1395,16 +1438,6 @@ body.body--dark {
   }
   .stat > .q-icon {
     padding: 8px;
-  }
-  .add-form {
-    flex-direction: column;
-  }
-  .add-form .q-input {
-    width: 100%;
-  }
-  .add-form > .q-btn {
-    min-height: 40px;
-    align-self: flex-end;
   }
 }
 @media (max-width: 850px) {

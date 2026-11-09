@@ -6,8 +6,11 @@ export type RachaPlayer = {
   paid: boolean;
 };
 
+export type RachaSport = 'fut7' | 'futsal' | 'football' | 'custom';
+
 export type RachaConfig = {
   mode: 'size' | 'seeds';
+  sport: RachaSport;
   teamSize: number;
   defineStarter: boolean;
 };
@@ -20,7 +23,7 @@ export type RachaState = {
   players: RachaPlayer[];
   config: RachaConfig;
   teams: string[][];
-  starter: string | null;
+  startingTeam: number | null;
   drawChanged: boolean;
   ui: {
     newNames: string;

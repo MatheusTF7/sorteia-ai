@@ -1,8 +1,8 @@
 import { computed, ref, watch } from 'vue';
-import type { RachaPlayer } from 'src/types/racha';
+import type { RachaPlayer, RachaSport } from 'src/types/racha';
 import { playerKey } from 'src/utils/participants';
 import {
-  drawRachaStarter,
+  drawRachaStartingTeam,
   drawRachaTeams,
   emptyRacha,
   isRachaSeed,
@@ -10,6 +10,7 @@ import {
   rachaDrawIssue,
   rachaTeamCount,
   restoreRacha,
+  RACHA_SPORT_PRESETS,
 } from 'src/utils/racha';
 
 export const RACHA_STORAGE_KEY = 'sorteia-ai-racha-v1';
@@ -47,7 +48,6 @@ export function useRacha() {
         .filter((player): player is RachaPlayer => !!player),
     ),
   );
-  const starter = computed(() => playersById.value.get(state.value.starter ?? ''));
   const feeCents = computed(() => Math.round(Math.max(0, Number(state.value.fee) || 0) * 100));
   const received = computed(() => (paid.value.length * feeCents.value) / 100);
   const pending = computed(
@@ -65,7 +65,7 @@ export function useRacha() {
     () => {
       if (state.value.teams.length) drawChanged.value = true;
       state.value.teams = [];
-      state.value.starter = null;
+      state.value.startingTeam = null;
     },
     { flush: 'sync' },
   );
@@ -73,7 +73,7 @@ export function useRacha() {
   watch(
     () => state.value.config.defineStarter,
     (enabled) => {
-      if (!enabled) state.value.starter = null;
+      if (!enabled) state.value.startingTeam = null;
     },
     { flush: 'sync' },
   );
@@ -122,13 +122,19 @@ export function useRacha() {
   function generateTeams() {
     if (drawIssue.value) return;
     state.value.teams = drawRachaTeams(state.value.players, state.value.config);
-    state.value.starter = state.value.config.defineStarter
-      ? drawRachaStarter(state.value.teams)
+    state.value.startingTeam = state.value.config.defineStarter
+      ? drawRachaStartingTeam(state.value.teams)
       : null;
     drawChanged.value = false;
   }
-  function pickStarter() {
-    if (state.value.config.defineStarter) state.value.starter = drawRachaStarter(state.value.teams);
+  function pickStartingTeam() {
+    if (state.value.config.defineStarter)
+      state.value.startingTeam = drawRachaStartingTeam(state.value.teams);
+  }
+  function selectSport(sport: RachaSport) {
+    state.value.config.sport = sport;
+    const preset = RACHA_SPORT_PRESETS.find((item) => item.sport === sport);
+    if (preset) state.value.config.teamSize = preset.teamSize;
   }
   function reset() {
     state.value = emptyRacha();
@@ -144,14 +150,14 @@ export function useRacha() {
     teamCount,
     drawIssue,
     resultTeams,
-    starter,
     received,
     pending,
     addNames,
     renamePlayer,
     removePlayer,
     generateTeams,
-    pickStarter,
+    pickStartingTeam,
+    selectSport,
     reset,
   };
 }

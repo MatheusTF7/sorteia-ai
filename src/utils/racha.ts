@@ -2,6 +2,12 @@ import type { RachaConfig, RachaPlayer, RachaState } from '../types/racha';
 import { playerKey } from './participants';
 import { shuffleItems } from './random';
 
+export const RACHA_SPORT_PRESETS = [
+  { sport: 'fut7', teamSize: 7 },
+  { sport: 'futsal', teamSize: 5 },
+  { sport: 'football', teamSize: 11 },
+] as const;
+
 export function emptyRacha(): RachaState {
   return {
     title: '',
@@ -9,9 +15,9 @@ export function emptyRacha(): RachaState {
     date: '',
     fee: 0,
     players: [],
-    config: { mode: 'size', teamSize: 5, defineStarter: true },
+    config: { mode: 'size', sport: 'fut7', teamSize: 7, defineStarter: true },
     teams: [],
-    starter: null,
+    startingTeam: null,
     drawChanged: false,
     ui: {
       newNames: '',
@@ -68,10 +74,9 @@ export function drawRachaTeams(
   return shuffleItems(teams, random);
 }
 
-export function drawRachaStarter(teams: string[][], random: () => number = Math.random) {
-  const largest = Math.max(0, ...teams.map((team) => team.length));
-  const candidates = teams.filter((team) => team.length === largest).flat();
-  return candidates[Math.floor(random() * candidates.length)] ?? null;
+export function drawRachaStartingTeam(teams: string[][], random: () => number = Math.random) {
+  // Team 1 and Team 2 always play the opening match.
+  return teams.length >= 2 ? Math.floor(random() * 2) : null;
 }
 
 export function parseRachaNames(raw: string, existing: RachaPlayer[]): string[] {
@@ -104,6 +109,8 @@ export function restoreRacha(raw: unknown): RachaState {
     if (Number.isSafeInteger(raw.config.teamSize) && Number(raw.config.teamSize) > 0) {
       state.config.teamSize = Number(raw.config.teamSize);
     }
+    const preset = RACHA_SPORT_PRESETS.find((item) => item.teamSize === state.config.teamSize);
+    state.config.sport = raw.config.sport === 'custom' ? 'custom' : (preset?.sport ?? 'custom');
     state.config.defineStarter = raw.config.defineStarter !== false;
   }
   const ids = new Set<string>();
@@ -172,9 +179,9 @@ export function restoreRacha(raw: unknown): RachaState {
   )
     return state;
   state.teams = teams;
-  state.starter =
-    state.config.defineStarter && typeof raw.starter === 'string' && drawn.includes(raw.starter)
-      ? raw.starter
+  state.startingTeam =
+    state.config.defineStarter && (raw.startingTeam === 0 || raw.startingTeam === 1)
+      ? raw.startingTeam
       : null;
   return state;
 }

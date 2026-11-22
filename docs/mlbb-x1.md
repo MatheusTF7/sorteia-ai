@@ -30,7 +30,17 @@ Use **Registrar resultado** para informar o **placar de cada jogo (kills)** e co
 
 O modo **Vitórias na série** continua disponível para registrar apenas o resultado da série. Resultados antigos são preservados nesse modo, sem inventar placares de kills. **W.O.** continua permitindo indicar quem avançou. A chave, o resumo para compartilhar e os backups preservam os dados por jogo e da série. O vencedor avança para o confronto correspondente; a final concluída destaca o campeão. Não há consulta automática ao jogo nem envio de resultados para o MLBB.
 
-## Terceiro lugar
+## Sorteio de classe e heróis
+
+Em **Sorteio de classe e heróis**, selecione uma ou mais classes base e marque os heróis banidos pela busca com retratos. Cada confronto, inclusive fases futuras e terceiro lugar, recebe uma classe e dois heróis distintos, um para cada lado da chave. A classe é sorteada primeiro, com chances iguais entre as classes selecionadas que ainda tenham pelo menos dois heróis elegíveis; depois são sorteados os heróis daquela classe. Heróis híbridos participam de cada classe cadastrada. Filtros como All, Gold Lane e Jungle do JSON original não são tratados como heróis.
+
+Os picks aparecem no cartão e no destaque do jogo atual. **Sortear classe e heróis novamente** refaz somente os picks daquele confronto, sem alterar adversários ou resultados. Avanços automáticos não recebem picks. Os sorteios são mantidos ao recarregar e nos backups. Jogos concluídos não permitem novo sorteio; resultados anteriores à funcionalidade não recebem picks históricos inventados.
+
+Classes e bans podem ser ajustados depois de chavear. Um pick ainda não jogado que deixar de respeitar a configuração será substituído; picks concluídos ficam no histórico. Sem classes com dois heróis disponíveis, o aplicativo avisa e impede gerar uma nova chave. Não há limite de uso de um herói entre confrontos diferentes.
+
+O catálogo e os retratos vêm de `src/data/mlbb/heroes.json` e `localImage`; os arquivos são empacotados localmente pelo Webpack. Como o JSON não possui classes, `hero-roles.json` complementa 124 classificações consultadas na [API oficial](https://mapi.mobilelegends.com/hero/list), usando o endpoint `/hero/detail?id=…`, em 22/11/2026. Hirara, Marcel, Sora, Obsidia, Zetian, Kalea, Lukas, Suyou e Zhuxin não estão classificados nessa API. Em **Conferir ou ajustar classes dos heróis**, atribua classes a eles para incluí-los ou ajuste qualquer classificação para o campeonato. Não são presumidas classes para os heróis sem dados. Essas alterações também são salvas no backup.
+
+## Configuração do terceiro lugar
 
 Com pelo menos quatro jogadores, escolha **Como definir o 3º lugar** nas configurações. A escolha pode ser alterada após o sorteio sem refazer a chave principal:
 

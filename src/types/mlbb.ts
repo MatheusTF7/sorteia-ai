@@ -36,6 +36,8 @@ export interface MlbbResult {
 }
 
 export interface MlbbTournament {
+  heroSettings?: import('../utils/mlbb-heroes').MlbbHeroSettings;
+  heroPicks?: Record<string, import('../utils/mlbb-heroes').MlbbHeroPick>;
   id: string;
   name: string;
   createdAt: string;

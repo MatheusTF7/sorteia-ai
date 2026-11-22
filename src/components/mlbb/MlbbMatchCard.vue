@@ -41,6 +41,14 @@
         {{ game.scoreB }} · {{ players.find((player) => player.id === game.winnerId)?.name }}
       </div>
     </div>
+    <MlbbHeroDuel
+      v-if="match.status !== 'bye'"
+      :pick="pick"
+      :disabled="!!match.result"
+      :label-a="sides[0]?.name ?? ''"
+      :label-b="sides[1]?.name ?? ''"
+      @redraw="$emit('redraw', match.id)"
+    />
     <div class="duel-footer">
       <span :class="{ 'text-positive': match.status === 'ready' }">{{
         t(`mlbb.${match.result?.kind === 'wo' ? 'wo' : match.status}`)
@@ -62,6 +70,8 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { MlbbMatch, MlbbPlayer } from 'src/types/mlbb';
+import MlbbHeroDuel from './MlbbHeroDuel.vue';
+import type { MlbbHeroPick } from 'src/utils/mlbb-heroes';
 
 const props = defineProps<{
   match: MlbbMatch;
@@ -71,8 +81,9 @@ const props = defineProps<{
   sourceB: string;
   current?: boolean;
   title?: string;
+  pick?: MlbbHeroPick | undefined;
 }>();
-defineEmits<{ result: [match: MlbbMatch] }>();
+defineEmits<{ result: [match: MlbbMatch]; redraw: [id: string] }>();
 const { t } = useI18n();
 const sides = computed(() =>
   [

@@ -333,6 +333,44 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
       ? data.createdAt
       : tournament.createdAt;
   tournament.draftNames = textValue(data.draftNames, 10000);
+  const heroSettings = record(data.heroSettings);
+  const classIds = new Set(['tank', 'fighter', 'assassin', 'mage', 'marksman', 'support']);
+  const strings = (value: unknown): string[] =>
+    Array.isArray(value)
+      ? [
+          ...new Set(
+            value.filter((id): id is string => typeof id === 'string' && id.length <= 100),
+          ),
+        ].slice(0, 200)
+      : [];
+  if (heroSettings) {
+    const overrides: Record<string, string[]> = {};
+    for (const [id, values] of Object.entries(record(heroSettings.overrides) ?? {}).slice(0, 200)) {
+      if (/^[a-z0-9-]+$/.test(id)) overrides[id] = strings(values).filter((id) => classIds.has(id));
+    }
+    tournament.heroSettings = {
+      classes: strings(heroSettings.classes).filter((id) => classIds.has(id)),
+      bannedIds: strings(heroSettings.bannedIds),
+      overrides,
+    };
+  }
+  if (data.heroPicks) {
+    tournament.heroPicks = {};
+    for (const [id, raw] of Object.entries(record(data.heroPicks) ?? {}).slice(0, 64)) {
+      const pick = record(raw);
+      if (
+        /^(r\d+-m\d+|third-place)$/.test(id) &&
+        classIds.has(String(pick?.classId)) &&
+        typeof pick?.heroAId === 'string' &&
+        typeof pick.heroBId === 'string'
+      )
+        tournament.heroPicks[id] = {
+          classId: String(pick.classId),
+          heroAId: pick.heroAId.slice(0, 100),
+          heroBId: pick.heroBId.slice(0, 100),
+        };
+    }
+  }
   const ids = new Set<string>();
   const names = new Set<string>();
   for (const value of data.players) {

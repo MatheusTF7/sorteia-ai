@@ -1,5 +1,26 @@
 export default {
   nav: 'Campeonato X1 MLBB',
+  heroDraw: 'Sorteio de classe e heróis',
+  heroDrawHint:
+    'Sorteamos uma classe e dois heróis distintos, um para cada lado. Bans e classes valem para os próximos duelos; picks de jogos concluídos são preservados.',
+  baseClasses: 'Classes base permitidas',
+  bannedHeroes: 'Heróis banidos · busque pelo nome',
+  noHeroPool: 'Escolha ao menos uma classe com dois heróis disponíveis após os bans.',
+  availableClasses: '{count} classe(s) disponível(is) para sorteio.',
+  editHeroClasses: 'Conferir ou ajustar classes dos heróis',
+  unclassifiedHint:
+    '{count} herói(s) sem classe cadastrada. Defina as classes para incluí-los no sorteio. As alterações ficam neste campeonato.',
+  chooseHero: 'Escolha o herói',
+  redrawHeroes: 'Sortear classe e heróis novamente',
+  noHistoricalPick: 'Sem picks registrados neste confronto.',
+  classes: {
+    tank: 'Tanque',
+    fighter: 'Lutador',
+    assassin: 'Assassino',
+    mage: 'Mago',
+    marksman: 'Atirador',
+    support: 'Suporte',
+  },
   description: 'Sorteie as chaves, registre os duelos e acompanhe até o campeão.',
   eyebrow: 'Mobile Legends: Bang Bang',
   title: 'Seu X1 começa aqui.',

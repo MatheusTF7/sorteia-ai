@@ -16,6 +16,68 @@ async function moduleUrl(relativePath, imports = {}) {
 }
 
 const participantsUrl = await moduleUrl('../src/utils/participants.ts');
+const { drawMlbbHeroes, heroPools, validHeroPick } = await import(
+  await moduleUrl('../src/utils/mlbb-heroes.ts', {
+    './random': await moduleUrl('../src/utils/random.ts'),
+  })
+);
+const heroCatalog = JSON.parse(
+  await readFile(new URL('../src/data/mlbb/heroes.json', import.meta.url), 'utf8'),
+);
+const heroRoles = JSON.parse(
+  await readFile(new URL('../src/data/mlbb/hero-roles.json', import.meta.url), 'utf8'),
+).roles;
+const playableHeroes = heroCatalog
+  .slice(6)
+  .map((hero) => ({ ...hero, classes: heroRoles[hero.id] ?? [] }));
+
+test('hero draws use a selected class then two different eligible heroes, respecting every ban', () => {
+  const settings = { classes: ['mage', 'fighter'], bannedIds: ['eudora', 'miya'], overrides: {} };
+  for (let index = 0; index < 100; index++) {
+    const pick = drawMlbbHeroes(playableHeroes, settings);
+    assert.ok(validHeroPick(pick, playableHeroes, settings));
+    assert.notEqual(pick.heroAId, pick.heroBId);
+    assert.ok(!settings.bannedIds.includes(pick.heroAId));
+    assert.ok(!settings.bannedIds.includes(pick.heroBId));
+  }
+});
+
+test('empty selections and fully banned or undersized classes return no pick', () => {
+  assert.equal(drawMlbbHeroes(playableHeroes, { classes: [], bannedIds: [], overrides: {} }), null);
+  const settings = {
+    classes: ['mage'],
+    bannedIds: playableHeroes.filter((hero) => hero.id !== 'eudora').map((hero) => hero.id),
+    overrides: {},
+  };
+  assert.equal(drawMlbbHeroes(playableHeroes, settings), null);
+  assert.deepEqual(heroPools(playableHeroes, settings), []);
+});
+
+test('hero classes can be configured per tournament and hybrid heroes enter each permitted pool', () => {
+  const heroes = [
+    { id: 'a', classes: [] },
+    { id: 'b', classes: ['mage', 'fighter'] },
+  ];
+  const settings = {
+    classes: ['mage', 'fighter'],
+    bannedIds: [],
+    overrides: { a: ['mage', 'fighter'] },
+  };
+  assert.equal(heroPools(heroes, settings).length, 2);
+  assert.equal(drawMlbbHeroes(heroes, settings, () => 0).classId, 'fighter');
+  assert.equal(drawMlbbHeroes(heroes, settings, () => 0.999).classId, 'mage');
+});
+
+test('every playable catalog image exists locally and navigation filters cannot be drawn', async () => {
+  assert.equal(playableHeroes.length, heroCatalog.length - 6);
+  for (const hero of playableHeroes)
+    await readFile(new URL('../src/data/mlbb/' + hero.localImage, import.meta.url));
+  assert.ok(
+    playableHeroes.every(
+      (hero) => !['all', 'gold-lane', 'jungle', 'roam', 'mid-lane', 'exp-lane'].includes(hero.id),
+    ),
+  );
+});
 const utilityUrl = await moduleUrl('../src/utils/mlbb.ts', {
   './participants': participantsUrl,
   './random': await moduleUrl('../src/utils/random.ts'),
@@ -160,6 +222,21 @@ test('legacy series-only results restore without inventing kills', () => {
   assert.deepEqual(restored.results, value.results);
   assert.equal(restored.rules.thirdPlace, 'none');
   assert.equal(restored.results['r1-m1'].games, undefined);
+});
+
+test('hero choices, bans, class overrides and exact pre-draw survive backup restoration', () => {
+  const value = tournament(4);
+  value.heroSettings = {
+    classes: ['mage'],
+    bannedIds: ['eudora'],
+    overrides: { hirara: ['mage'] },
+  };
+  const pick = drawMlbbHeroes(playableHeroes, value.heroSettings);
+  value.heroPicks = { 'r1-m1': pick };
+  const restored = restoreMlbbTournament(JSON.parse(JSON.stringify(value)));
+  assert.deepEqual(restored.heroSettings, value.heroSettings);
+  assert.deepEqual(restored.heroPicks, value.heroPicks);
+  assert.ok(validHeroPick(restored.heroPicks['r1-m1'], playableHeroes, restored.heroSettings));
 });
 
 test('all sizes from 2 to 64 produce a complete elimination tree, fair byes and exactly N-1 played duels', () => {

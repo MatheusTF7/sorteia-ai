@@ -168,6 +168,13 @@
               >
               <p>{{ t('mlbb.currentMatchHint') }}</p>
             </div>
+            <MlbbHeroDuel
+              :pick="current.heroPicks?.[currentMatch.id]"
+              :disabled="false"
+              :label-a="playerName(currentMatch.playerAId)"
+              :label-b="playerName(currentMatch.playerBId)"
+              @redraw="redrawHeroes(currentMatch.id)"
+            />
             <div class="current-match-actions">
               <q-btn
                 color="primary"
@@ -212,7 +219,13 @@
             :aria-label="t('mlbb.bracketRegion')"
             tabindex="0"
           >
-            <div class="bracket-rounds">
+            <div
+              class="bracket-rounds"
+              :style="{
+                '--mlbb-row-height': `${bracketRowHeight}px`,
+                '--mlbb-round-height': `${bracketRowHeight * (rounds[0]?.length ?? 1)}px`,
+              }"
+            >
               <section v-for="(round, index) in rounds" :key="index" class="bracket-round">
                 <div class="round-heading">
                   <h3>{{ roundLabel(index) }}</h3>
@@ -238,6 +251,8 @@
                     />
                     <MlbbMatchCard
                       :match="match"
+                      :pick="current.heroPicks?.[match.id]"
+                      @redraw="redrawHeroes"
                       :current="match.id === currentMatch?.id"
                       :players="current.players"
                       :number="matchNumber(match.id)"
@@ -261,6 +276,8 @@
                   >
                     <MlbbMatchCard
                       :match="bronzeMatch"
+                      :pick="current.heroPicks?.[bronzeMatch.id]"
+                      @redraw="redrawHeroes"
                       :title="t('mlbb.thirdPlace')"
                       :players="current.players"
                       :number="matchNumber(bronzeMatch.id)"
@@ -476,6 +493,7 @@
                 class="q-mt-md"
               />
               <p class="field-help q-mt-md">{{ t('mlbb.suggestedRules') }}</p>
+              <MlbbHeroSettings v-model="heroSettings" />
             </q-card-section>
           </q-card>
         </section>
@@ -758,6 +776,11 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { copyToClipboard, exportFile, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import MlbbMatchCard from 'src/components/mlbb/MlbbMatchCard.vue';
+import MlbbHeroSettings from 'src/components/mlbb/MlbbHeroSettings.vue';
+import MlbbHeroDuel from 'src/components/mlbb/MlbbHeroDuel.vue';
+import { mlbbHeroes } from 'src/data/mlbb/catalog';
+import { MLBB_CLASSES, drawMlbbHeroes, heroPools, validHeroPick } from 'src/utils/mlbb-heroes';
+import type { MlbbHeroSettings as HeroSettings } from 'src/utils/mlbb-heroes';
 import { useMlbb } from 'src/composables/useMlbb';
 import type { MlbbGameScore, MlbbMatch, MlbbPlayer } from 'src/types/mlbb';
 import {
@@ -802,6 +825,56 @@ const allMatches = computed(() => [
   ...rounds.value.flat(),
   ...(bronzeMatch.value ? [bronzeMatch.value] : []),
 ]);
+watch(
+  () => current.value.id,
+  () => {
+    current.value.heroSettings ??= { classes: [...MLBB_CLASSES], bannedIds: [], overrides: {} };
+  },
+  { immediate: true },
+);
+const heroSettings = computed<HeroSettings>({
+  get: () => current.value.heroSettings!,
+  set: (value) => {
+    current.value.heroSettings = value;
+  },
+});
+const availableHeroPools = computed(() => heroPools(mlbbHeroes, heroSettings.value));
+function redrawHeroes(id: string) {
+  const match = allMatches.value.find((match) => match.id === id);
+  if (!match || match.result || match.status === 'bye') return;
+  const pick = drawMlbbHeroes(mlbbHeroes, heroSettings.value);
+  if (!pick) {
+    notify('mlbb.noHeroPool', 'warning');
+    return;
+  }
+  current.value.heroPicks = { ...current.value.heroPicks, [id]: pick };
+}
+watch(
+  () =>
+    JSON.stringify([
+      current.value.id,
+      current.value.heroSettings,
+      allMatches.value.map((match) => [match.id, match.status]),
+    ]),
+  () => {
+    const picks = { ...current.value.heroPicks };
+    for (const id of Object.keys(picks))
+      if (!allMatches.value.some((match) => match.id === id && match.status !== 'bye'))
+        delete picks[id];
+    for (const match of allMatches.value) {
+      if (match.result || match.status === 'bye') continue;
+      const existing = picks[match.id];
+      if (!existing || !validHeroPick(existing, mlbbHeroes, heroSettings.value)) {
+        const pick = drawMlbbHeroes(mlbbHeroes, heroSettings.value);
+        if (pick) picks[match.id] = pick;
+        else delete picks[match.id];
+      }
+    }
+    if (JSON.stringify(picks) !== JSON.stringify(current.value.heroPicks ?? {}))
+      current.value.heroPicks = picks;
+  },
+  { immediate: true, flush: 'post' },
+);
 const currentMatch = computed(
   () => allMatches.value.find((match) => match.status === 'ready') ?? null,
 );
@@ -873,6 +946,30 @@ onBeforeUnmount(() => {
   if (bracketFullscreen.value) document.body.style.overflow = previousBodyOverflow;
 });
 const bracketViewport = ref<HTMLElement | null>(null);
+const bracketRowHeight = ref(480);
+let bracketSizeObserver: ResizeObserver | null = null;
+function measureBracketCards() {
+  const cards = bracketViewport.value?.querySelectorAll<HTMLElement>('.match-position > .duel');
+  if (!cards?.length) return;
+  // All columns share one row unit, including space for the current-match outline.
+  const tallest = Math.max(...Array.from(cards, (card) => card.getBoundingClientRect().height));
+  bracketRowHeight.value = Math.ceil(tallest) + 40;
+}
+watch(
+  [bracketViewport, () => allMatches.value.map((match) => match.id).join(',')],
+  async () => {
+    await nextTick();
+    bracketSizeObserver?.disconnect();
+    measureBracketCards();
+    if (typeof ResizeObserver === 'undefined') return;
+    bracketSizeObserver = new ResizeObserver(measureBracketCards);
+    bracketViewport.value
+      ?.querySelectorAll('.match-position > .duel')
+      .forEach((card) => bracketSizeObserver?.observe(card));
+  },
+  { flush: 'post' },
+);
+onBeforeUnmount(() => bracketSizeObserver?.disconnect());
 function locateCurrentMatch() {
   const viewport = bracketViewport.value;
   const card = viewport?.querySelector<HTMLElement>('[data-current-match="true"] .duel');
@@ -945,6 +1042,7 @@ const formats = computed(() => [
 const hasEvenSeries = computed(() => formats.value.some((value) => value > 0 && value % 2 === 0));
 const canDraw = computed(
   () =>
+    availableHeroPools.value.length > 0 &&
     current.value.players.length >= 2 &&
     current.value.players.length <= 64 &&
     formats.value.every((value) => Number.isInteger(value) && value >= 1 && value <= 99),
@@ -1187,6 +1285,11 @@ const shareText = computed(() => {
       lines.push(
         `${t('mlbb.game', { number: matchNumber(match.id) })}: ${duel}${result ? ` · ${result.kind === 'wo' ? t('mlbb.wo') : t('mlbb.winner')}: ${playerName(result.winnerId)}` : ''}`,
       );
+      const pick = tournament.heroPicks?.[match.id];
+      if (pick)
+        lines.push(
+          `${t('mlbb.classes.' + pick.classId)}: ${mlbbHeroes.find((hero) => hero.id === pick.heroAId)?.name ?? pick.heroAId} x ${mlbbHeroes.find((hero) => hero.id === pick.heroBId)?.name ?? pick.heroBId}`,
+        );
       result?.games?.forEach((game, index) =>
         lines.push(
           `  ${t('mlbb.gameScoreTitle', { number: index + 1 })}: ${game.scoreA} x ${game.scoreB} (${t('mlbb.winner')}: ${playerName(game.winnerId)})`,
@@ -1633,17 +1736,19 @@ h3 {
   justify-content: space-around;
   gap: 0;
   flex: 1;
+  min-height: var(--mlbb-round-height);
 }
 .match-position {
   position: relative;
-  flex: 1;
-  min-height: 240px;
+  flex: 1 0 0;
+  min-height: var(--mlbb-row-height);
   display: flex;
   align-items: center;
   padding: 10px 0;
 }
 .match-position > .duel {
   width: 100%;
+  flex-shrink: 0;
 }
 .connector-in,
 .connector-out {
@@ -1919,9 +2024,6 @@ body.body--dark .champion-banner {
 }
 .connector-join {
   border-right-color: var(--mlbb-connector);
-}
-.match-position {
-  min-height: 280px;
 }
 .current-match-summary {
   display: flex;

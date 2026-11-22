@@ -1,5 +1,26 @@
 export default {
   nav: 'MLBB 1v1 tournament',
+  heroDraw: 'Class and hero draw',
+  heroDrawHint:
+    'Draw one class, then two different heroes, one per side. Bans and classes apply to upcoming matches; completed picks are preserved.',
+  baseClasses: 'Allowed base classes',
+  bannedHeroes: 'Banned heroes · search by name',
+  noHeroPool: 'Choose at least one class with two available heroes after bans.',
+  availableClasses: '{count} class(es) available for the draw.',
+  editHeroClasses: 'Review or adjust hero classes',
+  unclassifiedHint:
+    '{count} hero(es) have no class. Assign classes to include them in draws. Changes apply to this tournament.',
+  chooseHero: 'Choose a hero',
+  redrawHeroes: 'Redraw class and heroes',
+  noHistoricalPick: 'No picks recorded for this match.',
+  classes: {
+    tank: 'Tank',
+    fighter: 'Fighter',
+    assassin: 'Assassin',
+    mage: 'Mage',
+    marksman: 'Marksman',
+    support: 'Support',
+  },
   description: 'Draw the bracket, record duels and follow the road to the champion.',
   eyebrow: 'Mobile Legends: Bang Bang',
   title: 'Your next duel starts here.',

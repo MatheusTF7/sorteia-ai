@@ -10,7 +10,9 @@ Configure separadamente a MDX das partidas, das semifinais e da final. X aceita 
 
 MDX significa uma série de até X jogos. A série acaba quando um jogador conquista a maioria necessária ou quando o limite é alcançado. Exemplos: MD1 aceita 1 × 0; MD5 aceita 3 × 1 ou 3 × 0. MD4 aceita 3 × 0 ou 3 × 1. **Empates ao fim de uma MD par exigem selecionar manualmente quem venceu pelo desempate previsto nas regras**; não há sorteio automático do vencedor. Um placar parcial, como 2 × 1 em MD4, não encerra a série.
 
-A rota e a condição de vitória de cada jogo começam com sugestões editáveis. Use a descrição para registrar bans, heróis permitidos, feitiços, atrasos, pausas e desempates. Essas opções são decisões do organizador, não um regulamento oficial do MLBB. A descrição aparece também no resumo para compartilhar.
+A condição de vitória padrão é **Primeiro a fazer 3 kills**. A condição e a descrição de regras oferecem modelos para X1 da live (3 kills), primeira kill e destruição da base, além de texto personalizado. Os textos continuam editáveis. O regulamento padrão inclui a proibição de bater na torre, derrota ao destruir a torre com menos kills, a exceção de torre destruída por mínions (mais kills e mais farm) e a orientação de avisar no chat da live quando não tiver o herói sorteado. Os campeonatos existentes preservam seus textos. A descrição aparece também no resumo para compartilhar.
+
+Cada MDX ocupa uma linha, com botões **−** e **+** e entrada numérica direta, respeitando os limites de 1 a 99 e o fechamento das inscrições.
 
 ## Chaves e resultados
 

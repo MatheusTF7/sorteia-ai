@@ -203,36 +203,34 @@
               <h2><q-icon name="tune" />{{ t('mlbb.rules') }}</h2>
             </div>
             <div class="format-grid">
-              <q-input
-                v-model.number="current.rules.bestOf"
-                outlined
-                type="number"
-                min="1"
-                max="99"
-                step="1"
-                :disable="locked"
-                :label="t('mlbb.generalBestOf')"
-              />
-              <q-input
-                v-model.number="current.rules.semifinalBestOf"
-                outlined
-                type="number"
-                min="1"
-                max="99"
-                step="1"
-                :disable="locked"
-                :label="t('mlbb.semifinalBestOf')"
-              />
-              <q-input
-                v-model.number="current.rules.finalBestOf"
-                outlined
-                type="number"
-                min="1"
-                max="99"
-                step="1"
-                :disable="locked"
-                :label="t('mlbb.finalBestOf')"
-              />
+              <div v-for="field in formatFields" :key="field.key" class="mdx-control">
+                <q-btn
+                  outline
+                  color="primary"
+                  icon="remove"
+                  :disable="locked || current.rules[field.key] <= 1"
+                  :aria-label="t('mlbb.decreaseMdx', { format: t(field.label) })"
+                  @click="stepFormat(field.key, -1)"
+                />
+                <q-input
+                  v-model.number="current.rules[field.key]"
+                  outlined
+                  type="number"
+                  min="1"
+                  max="99"
+                  step="1"
+                  :disable="locked"
+                  :label="t(field.label)"
+                />
+                <q-btn
+                  outline
+                  color="primary"
+                  icon="add"
+                  :disable="locked || current.rules[field.key] >= 99"
+                  :aria-label="t('mlbb.increaseMdx', { format: t(field.label) })"
+                  @click="stepFormat(field.key, 1)"
+                />
+              </div>
             </div>
             <p class="field-help">{{ t('mlbb.formatHint') }}</p>
             <p v-if="hasEvenSeries" class="field-help even-help">
@@ -246,6 +244,17 @@
               maxlength="80"
               class="q-mt-md"
             />
+            <q-select
+              :model-value="presetValue('victory')"
+              outlined
+              emit-value
+              map-options
+              :disable="locked"
+              :options="presetOptions('victory')"
+              :label="t('mlbb.victoryModel')"
+              class="q-mt-lg"
+              @update:model-value="(value) => applyPreset('victory', value)"
+            />
             <q-input
               v-model="current.rules.victory"
               outlined
@@ -253,6 +262,17 @@
               :label="t('mlbb.victory')"
               maxlength="200"
               class="q-mt-md"
+            />
+            <q-select
+              :model-value="presetValue('notes')"
+              outlined
+              emit-value
+              map-options
+              :disable="locked"
+              :options="presetOptions('notes')"
+              :label="t('mlbb.rulesModel')"
+              class="q-mt-lg"
+              @update:model-value="(value) => applyPreset('notes', value)"
             />
             <q-input
               v-model="current.rules.notes"
@@ -549,6 +569,7 @@ import { useMlbb } from 'src/composables/useMlbb';
 import type { MlbbMatch, MlbbPlayer } from 'src/types/mlbb';
 import {
   mlbbBracketSize,
+  mlbbRulePresets,
   mlbbDescendants,
   restoreMlbbTournament,
   setMlbbResult,
@@ -583,6 +604,40 @@ const tournamentOptions = computed(() =>
 const completedCount = computed(
   () => rounds.value.flat().filter((match) => match.status === 'completed').length,
 );
+const formatFields = [
+  { key: 'bestOf', label: 'mlbb.generalBestOf' },
+  { key: 'semifinalBestOf', label: 'mlbb.semifinalBestOf' },
+  { key: 'finalBestOf', label: 'mlbb.finalBestOf' },
+] as const;
+type FormatKey = (typeof formatFields)[number]['key'];
+function stepFormat(key: FormatKey, delta: number) {
+  if (locked.value) return;
+  const value = Number(current.value.rules[key]);
+  current.value.rules[key] = Math.min(
+    99,
+    Math.max(1, (Number.isFinite(value) ? Math.trunc(value) : 1) + delta),
+  );
+}
+const presets = computed(() => mlbbRulePresets(locale.value.startsWith('en')));
+function presetOptions(field: 'victory' | 'notes') {
+  const values = field === 'victory' ? presets.value.victories : presets.value.rules;
+  const labels = ['mlbb.presetLive', 'mlbb.presetFirstKill', 'mlbb.presetBase'];
+  return [
+    ...values.map((value, index) => ({
+      label: field === 'victory' ? value : t(labels[index]!),
+      value,
+    })),
+    { label: t('mlbb.customModel'), value: '__custom__' },
+  ];
+}
+function presetValue(field: 'victory' | 'notes') {
+  return presetOptions(field).some((option) => option.value === current.value.rules[field])
+    ? current.value.rules[field]
+    : '__custom__';
+}
+function applyPreset(field: 'victory' | 'notes', value: string) {
+  if (!locked.value) current.value.rules[field] = value === '__custom__' ? '' : value;
+}
 const formats = computed(() => [
   current.value.rules.bestOf,
   current.value.rules.semifinalBestOf,
@@ -1080,8 +1135,8 @@ h2 {
 }
 .format-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 .field-help {
   color: var(--mlbb-muted, #64748b);
@@ -1441,5 +1496,19 @@ body.body--dark .champion-banner {
   * {
     scroll-behavior: auto;
   }
+}
+.mdx-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mdx-control > .q-field {
+  flex: 1;
+  min-width: 0;
+}
+.mdx-control > .q-btn {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
 }
 </style>

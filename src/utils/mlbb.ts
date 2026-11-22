@@ -12,6 +12,25 @@ import { shuffleItems } from './random';
 export const MLBB_MAX_PLAYERS = 64;
 export const MLBB_MAX_TOURNAMENTS = 50;
 
+export function mlbbRulePresets(english = false) {
+  return {
+    victories: english
+      ? ['First to 3 kills', 'First kill', 'Destroy the opposing base']
+      : ['Primeiro a fazer 3 kills', 'Primeira kill', 'Destruir a base adversária'],
+    rules: english
+      ? [
+          'The first player to reach 3 kills wins the game; attacking the tower is not allowed; if you destroy the enemy tower with fewer kills than your opponent, you lose; if minions destroy the enemy tower, the player with more kills and more farm wins; if you do not own the drawn hero, report it immediately in the livestream chat.',
+          'The first player to get a kill wins the game. Agree on allowed heroes, spells and tiebreakers before starting.',
+          'Destroy the opposing base to win the game. Agree on allowed heroes, spells and pauses before starting.',
+        ]
+      : [
+          'O primeiro jogador a fazer 3 kills ganha a partida; não é permitido bater na torre; se destruir a torre inimiga com menos kills que o adversário, você perde; na exceção de os mínions levarem a torre inimiga, ganha quem tem mais kills e mais farm; caso não tenha o herói sorteado, informe imediatamente no chat da live.',
+          'O primeiro jogador a fazer uma kill ganha a partida. Combine os heróis permitidos, feitiços e critérios de desempate antes de começar.',
+          'Destrua a base adversária para ganhar a partida. Combine os heróis permitidos, feitiços e pausas antes de começar.',
+        ],
+  };
+}
+
 export function emptyMlbbTournament(id: string, english = false): MlbbTournament {
   return {
     id,
@@ -23,8 +42,8 @@ export function emptyMlbbTournament(id: string, english = false): MlbbTournament
       semifinalBestOf: 1,
       finalBestOf: 3,
       lane: english ? 'Mid lane' : 'Rota do meio',
-      victory: english ? 'Destroy the opposing base' : 'Destruir a base adversária',
-      notes: '',
+      victory: mlbbRulePresets(english).victories[0]!,
+      notes: mlbbRulePresets(english).rules[0]!,
     },
     seededIds: [],
     results: {},

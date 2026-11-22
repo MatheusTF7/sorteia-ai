@@ -40,7 +40,17 @@ export function rachaTeamCount(players: RachaPlayer[], config: RachaConfig): num
   const seeds = players.filter(isRachaSeed).length;
   if (config.mode === 'seeds') return seeds;
   if (!Number.isSafeInteger(config.teamSize) || config.teamSize < 1) return 0;
-  return Math.max(Math.ceil(players.length / config.teamSize), seeds);
+  return Math.ceil(players.length / config.teamSize);
+}
+
+/** Fixed capacities keep complete teams ahead of the remaining players. */
+function rachaTeamSizes(players: RachaPlayer[], config: RachaConfig): number[] {
+  const count = rachaTeamCount(players, config);
+  return Array.from({ length: count }, (_, index) =>
+    config.mode === 'size'
+      ? Math.min(config.teamSize, players.length - index * config.teamSize)
+      : Math.floor(players.length / count) + Number(index < players.length % count),
+  );
 }
 
 export function rachaDrawIssue(players: RachaPlayer[], config: RachaConfig) {
@@ -52,26 +62,47 @@ export function rachaDrawIssue(players: RachaPlayer[], config: RachaConfig) {
   return null;
 }
 
-/** Every seed, including every goalkeeper, occupies a different team. */
+/** Complete the first teams, prioritizing goalkeepers and separating seeds where possible. */
 export function drawRachaTeams(
   players: RachaPlayer[],
   config: RachaConfig,
   random: () => number = Math.random,
 ): string[][] {
   if (rachaDrawIssue(players, config)) return [];
-  const teams: string[][] = Array.from({ length: rachaTeamCount(players, config) }, () => []);
-  const seeds = shuffleItems(players.filter(isRachaSeed), random);
-  seeds.forEach((player, index) => teams[index]!.push(player.id));
+  const sizes = rachaTeamSizes(players, config);
+  const teams: string[][] = sizes.map(() => []);
+  const seedCounts = sizes.map(() => 0);
+  // Place goalkeepers before other seeds so the opening teams get them first.
+  const seeds = [
+    ...shuffleItems(
+      players.filter((player) => player.goalkeeper),
+      random,
+    ),
+    ...shuffleItems(
+      players.filter((player) => player.seed && !player.goalkeeper),
+      random,
+    ),
+  ];
+  for (const player of seeds) {
+    const smallest = Math.min(
+      ...seedCounts.filter((_, index) => teams[index]!.length < sizes[index]!),
+    );
+    const index = teams.findIndex(
+      (team, index) => team.length < sizes[index]! && seedCounts[index] === smallest,
+    );
+    teams[index]!.push(player.id);
+    seedCounts[index]! += 1;
+  }
   const others = shuffleItems(
     players.filter((player) => !isRachaSeed(player)),
     random,
   );
-  // Fill the smallest teams first so sizes differ by at most one, even with many seeds.
+  let index = 0;
   for (const player of others) {
-    const smallest = Math.min(...teams.map((team) => team.length));
-    teams.find((team) => team.length === smallest)!.push(player.id);
+    while (teams[index]!.length === sizes[index]) index++;
+    teams[index]!.push(player.id);
   }
-  return shuffleItems(teams, random);
+  return teams;
 }
 
 export function drawRachaStartingTeam(teams: string[][], random: () => number = Math.random) {
@@ -166,18 +197,26 @@ export function restoreRacha(raw: unknown): RachaState {
   );
   const drawn = teams.flat();
   const seedIds = new Set(state.players.filter(isRachaSeed).map((player) => player.id));
-  const sizes = teams.map((team) => team.length);
+  const goalkeeperIds = new Set(
+    state.players.filter((player) => player.goalkeeper).map((player) => player.id),
+  );
+  const sizes = rachaTeamSizes(state.players, state.config);
   if (
     teams.length !== raw.teams.length ||
     teams.length !== rachaTeamCount(state.players, state.config) ||
     drawn.length !== ids.size ||
     new Set(drawn).size !== ids.size ||
     drawn.some((id) => !ids.has(id)) ||
-    teams.some((team) => team.filter((id) => seedIds.has(id)).length > 1) ||
-    Math.max(...sizes) - Math.min(...sizes) > 1 ||
-    (state.config.mode === 'size' && Math.max(...sizes) > state.config.teamSize)
-  )
+    teams.some((team, index) => team.length !== sizes[index]) ||
+    teams.filter((team) => team.some((id) => seedIds.has(id))).length !==
+      Math.min(seedIds.size, teams.length) ||
+    teams
+      .slice(0, Math.min(goalkeeperIds.size, teams.length))
+      .some((team) => !team.some((id) => goalkeeperIds.has(id)))
+  ) {
+    if (raw.teams.length) state.drawChanged = true;
     return state;
+  }
   state.teams = teams;
   state.startingTeam =
     state.config.defineStarter && (raw.startingTeam === 0 || raw.startingTeam === 1)

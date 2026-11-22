@@ -22,13 +22,16 @@ A exportação usa a lista completa, independentemente da busca e dos filtros. F
 ## Sorteio
 
 - Novos rachas usam **FUT7**, com **7 jogadores por time, incluindo o goleiro**. Há predefinições de futsal (5) e futebol de campo (11), além de configuração personalizada. Editar o tamanho seleciona automaticamente **Personalizado**. Modalidade e tamanho são salvos localmente; tamanhos anteriormente salvos são preservados.
-- **Por tamanho:** o tamanho máximo inclui o goleiro. A quantidade de times é o maior valor entre o número necessário para acomodar os jogadores e o total de cabeças de chave.
+- **Por tamanho:** o tamanho máximo inclui o goleiro. Os primeiros times são completados antes de formar os próximos com os jogadores restantes. Por exemplo, 15 jogadores no FUT7 formam times de **7 + 7 + 1**; 12 jogadores no futsal formam **5 + 5 + 2**. A quantidade de times depende apenas do total de jogadores e do tamanho escolhido.
 - **Por cabeças de chave:** cria um time por cabeça de chave, incluindo goleiros, e distribui todos os jogadores. Exige pelo menos dois cabeças de chave.
-- Cada goleiro ou outro cabeça de chave fica em um time diferente. Quem possui as duas marcações conta uma única vez.
-- Os demais jogadores são embaralhados e distribuídos entre os menores times. A diferença de tamanho é de, no máximo, uma pessoa. O sorteio não avalia habilidade dos demais jogadores.
+- Os goleiros são sorteados primeiro, priorizando o Time 1, o Time 2 e depois os demais. Um time posterior não recebe goleiro enquanto um anterior estiver sem, se houver goleiros suficientes.
+- Os outros cabeças de chave são distribuídos em seguida, separados quando possível. No modo **Por tamanho**, cabeças de chave excedentes compartilham times para preservar as formações completas. No modo **Por cabeças de chave**, todos ficam em times distintos. Quem possui as duas marcações conta uma única vez.
+- Os demais jogadores são embaralhados e preenchem as vagas de cada time. No modo **Por cabeças de chave**, a diferença de tamanho é de, no máximo, uma pessoa. O sorteio não avalia habilidade dos demais jogadores.
 - Se faltarem goleiros para a quantidade de times, a página avisa e permite o sorteio.
 - **Time 1** e **Time 2** são os dois times do jogo inicial. A saída de bola, opcional, é sorteada somente entre esses dois times. O resultado aparece no cartão do time e na cópia dos times; nenhum jogador individual é indicado para a saída.
 
 Alterar jogadores, funções ou configuração da divisão limpa os times anteriores. Editar nomes, pagamentos ou detalhes do racha preserva a formação. Desativar o sorteio da saída limpa somente a indicação do time que dá a saída.
 
 O resultado e as marcações são restaurados ao reabrir a página. **Copiar times** copia nomes, funções, detalhes preenchidos e saída para compartilhar. **Novo racha** pede confirmação antes de apagar os dados atuais; não altera as listas de nomes salvas do restante do aplicativo.
+
+Resultados antigos que não respeitam as novas regras de tamanho ou prioridade dos goleiros são descartados ao reabrir a página, com aviso para sortear novamente. Jogadores, marcações, pagamentos e detalhes são preservados.

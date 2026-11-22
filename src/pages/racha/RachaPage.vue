@@ -323,9 +323,13 @@
                 class="q-mb-lg"
                 @update:model-value="state.config.sport = 'custom'"
               />
-              <p v-else class="muted text-body2">{{ t('racha.seedModeHint') }}</p>
+              <p class="muted text-body2">
+                {{ t(state.config.mode === 'size' ? 'racha.sizeModeHint' : 'racha.seedModeHint') }}
+              </p>
               <div class="seed-notice">
-                <q-icon name="verified_user" size="22px" /><span>{{ t('racha.seedRule') }}</span>
+                <q-icon name="verified_user" size="22px" /><span>{{
+                  t(state.config.mode === 'size' ? 'racha.sizeSeedRule' : 'racha.seedRule')
+                }}</span>
               </div>
               <q-toggle
                 v-model="state.config.defineStarter"
@@ -340,9 +344,6 @@
                   ><strong>{{
                     t('racha.preview', { teams: teamCount, players: state.players.length })
                   }}</strong>
-                  <p v-if="expandedTeamCount">
-                    {{ t('racha.expandedTeams', { seeds: seeds.length, teams: teamCount }) }}
-                  </p>
                   <p v-if="teamCount > goalkeepers.length">
                     {{ t('racha.missingGoalkeepers', { count: teamCount - goalkeepers.length }) }}
                   </p>
@@ -684,11 +685,6 @@ const visiblePlayers = computed(() =>
           ? !player.paid
           : true;
   }),
-);
-const expandedTeamCount = computed(
-  () =>
-    state.value.config.mode === 'size' &&
-    seeds.value.length > Math.ceil(state.value.players.length / state.value.config.teamSize),
 );
 function money(value: number) {
   return new Intl.NumberFormat(locale.value, { style: 'currency', currency: 'BRL' }).format(value);

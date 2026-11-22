@@ -84,11 +84,14 @@ export default {
   },
   teamSize: 'Máximo de jogadores por time',
   includesGoalkeeper: 'O goleiro está incluído neste total.',
+  sizeModeHint:
+    'Os primeiros times ficam completos. Os jogadores restantes formam os próximos times.',
   seedModeHint:
     'Um time para cada cabeça de chave, contando os goleiros. Todos os jogadores serão distribuídos.',
+  sizeSeedRule:
+    'Goleiros têm prioridade nos primeiros times. Cabeças de chave ficam separados quando possível, sem impedir times completos.',
   seedRule: 'Goleiros e outros cabeças de chave sempre ficam em times separados.',
   preview: '{teams} times · {players} jogadores',
-  expandedTeams: 'Para separar os {seeds} cabeças de chave, serão criados {teams} times.',
   missingGoalkeepers:
     'Haverá {count} time(s) sem goleiro. Você pode sortear assim ou marcar mais goleiros.',
   paymentHint: 'Todos os jogadores da lista entram no sorteio, inclusive os que ainda não pagaram.',
@@ -105,10 +108,10 @@ export default {
     size: 'Informe um tamanho de time inteiro e maior que zero.',
     seeds: 'Marque pelo menos 2 cabeças de chave ou goleiros.',
     teams:
-      'Reduza o tamanho por time ou marque mais cabeças de chave para formar pelo menos 2 times.',
+      'Reduza o tamanho por time ou use o modo por cabeças de chave para formar pelo menos 2 times.',
   },
   resultTitle: 'Times em campo',
-  resultHint: 'Cabeças de chave separados. Agora é com vocês!',
+  resultHint: 'Times sorteados. Agora é com vocês!',
   resultEmpty: 'Os times aparecem aqui depois do sorteio.',
   resultChanged:
     'A lista, as funções ou a configuração mudaram. Sorteie novamente para atualizar os times.',

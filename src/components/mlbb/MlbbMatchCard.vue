@@ -9,7 +9,7 @@
     :aria-current="current ? 'step' : undefined"
   >
     <div class="duel-heading">
-      <span class="text-weight-bold">{{ t('mlbb.game', { number }) }}</span>
+      <span class="text-weight-bold">{{ title || t('mlbb.game', { number }) }}</span>
       <span>MD{{ match.bestOf }}</span>
     </div>
     <div v-if="current" class="duel-current-label">
@@ -31,6 +31,15 @@
       </div>
       <strong v-if="match.result?.kind === 'score'">{{ side.score }}</strong>
       <q-icon v-else-if="side.id && match.winnerId === side.id" name="check" size="18px" />
+    </div>
+    <div v-if="match.result?.games" class="duel-series-details">
+      <strong>{{
+        t('mlbb.seriesScore', { a: match.result.scoreA, b: match.result.scoreB })
+      }}</strong>
+      <div v-for="(game, index) in match.result.games" :key="index">
+        {{ t('mlbb.gameScoreTitle', { number: index + 1 }) }}: {{ game.scoreA }} ×
+        {{ game.scoreB }} · {{ players.find((player) => player.id === game.winnerId)?.name }}
+      </div>
     </div>
     <div class="duel-footer">
       <span :class="{ 'text-positive': match.status === 'ready' }">{{
@@ -61,6 +70,7 @@ const props = defineProps<{
   sourceA: string;
   sourceB: string;
   current?: boolean;
+  title?: string;
 }>();
 defineEmits<{ result: [match: MlbbMatch] }>();
 const { t } = useI18n();
@@ -70,13 +80,19 @@ const sides = computed(() =>
       key: 'a',
       id: props.match.playerAId,
       source: props.sourceA,
-      score: props.match.result?.scoreA,
+      score:
+        props.match.result?.games?.length === 1
+          ? props.match.result.games[0]?.scoreA
+          : props.match.result?.scoreA,
     },
     {
       key: 'b',
       id: props.match.playerBId,
       source: props.sourceB,
-      score: props.match.result?.scoreB,
+      score:
+        props.match.result?.games?.length === 1
+          ? props.match.result.games[0]?.scoreB
+          : props.match.result?.scoreB,
     },
   ].map((side) => ({
     ...side,
@@ -174,5 +190,13 @@ const sides = computed(() =>
 .duel-footer > span {
   font-size: 0.8125rem;
   color: var(--mlbb-muted);
+}
+.duel-series-details {
+  padding: 10px 14px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--mlbb-muted);
+  border-top: 1px solid var(--mlbb-border);
+  overflow-wrap: anywhere;
 }
 </style>

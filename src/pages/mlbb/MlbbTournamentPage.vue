@@ -99,7 +99,9 @@
           <div>
             <strong
               >{{ completedCount
-              }}<small> / {{ Math.max(0, current.players.length - 1) }}</small></strong
+              }}<small>
+                / {{ Math.max(0, current.players.length - 1) + (bronzeMatch ? 1 : 0) }}</small
+              ></strong
             ><span>{{ t('mlbb.matches') }}</span>
           </div>
         </div>
@@ -191,6 +193,10 @@
               <p>{{ t('mlbb.championHint') }}</p>
             </div>
           </div>
+          <p v-if="thirdPlaceId" class="third-place-award">
+            <q-icon name="workspace_premium" /> {{ t('mlbb.thirdPlace') }}:
+            <strong>{{ playerName(thirdPlaceId) }}</strong>
+          </p>
           <div v-if="!locked" class="empty-state bracket-empty">
             <div class="empty-bracket-art" aria-hidden="true">
               <q-icon name="account_tree" size="54px" />
@@ -237,6 +243,30 @@
                       :number="matchNumber(match.id)"
                       :source-a="sourceLabel(match.sourceA)"
                       :source-b="sourceLabel(match.sourceB)"
+                      @result="openResult"
+                    />
+                  </div>
+                </div>
+              </section>
+              <section v-if="bronzeMatch" class="bracket-round">
+                <div class="round-heading">
+                  <h3>{{ t('mlbb.thirdPlace') }}</h3>
+                  <span>MD{{ bronzeMatch.bestOf }}</span>
+                </div>
+                <div class="round-matches">
+                  <div
+                    v-if="bronzeMatch"
+                    class="match-position"
+                    :data-current-match="bronzeMatch.id === currentMatch?.id ? 'true' : undefined"
+                  >
+                    <MlbbMatchCard
+                      :match="bronzeMatch"
+                      :title="t('mlbb.thirdPlace')"
+                      :players="current.players"
+                      :number="matchNumber(bronzeMatch.id)"
+                      :current="bronzeMatch.id === currentMatch?.id"
+                      :source-a="t('mlbb.loserOf', { number: matchNumber(bronzeMatch.sourceA!) })"
+                      :source-b="t('mlbb.loserOf', { number: matchNumber(bronzeMatch.sourceB!) })"
                       @result="openResult"
                     />
                   </div>
@@ -368,6 +398,30 @@
                   />
                 </div>
               </div>
+              <q-select
+                :model-value="current.rules.thirdPlace"
+                :options="thirdPlaceOptions"
+                emit-value
+                map-options
+                outlined
+                :disable="current.players.length < 4"
+                :label="t('mlbb.thirdPlaceMode')"
+                class="q-mt-md"
+                @update:model-value="changeThirdPlace"
+              />
+              <p class="field-help">{{ t('mlbb.thirdPlaceHint') }}</p>
+              <q-input
+                v-if="current.rules.thirdPlace === 'match'"
+                v-model.number="current.rules.thirdPlaceBestOf"
+                type="number"
+                min="1"
+                max="99"
+                step="1"
+                outlined
+                :disable="locked"
+                :label="t('mlbb.thirdPlaceFormat')"
+                class="q-mt-md"
+              />
               <p class="field-help">{{ t('mlbb.formatHint') }}</p>
               <p v-if="hasEvenSeries" class="field-help even-help">
                 <q-icon name="info_outline" /> {{ t('mlbb.evenHint') }}
@@ -551,7 +605,76 @@
               { label: t('mlbb.wo'), value: 'wo' },
             ]"
           />
-          <div v-if="resultKind === 'score'" class="score-inputs q-mt-lg">
+          <q-select
+            v-if="resultKind === 'score'"
+            v-model="scoreMode"
+            outlined
+            emit-value
+            map-options
+            :label="t('mlbb.scoreMode')"
+            :options="[
+              { label: t('mlbb.gameScores'), value: 'games' },
+              { label: t('mlbb.seriesWins'), value: 'series' },
+            ]"
+            class="q-mt-md"
+          />
+          <div v-if="resultKind === 'score' && scoreMode === 'games'" class="game-scores-editor">
+            <p class="field-help">{{ t('mlbb.gameScoreHint') }}</p>
+            <div v-for="(game, index) in gameScores" :key="index" class="game-score-entry">
+              <div class="row items-center justify-between">
+                <strong>{{ t('mlbb.gameScoreTitle', { number: index + 1 }) }}</strong
+                ><q-btn
+                  v-if="gameScores.length > 1"
+                  flat
+                  round
+                  icon="close"
+                  :aria-label="t('mlbb.removeGame')"
+                  @click="gameScores.splice(index, 1)"
+                />
+              </div>
+              <div class="score-inputs q-mt-sm">
+                <q-input
+                  v-model.number="game.scoreA"
+                  outlined
+                  type="number"
+                  min="0"
+                  step="1"
+                  :label="playerName(selectedMatch.playerAId)"
+                /><span>&times;</span
+                ><q-input
+                  v-model.number="game.scoreB"
+                  outlined
+                  type="number"
+                  min="0"
+                  step="1"
+                  :label="playerName(selectedMatch.playerBId)"
+                />
+              </div>
+              <q-select
+                :model-value="gameWinner(game)"
+                outlined
+                emit-value
+                map-options
+                :options="winnerOptions"
+                :label="t('mlbb.selectWinner')"
+                class="q-mt-md"
+                @update:model-value="(value) => (game.winnerId = value)"
+              />
+            </div>
+            <q-btn
+              v-if="canAddGame"
+              outline
+              color="primary"
+              icon="add"
+              :label="t('mlbb.addGame')"
+              class="q-mt-md"
+              @click="gameScores.push({ scoreA: 0, scoreB: 0, winnerId: '' })"
+            />
+            <p class="text-weight-bold q-mt-md">
+              {{ t('mlbb.seriesScore', { a: resultTotals.a, b: resultTotals.b }) }}
+            </p>
+          </div>
+          <div v-if="resultKind === 'score' && scoreMode === 'series'" class="score-inputs q-mt-lg">
             <q-input
               v-model.number="scoreA"
               type="number"
@@ -571,7 +694,7 @@
               :label="playerName(selectedMatch.playerBId)"
             />
           </div>
-          <p class="field-help q-mt-md">
+          <p v-if="resultKind === 'wo' || scoreMode === 'series'" class="field-help q-mt-md">
             {{
               resultKind === 'wo'
                 ? t('mlbb.woHint')
@@ -636,8 +759,10 @@ import { copyToClipboard, exportFile, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import MlbbMatchCard from 'src/components/mlbb/MlbbMatchCard.vue';
 import { useMlbb } from 'src/composables/useMlbb';
-import type { MlbbMatch, MlbbPlayer } from 'src/types/mlbb';
+import type { MlbbGameScore, MlbbMatch, MlbbPlayer } from 'src/types/mlbb';
 import {
+  buildMlbbThirdPlaceMatch,
+  mlbbThirdPlaceId,
   mlbbBracketSize,
   mlbbRulePresets,
   mlbbDescendants,
@@ -671,9 +796,29 @@ const tournamentOptions = computed(() =>
     value: item.id,
   })),
 );
+const bronzeMatch = computed(() => buildMlbbThirdPlaceMatch(current.value));
+const thirdPlaceId = computed(() => mlbbThirdPlaceId(current.value));
+const allMatches = computed(() => [
+  ...rounds.value.flat(),
+  ...(bronzeMatch.value ? [bronzeMatch.value] : []),
+]);
 const currentMatch = computed(
-  () => rounds.value.flat().find((match) => match.status === 'ready') ?? null,
+  () => allMatches.value.find((match) => match.status === 'ready') ?? null,
 );
+const thirdPlaceOptions = computed(() => [
+  { label: t('mlbb.thirdPlaceNone'), value: 'none' },
+  { label: t('mlbb.thirdPlaceMatch'), value: 'match' },
+  { label: t('mlbb.thirdPlaceChampion'), value: 'champion-loser' },
+]);
+function changeThirdPlace(value: 'none' | 'match' | 'champion-loser') {
+  const commit = () => {
+    delete current.value.results['third-place'];
+    current.value.rules.thirdPlace = value;
+  };
+  if (current.value.results['third-place'])
+    confirmAction('mlbb.thirdPlaceChange', 'mlbb.thirdPlaceChangeMessage', commit);
+  else commit();
+}
 const bracketFullscreen = ref(false);
 const bracketPanel = ref<HTMLElement | null>(null);
 let fullscreenReturnFocus: HTMLElement | null = null;
@@ -755,7 +900,7 @@ watch(
   { immediate: true },
 );
 const completedCount = computed(
-  () => rounds.value.flat().filter((match) => match.status === 'completed').length,
+  () => allMatches.value.filter((match) => match.status === 'completed').length,
 );
 const formatFields = [
   { key: 'bestOf', label: 'mlbb.generalBestOf' },
@@ -795,6 +940,7 @@ const formats = computed(() => [
   current.value.rules.bestOf,
   current.value.rules.semifinalBestOf,
   current.value.rules.finalBestOf,
+  current.value.rules.thirdPlaceBestOf,
 ]);
 const hasEvenSeries = computed(() => formats.value.some((value) => value > 0 && value % 2 === 0));
 const canDraw = computed(
@@ -889,12 +1035,13 @@ function playerName(id: string | null) {
   return current.value.players.find((player) => player.id === id)?.name ?? t('mlbb.waiting');
 }
 function matchNumber(id: string) {
-  return rounds.value.flat().findIndex((match) => match.id === id) + 1;
+  return allMatches.value.findIndex((match) => match.id === id) + 1;
 }
 function sourceLabel(id: string | null) {
   return id ? t('mlbb.winnerOf', { number: matchNumber(id) }) : '';
 }
 function roundLabel(index: number) {
+  if (index === rounds.value.length) return t('mlbb.thirdPlace');
   const remaining = rounds.value.length - index;
   return remaining === 1
     ? t('mlbb.final')
@@ -912,11 +1059,40 @@ const scoreA = ref<number | null>(0);
 const scoreB = ref<number | null>(0);
 const selectedWinner = ref('');
 const resultError = ref(false);
-const isTied = computed(() => scoreA.value === scoreB.value);
+const scoreMode = ref<'games' | 'series'>('games');
+const gameScores = ref<MlbbGameScore[]>([]);
+function gameWinner(game: MlbbGameScore) {
+  return (
+    game.winnerId ||
+    (game.scoreA === game.scoreB
+      ? ''
+      : ((Number(game.scoreA) > Number(game.scoreB)
+          ? selectedMatch.value?.playerAId
+          : selectedMatch.value?.playerBId) ?? ''))
+  );
+}
+const resultTotals = computed(() =>
+  scoreMode.value === 'series'
+    ? { a: scoreA.value, b: scoreB.value }
+    : {
+        a: gameScores.value.filter((game) => gameWinner(game) === selectedMatch.value?.playerAId)
+          .length,
+        b: gameScores.value.filter((game) => gameWinner(game) === selectedMatch.value?.playerBId)
+          .length,
+      },
+);
+const canAddGame = computed(
+  () =>
+    !!selectedMatch.value &&
+    gameScores.value.length < selectedMatch.value.bestOf &&
+    Math.max(Number(resultTotals.value.a), Number(resultTotals.value.b)) <=
+      selectedMatch.value.bestOf / 2,
+);
+const isTied = computed(() => resultTotals.value.a === resultTotals.value.b);
 const effectiveWinner = computed(() =>
   resultKind.value === 'wo' || isTied.value
     ? selectedWinner.value
-    : ((Number(scoreA.value) > Number(scoreB.value)
+    : ((Number(resultTotals.value.a) > Number(resultTotals.value.b)
         ? selectedMatch.value?.playerAId
         : selectedMatch.value?.playerBId) ?? ''),
 );
@@ -928,6 +1104,10 @@ const winnerOptions = computed(() =>
 function openResult(match: MlbbMatch) {
   selectedMatch.value = match;
   resultKind.value = match.result?.kind ?? 'score';
+  scoreMode.value = match.result?.kind === 'score' && !match.result.games ? 'series' : 'games';
+  gameScores.value = match.result?.games?.map((game) => ({ ...game })) ?? [
+    { scoreA: 0, scoreB: 0, winnerId: '' },
+  ];
   scoreA.value = match.result?.scoreA ?? 0;
   scoreB.value = match.result?.scoreB ?? 0;
   selectedWinner.value = match.result?.winnerId ?? '';
@@ -942,8 +1122,11 @@ function submitResult() {
       ? { kind: 'wo' as const, winnerId: selectedWinner.value }
       : {
           kind: 'score' as const,
-          scoreA: scoreA.value ?? NaN,
-          scoreB: scoreB.value ?? NaN,
+          scoreA: resultTotals.value.a ?? NaN,
+          scoreB: resultTotals.value.b ?? NaN,
+          ...(scoreMode.value === 'games'
+            ? { games: gameScores.value.map((game) => ({ ...game, winnerId: gameWinner(game) })) }
+            : {}),
           winnerId: effectiveWinner.value,
         };
   try {
@@ -1004,8 +1187,29 @@ const shareText = computed(() => {
       lines.push(
         `${t('mlbb.game', { number: matchNumber(match.id) })}: ${duel}${result ? ` · ${result.kind === 'wo' ? t('mlbb.wo') : t('mlbb.winner')}: ${playerName(result.winnerId)}` : ''}`,
       );
+      result?.games?.forEach((game, index) =>
+        lines.push(
+          `  ${t('mlbb.gameScoreTitle', { number: index + 1 })}: ${game.scoreA} x ${game.scoreB} (${t('mlbb.winner')}: ${playerName(game.winnerId)})`,
+        ),
+      );
     });
   });
+  if (bronzeMatch.value) {
+    const match = bronzeMatch.value;
+    lines.push(
+      '',
+      `${t('mlbb.thirdPlace')}: ${match.playerAId ? playerName(match.playerAId) : t('mlbb.loserOf', { number: matchNumber(match.sourceA!) })} x ${match.playerBId ? playerName(match.playerBId) : t('mlbb.loserOf', { number: matchNumber(match.sourceB!) })}`,
+    );
+    if (match.result) {
+      lines.push(t('mlbb.seriesScore', { a: match.result.scoreA, b: match.result.scoreB }));
+      match.result.games?.forEach((game, index) =>
+        lines.push(
+          `${t('mlbb.gameScoreTitle', { number: index + 1 })}: ${game.scoreA} x ${game.scoreB} (${t('mlbb.winner')}: ${playerName(game.winnerId)})`,
+        ),
+      );
+    }
+  }
+  if (thirdPlaceId.value) lines.push(`${t('mlbb.thirdPlace')}: ${playerName(thirdPlaceId.value)}`);
   if (championId.value) lines.push('', `${t('mlbb.champion')} ${playerName(championId.value)}`);
   return lines.join('\n');
 });
@@ -1849,5 +2053,21 @@ body.body--dark .bracket-section {
     flex-direction: row;
     flex-wrap: wrap;
   }
+}
+
+.game-score-entry {
+  padding: 16px;
+  border: 1px solid #94a3b8;
+  border-radius: 12px;
+  margin-top: 16px;
+}
+.third-place-award {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  padding: 16px;
+  background: var(--mlbb-accent-soft);
+  border-radius: 12px;
 }
 </style>

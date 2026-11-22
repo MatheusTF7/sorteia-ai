@@ -1,5 +1,6 @@
 import type {
   MlbbBestOf,
+  MlbbGameScore,
   MlbbMatch,
   MlbbPlayer,
   MlbbResult,
@@ -41,6 +42,8 @@ export function emptyMlbbTournament(id: string, english = false): MlbbTournament
       bestOf: 1,
       semifinalBestOf: 1,
       finalBestOf: 3,
+      thirdPlace: 'none',
+      thirdPlaceBestOf: 1,
       lane: english ? 'Mid lane' : 'Rota do meio',
       victory: mlbbRulePresets(english).victories[0]!,
       notes: mlbbRulePresets(english).rules[0]!,
@@ -79,6 +82,7 @@ export function drawMlbbBracket(
       tournament.rules.bestOf,
       tournament.rules.semifinalBestOf,
       tournament.rules.finalBestOf,
+      tournament.rules.thirdPlaceBestOf,
     ].every((value) => Number.isInteger(value) && value >= 1 && value <= 99)
   )
     throw new RangeError('format');
@@ -101,6 +105,27 @@ function validResult(
   if (!value || !a || !b || value.playerAId !== a || value.playerBId !== b) return false;
   if (value.kind === 'wo') return value.winnerId === a || value.winnerId === b;
   if (value.kind !== 'score') return false;
+  if (value.games !== undefined) {
+    if (!Array.isArray(value.games) || !value.games.length || value.games.length > bestOf)
+      return false;
+    let winsA = 0;
+    let winsB = 0;
+    for (const game of value.games) {
+      if (
+        Math.max(winsA, winsB) > bestOf / 2 ||
+        !game ||
+        !Number.isSafeInteger(game.scoreA) ||
+        !Number.isSafeInteger(game.scoreB) ||
+        game.scoreA < 0 ||
+        game.scoreB < 0 ||
+        (game.winnerId !== a && game.winnerId !== b)
+      )
+        return false;
+      if (game.winnerId === a) winsA++;
+      else winsB++;
+    }
+    if (winsA !== value.scoreA || winsB !== value.scoreB) return false;
+  }
   const needed = Math.floor(bestOf / 2) + 1;
   const { scoreA, scoreB } = value;
   if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB) || scoreA < 0 || scoreB < 0)
@@ -171,20 +196,73 @@ export function mlbbDescendants(tournament: MlbbTournament, matchId: string): st
       affected.add(match.id);
   }
   affected.delete(matchId);
+  const bronze = buildMlbbThirdPlaceMatch(tournament);
+  if (
+    bronze &&
+    ((bronze.sourceA && affected.has(bronze.sourceA)) ||
+      (bronze.sourceB && affected.has(bronze.sourceB)) ||
+      bronze.sourceA === matchId ||
+      bronze.sourceB === matchId)
+  )
+    affected.add(bronze.id);
   return [...affected];
+}
+
+function loser(match: MlbbMatch | undefined): string | null {
+  if (!match?.result || !match.winnerId) return null;
+  return match.winnerId === match.playerAId ? match.playerBId : match.playerAId;
+}
+
+export function buildMlbbThirdPlaceMatch(tournament: MlbbTournament): MlbbMatch | null {
+  if (tournament.rules.thirdPlace !== 'match' || tournament.players.length < 4) return null;
+  const rounds = buildMlbbRounds(tournament);
+  const semifinals = rounds.at(-2);
+  if (!semifinals) return null;
+  const playerAId = loser(semifinals[0]);
+  const playerBId = loser(semifinals[1]);
+  const candidate = tournament.results['third-place'];
+  const result = validResult(candidate, playerAId, playerBId, tournament.rules.thirdPlaceBestOf)
+    ? candidate
+    : null;
+  return {
+    id: 'third-place',
+    round: rounds.length,
+    index: 0,
+    bestOf: tournament.rules.thirdPlaceBestOf,
+    playerAId,
+    playerBId,
+    sourceA: semifinals[0]?.id ?? null,
+    sourceB: semifinals[1]?.id ?? null,
+    winnerId: result?.winnerId ?? null,
+    status: result ? 'completed' : playerAId && playerBId ? 'ready' : 'waiting',
+    result,
+  };
+}
+
+export function mlbbThirdPlaceId(tournament: MlbbTournament): string | null {
+  if (tournament.players.length < 4) return null;
+  if (tournament.rules.thirdPlace === 'match')
+    return buildMlbbThirdPlaceMatch(tournament)?.winnerId ?? null;
+  if (tournament.rules.thirdPlace !== 'champion-loser') return null;
+  const rounds = buildMlbbRounds(tournament);
+  const champion = rounds.at(-1)?.[0]?.winnerId;
+  return champion ? loser(rounds.at(-2)?.find((match) => match.winnerId === champion)) : null;
 }
 
 export function setMlbbResult(
   tournament: MlbbTournament,
   matchId: string,
   input:
-    | { kind: 'score'; scoreA: number; scoreB: number; winnerId?: string }
+    | { kind: 'score'; scoreA: number; scoreB: number; winnerId?: string; games?: MlbbGameScore[] }
     | { kind: 'wo'; winnerId: string }
     | null,
 ): MlbbTournament {
-  const match = buildMlbbRounds(tournament)
-    .flat()
-    .find((item) => item.id === matchId);
+  const match =
+    matchId === 'third-place'
+      ? buildMlbbThirdPlaceMatch(tournament)
+      : buildMlbbRounds(tournament)
+          .flat()
+          .find((item) => item.id === matchId);
   if (!match || !match.playerAId || !match.playerBId) throw new RangeError('match');
   let result: MlbbResult | null = null;
   if (input) {
@@ -203,6 +281,9 @@ export function setMlbbResult(
       scoreA: input.kind === 'score' ? input.scoreA : 0,
       scoreB: input.kind === 'score' ? input.scoreB : 0,
       winnerId,
+      ...(input.kind === 'score' && input.games !== undefined
+        ? { games: input.games.map((game) => ({ ...game })) }
+        : {}),
     };
     if (!validResult(result, match.playerAId, match.playerBId, match.bestOf))
       throw new RangeError('score');
@@ -272,6 +353,11 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
     bestOf: bestOf(rules.bestOf),
     semifinalBestOf: bestOf(rules.semifinalBestOf ?? rules.bestOf),
     finalBestOf: bestOf(rules.finalBestOf),
+    thirdPlace:
+      rules.thirdPlace === 'match' || rules.thirdPlace === 'champion-loser'
+        ? rules.thirdPlace
+        : 'none',
+    thirdPlaceBestOf: bestOf(rules.thirdPlaceBestOf),
     lane: textValue(rules.lane, 80),
     victory: textValue(rules.victory, 200),
     notes: textValue(rules.notes, 2000),
@@ -287,8 +373,10 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
   }
   const results = record(data.results);
   // Resolve one round at a time so an invalid upstream result cannot resurrect a later match.
-  for (let round = 0; round < Math.log2(mlbbBracketSize(ids.size)); round++) {
-    for (const match of buildMlbbRounds(tournament)[round] ?? []) {
+  const roundCount = Math.max(0, Math.log2(mlbbBracketSize(ids.size)));
+  for (let round = 0; round <= roundCount; round++) {
+    const bronze = round === roundCount ? buildMlbbThirdPlaceMatch(tournament) : null;
+    for (const match of bronze ? [bronze] : (buildMlbbRounds(tournament)[round] ?? [])) {
       const raw = record(results?.[match.id]);
       if (!raw) continue;
       const candidate: MlbbResult = {
@@ -299,6 +387,19 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
         scoreA: typeof raw.scoreA === 'number' ? raw.scoreA : -1,
         scoreB: typeof raw.scoreB === 'number' ? raw.scoreB : -1,
       };
+      if (raw.games !== undefined) {
+        if (!Array.isArray(raw.games) || raw.games.length > 99) continue;
+        const games: MlbbGameScore[] = [];
+        for (const entry of raw.games) {
+          const game = record(entry);
+          games.push({
+            scoreA: typeof game?.scoreA === 'number' ? game.scoreA : -1,
+            scoreB: typeof game?.scoreB === 'number' ? game.scoreB : -1,
+            winnerId: textValue(game?.winnerId, 100),
+          });
+        }
+        candidate.games = games;
+      }
       if (
         (raw.kind === 'score' || raw.kind === 'wo') &&
         validResult(candidate, match.playerAId, match.playerBId, match.bestOf)

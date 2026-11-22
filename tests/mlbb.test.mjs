@@ -22,6 +22,8 @@ const utilityUrl = await moduleUrl('../src/utils/mlbb.ts', {
 });
 const {
   buildMlbbRounds,
+  buildMlbbThirdPlaceMatch,
+  mlbbThirdPlaceId,
   drawMlbbBracket,
   emptyMlbbTournament,
   mlbbBracketSize,
@@ -63,6 +65,102 @@ function finish(value) {
     });
   }
 }
+
+test('MD1 records 3-0 kills as 1-0 series wins and preserves both through restore', () => {
+  const value = tournament(2, { finalBestOf: 1 });
+  const match = buildMlbbRounds(value)[0][0];
+  const updated = setMlbbResult(value, match.id, {
+    kind: 'score',
+    scoreA: 1,
+    scoreB: 0,
+    games: [{ scoreA: 3, scoreB: 0, winnerId: match.playerAId }],
+  });
+  assert.equal(updated.results[match.id].scoreA, 1);
+  assert.equal(updated.results[match.id].games[0].scoreA, 3);
+  assert.deepEqual(restoreMlbbTournament(JSON.parse(JSON.stringify(updated))), updated);
+});
+
+test('game winner can have fewer kills under tower rules and series wins follow declared winners', () => {
+  const value = tournament(2, { finalBestOf: 3 });
+  const match = buildMlbbRounds(value)[0][0];
+  const games = [
+    { scoreA: 8, scoreB: 2, winnerId: match.playerBId },
+    { scoreA: 0, scoreB: 0, winnerId: match.playerBId },
+  ];
+  const updated = setMlbbResult(value, match.id, { kind: 'score', scoreA: 0, scoreB: 2, games });
+  assert.equal(buildMlbbRounds(updated)[0][0].winnerId, match.playerBId);
+  assert.deepEqual(restoreMlbbTournament(updated), updated);
+});
+
+test('rejects mismatched series counts, invalid kills, outsiders and games after the series was won', () => {
+  const value = tournament(2, { finalBestOf: 3 });
+  const match = buildMlbbRounds(value)[0][0];
+  const win = { scoreA: 3, scoreB: 0, winnerId: match.playerAId };
+  for (const games of [
+    [win],
+    [win, { ...win, scoreA: -1 }],
+    [win, { ...win, scoreA: 1.5 }],
+    [win, { ...win, winnerId: 'outsider' }],
+    [win, win, { ...win, winnerId: match.playerBId }],
+  ]) {
+    assert.throws(
+      () => setMlbbResult(value, match.id, { kind: 'score', scoreA: 2, scoreB: 0, games }),
+      RangeError,
+    );
+  }
+});
+
+test('third-place match resolves semifinal losers independently of the main final and restores', () => {
+  let value = finish(tournament(8, { thirdPlace: 'match', thirdPlaceBestOf: 1 }));
+  const match = buildMlbbThirdPlaceMatch(value);
+  assert.equal(match.status, 'ready');
+  const final = buildMlbbRounds(value).at(-1)[0];
+  assert.ok(![final.playerAId, final.playerBId].includes(match.playerAId));
+  assert.ok(![final.playerAId, final.playerBId].includes(match.playerBId));
+  value = setMlbbResult(value, match.id, {
+    kind: 'score',
+    scoreA: 0,
+    scoreB: 1,
+    games: [{ scoreA: 1, scoreB: 3, winnerId: match.playerBId }],
+  });
+  assert.equal(mlbbThirdPlaceId(value), match.playerBId);
+  assert.equal(buildMlbbRounds(value).at(-1)[0].winnerId, final.winnerId);
+  assert.deepEqual(restoreMlbbTournament(JSON.parse(JSON.stringify(value))), value);
+  assert.equal(buildMlbbThirdPlaceMatch(tournament(4, { thirdPlace: 'match' })).status, 'waiting');
+});
+
+test('correcting a semifinal invalidates the bronze result; correcting final does not', () => {
+  let value = finish(tournament(4, { thirdPlace: 'match', thirdPlaceBestOf: 1 }));
+  const bronze = buildMlbbThirdPlaceMatch(value);
+  value = setMlbbResult(value, bronze.id, { kind: 'wo', winnerId: bronze.playerAId });
+  const semifinal = buildMlbbRounds(value)[0][0];
+  const corrected = setMlbbResult(value, semifinal.id, { kind: 'score', scoreA: 0, scoreB: 1 });
+  assert.equal(corrected.results['third-place'], undefined);
+  assert.equal(corrected.results['r2-m1'], undefined);
+  assert.equal(buildMlbbThirdPlaceMatch(corrected).playerAId, semifinal.playerAId);
+  const finalCorrected = setMlbbResult(value, 'r2-m1', { kind: 'score', scoreA: 0, scoreB: 2 });
+  assert.deepEqual(finalCorrected.results['third-place'], value.results['third-place']);
+});
+
+test('automatic third place is the champion semifinal opponent and changes with final winner', () => {
+  const value = finish(tournament(4, { thirdPlace: 'champion-loser' }));
+  const semifinals = buildMlbbRounds(value)[0];
+  assert.equal(mlbbThirdPlaceId(value), semifinals[0].playerBId);
+  const changed = setMlbbResult(value, 'r2-m1', { kind: 'score', scoreA: 0, scoreB: 2 });
+  assert.equal(mlbbThirdPlaceId(changed), semifinals[1].playerBId);
+  assert.equal(mlbbThirdPlaceId(tournament(4, { thirdPlace: 'champion-loser' })), null);
+  assert.equal(mlbbThirdPlaceId(finish(tournament(2, { thirdPlace: 'champion-loser' }))), null);
+});
+
+test('legacy series-only results restore without inventing kills', () => {
+  const value = finish(tournament(4));
+  delete value.rules.thirdPlace;
+  delete value.rules.thirdPlaceBestOf;
+  const restored = restoreMlbbTournament(value);
+  assert.deepEqual(restored.results, value.results);
+  assert.equal(restored.rules.thirdPlace, 'none');
+  assert.equal(restored.results['r1-m1'].games, undefined);
+});
 
 test('all sizes from 2 to 64 produce a complete elimination tree, fair byes and exactly N-1 played duels', () => {
   for (let count = 2; count <= 64; count++) {

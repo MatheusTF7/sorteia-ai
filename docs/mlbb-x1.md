@@ -26,7 +26,19 @@ O **Jogo atual** é o primeiro duelo pronto para jogar na ordem da numeração; 
 
 Quando a quantidade não é potência de dois, os avanços sem adversário são distribuídos pela primeira fase. Todos os inscritos têm a mesma chance de ocupar essas vagas no sorteio. Ninguém recebe dois avanços automáticos e um adversário ainda indefinido não é tratado como vaga vazia. Um campeonato com N jogadores exige N − 1 duelos decididos, além dos avanços automáticos.
 
-Use **Registrar resultado** para informar jogos vencidos na série ou selecionar um vencedor por **W.O.**. O vencedor avança para o confronto correspondente; a final concluída destaca o campeão. Não há consulta automática ao jogo nem envio de resultados para o MLBB.
+Use **Registrar resultado** para informar o **placar de cada jogo (kills)** e confirmar o vencedor daquele jogo. As kills não são limitadas pela MDX: em MD1, **3 × 0 em kills** corresponde a **1 × 0 na série**. Em MD3, adicione os jogos disputados até encerrar a série. O vencedor de cada jogo é sugerido pelo placar, mas pode ser ajustado para respeitar decisões por torre, farm ou desempate. A série é calculada pelos vencedores declarados. Não é permitido adicionar jogos depois que a série já foi vencida.
+
+O modo **Vitórias na série** continua disponível para registrar apenas o resultado da série. Resultados antigos são preservados nesse modo, sem inventar placares de kills. **W.O.** continua permitindo indicar quem avançou. A chave, o resumo para compartilhar e os backups preservam os dados por jogo e da série. O vencedor avança para o confronto correspondente; a final concluída destaca o campeão. Não há consulta automática ao jogo nem envio de resultados para o MLBB.
+
+## Terceiro lugar
+
+Com pelo menos quatro jogadores, escolha **Como definir o 3º lugar** nas configurações. A escolha pode ser alterada após o sorteio sem refazer a chave principal:
+
+- **Sem definição de 3º lugar**: mantém apenas a chave principal.
+- **Confronto entre perdedores das semifinais**: cria um duelo separado na grade, com MDX própria configurada antes do sorteio. Os adversários são definidos pelas derrotas nas semifinais. A disputa aceita placares por jogo, resultado de série e W.O.
+- **Quem perdeu para o campeão na semifinal**: após a final, atribui o terceiro lugar automaticamente ao adversário que o campeão eliminou na semifinal. O vice-campeão não participa desse critério.
+
+Mudar o método pede confirmação se houver resultado de disputa de terceiro lugar e apaga somente esse resultado. Corrigir uma semifinal também invalida o resultado dependente da disputa de terceiro lugar. Corrigir a final recalcula o terceiro automático, preservando o confronto de terceiro já registrado. A disputa de terceiro lugar, quando habilitada, acrescenta um duelo aos N − 1 da chave principal.
 
 É possível editar ou apagar resultados. Alterar somente o placar preservando o vencedor mantém os jogos seguintes. Alterar o vencedor ou apagar um resultado limpa todos os resultados posteriores que dependem daquele confronto, com confirmação quando necessário, preservando os outros ramos da chave.
 

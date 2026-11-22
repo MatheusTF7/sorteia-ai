@@ -11,9 +11,17 @@ export interface MlbbRules {
   bestOf: MlbbBestOf;
   semifinalBestOf: MlbbBestOf;
   finalBestOf: MlbbBestOf;
+  thirdPlace: 'none' | 'match' | 'champion-loser';
+  thirdPlaceBestOf: MlbbBestOf;
   lane: string;
   victory: string;
   notes: string;
+}
+
+export interface MlbbGameScore {
+  scoreA: number;
+  scoreB: number;
+  winnerId: string;
 }
 
 export interface MlbbResult {
@@ -23,6 +31,8 @@ export interface MlbbResult {
   scoreA: number;
   scoreB: number;
   winnerId: string;
+  /** Scores within each game; scoreA/scoreB above continue to count series wins. */
+  games?: MlbbGameScore[];
 }
 
 export interface MlbbTournament {

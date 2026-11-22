@@ -73,13 +73,87 @@
             />
             <q-input v-model="state.location" outlined dense :label="t('racha.location')" />
             <q-input
-              v-model="state.date"
+              :model-value="formatRachaDate(state.date, locale)"
               outlined
               dense
-              type="datetime-local"
-              stack-label
+              readonly
               :label="t('racha.date')"
-            />
+            >
+              <template #append>
+                <q-btn flat round dense icon="event" :aria-label="t('racha.date')">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date
+                      v-model="selectedDate"
+                      mask="YYYY-MM-DD"
+                      :locale="pickerLanguage.date"
+                      today-btn
+                    >
+                      <div class="row items-center justify-between">
+                        <q-btn
+                          v-close-popup
+                          flat
+                          :label="pickerLanguage.label.clear"
+                          @click="state.date = ''"
+                        />
+                        <q-btn
+                          v-close-popup
+                          flat
+                          color="primary"
+                          :label="pickerLanguage.label.close"
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-btn>
+              </template>
+            </q-input>
+            <div class="match-times">
+              <q-input
+                v-for="field in timeFields"
+                :key="field"
+                :model-value="state[field]"
+                outlined
+                dense
+                readonly
+                :label="t(`racha.${field}`)"
+                :error="field === 'endTime' && sameTime"
+                :error-message="t('racha.sameTime')"
+                :hint="
+                  field === 'endTime'
+                    ? t(endsNextDay ? 'racha.nextDay' : 'racha.durationHint')
+                    : undefined
+                "
+              >
+                <template #append>
+                  <q-btn flat round dense icon="schedule" :aria-label="t(`racha.${field}`)">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-time
+                        :model-value="state[field] || null"
+                        mask="HH:mm"
+                        format24h
+                        :locale="pickerLanguage.date"
+                        @update:model-value="setMatchTime(field, $event)"
+                      >
+                        <div class="row items-center justify-between">
+                          <q-btn
+                            v-close-popup
+                            flat
+                            :label="pickerLanguage.label.clear"
+                            @click="setMatchTime(field, null)"
+                          />
+                          <q-btn
+                            v-close-popup
+                            flat
+                            color="primary"
+                            :label="pickerLanguage.label.close"
+                          />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-btn>
+                </template>
+              </q-input>
+            </div>
             <q-input
               v-model.number="state.fee"
               outlined
@@ -231,6 +305,17 @@
                     </q-btn>
                   </div>
                   <div class="player-controls">
+                    <q-select
+                      v-model="player.weight"
+                      class="player-weight"
+                      dense
+                      outlined
+                      emit-value
+                      map-options
+                      :options="weightOptions"
+                      :label="t('racha.weight')"
+                      :aria-label="t('racha.weightFor', { name: player.name })"
+                    />
                     <q-btn
                       flat
                       dense
@@ -331,6 +416,7 @@
                   t(state.config.mode === 'size' ? 'racha.sizeSeedRule' : 'racha.seedRule')
                 }}</span>
               </div>
+              <p class="muted text-body2 q-mt-md">{{ t('racha.balanceHint') }}</p>
               <q-toggle
                 v-model="state.config.defineStarter"
                 :label="t('racha.defineStarter')"
@@ -451,6 +537,8 @@
                 <li v-for="player in team" :key="player.id">
                   <span class="result-player-name">{{ player.name }}</span
                   ><span class="result-roles"
+                    ><q-badge outline color="primary" :label="t(`racha.weights.${player.weight}`)">
+                      <q-tooltip>{{ t('racha.weight') }}</q-tooltip> </q-badge
                     ><q-icon
                       v-if="player.goalkeeper"
                       name="sports_handball"
@@ -586,6 +674,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
 import { copyToClipboard, useQuasar } from 'quasar';
+import ptBR from 'quasar/lang/pt-BR';
+import enUS from 'quasar/lang/en-US';
 import { useI18n } from 'vue-i18n';
 import { useRacha } from 'src/composables/useRacha';
 import { useSavedConfigs } from 'src/composables/useSavedConfigs';
@@ -593,6 +683,7 @@ import type { SavedParticipantList } from 'src/types/saved-lists';
 import type { RachaPlayer, RachaState } from 'src/types/racha';
 import { isRachaSeed, RACHA_SPORT_PRESETS } from 'src/utils/racha';
 import { formatRachaMessage } from 'src/utils/racha-message';
+import { formatRachaDate, formatRachaSchedule, isRachaTime } from 'src/utils/racha-schedule';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -611,11 +702,30 @@ const {
   addNames,
   renamePlayer,
   removePlayer,
+  setStartTime,
   generateTeams,
   pickStartingTeam,
   selectSport,
   reset,
 } = useRacha();
+const timeFields = ['startTime', 'endTime'] as const;
+const pickerLanguage = computed(() => (locale.value === 'en-US' ? enUS : ptBR));
+const selectedDate = computed({
+  get: () => state.value.date || null,
+  set: (value: string | null) => {
+    state.value.date = value ?? '';
+  },
+});
+const sameTime = computed(
+  () => !!state.value.startTime && state.value.startTime === state.value.endTime,
+);
+const endsNextDay = computed(
+  () => !!state.value.endTime && state.value.endTime < state.value.startTime,
+);
+function setMatchTime(field: (typeof timeFields)[number], value: string | null) {
+  if (field === 'startTime') setStartTime(value);
+  else state.value.endTime = isRachaTime(value) ? value : '';
+}
 const { data: savedLists } = useSavedConfigs<SavedParticipantList[]>('saved_lists', []);
 function uiField<K extends keyof RachaState['ui']>(key: K) {
   return computed({
@@ -655,6 +765,12 @@ const sportOptions = computed(() => [
   ...RACHA_SPORT_PRESETS.map(({ sport }) => ({ value: sport, label: t(`racha.sports.${sport}`) })),
   { value: 'custom', label: t('racha.sports.custom') },
 ]);
+const weightOptions = computed(() =>
+  ['low', 'medium', 'high'].map((value) => ({
+    value,
+    label: t(`racha.weights.${value}`),
+  })),
+);
 const filters = computed(
   () =>
     [
@@ -791,7 +907,8 @@ async function copyRoster() {
 async function copyTeams() {
   const lines = [state.value.title || t('racha.nav')];
   if (state.value.location) lines.push(state.value.location);
-  if (state.value.date) lines.push(state.value.date.replace('T', ' '));
+  const schedule = formatRachaSchedule(state.value, locale.value, t('racha.nextDay'));
+  if (schedule) lines.push(schedule);
   resultTeams.value.forEach((team, index) => {
     lines.push('', t('racha.team', { number: index + 1 }));
     team.forEach((player) => {
@@ -975,6 +1092,11 @@ h1 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
+.match-times {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
 .match-details :deep(.q-item) {
   margin: 0;
   padding: 18px 22px;
@@ -1118,6 +1240,13 @@ h2 {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
+}
+.player-weight {
+  width: 108px;
+  flex-shrink: 0;
+}
+.player-weight :deep(.q-field__control) {
+  min-height: 36px;
 }
 .role-button {
   background: var(--sa-surface-muted);

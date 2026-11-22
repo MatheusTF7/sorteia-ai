@@ -1,6 +1,13 @@
 import type { RachaConfig, RachaPlayer, RachaState } from '../types/racha';
 import { playerKey } from './participants';
 import { shuffleItems } from './random';
+import { addRachaMinutes, isRachaDate, isRachaTime } from './racha-schedule';
+
+const PLAYER_WEIGHTS = { low: 1, medium: 2, high: 3 } as const;
+
+function playerWeight(player: RachaPlayer): number {
+  return PLAYER_WEIGHTS[player.weight] ?? PLAYER_WEIGHTS.medium;
+}
 
 export const RACHA_SPORT_PRESETS = [
   { sport: 'fut7', teamSize: 7 },
@@ -13,6 +20,8 @@ export function emptyRacha(): RachaState {
     title: '',
     location: '',
     date: '',
+    startTime: '',
+    endTime: '',
     fee: 0,
     players: [],
     config: { mode: 'size', sport: 'fut7', teamSize: 7, defineStarter: true },
@@ -72,35 +81,51 @@ export function drawRachaTeams(
   const sizes = rachaTeamSizes(players, config);
   const teams: string[][] = sizes.map(() => []);
   const seedCounts = sizes.map(() => 0);
-  // Place goalkeepers before other seeds so the opening teams get them first.
-  const seeds = [
-    ...shuffleItems(
-      players.filter((player) => player.goalkeeper),
-      random,
-    ),
-    ...shuffleItems(
-      players.filter((player) => player.seed && !player.goalkeeper),
-      random,
-    ),
-  ];
-  for (const player of seeds) {
-    const smallest = Math.min(
-      ...seedCounts.filter((_, index) => teams[index]!.length < sizes[index]!),
-    );
-    const index = teams.findIndex(
-      (team, index) => team.length < sizes[index]! && seedCounts[index] === smallest,
-    );
+  const scores = sizes.map(() => 0);
+  const highCounts = sizes.map(() => 0);
+  // Shuffle before sorting so equally rated players still participate in a random draw.
+  const byWeight = (group: RachaPlayer[]) =>
+    shuffleItems(group, random).sort((a, b) => playerWeight(b) - playerWeight(a));
+  function assign(player: RachaPlayer, candidates: number[]) {
+    const weight = playerWeight(player);
+    const index = shuffleItems(candidates, random).sort((a, b) => {
+      // Spread high-rated players first, including any already assigned in special roles.
+      if (weight === PLAYER_WEIGHTS.high && highCounts[a] !== highCounts[b]) {
+        return highCounts[a]! - highCounts[b]!;
+      }
+      return scores[a]! / sizes[a]! - scores[b]! / sizes[b]!;
+    })[0]!;
     teams[index]!.push(player.id);
-    seedCounts[index]! += 1;
+    scores[index]! += weight;
+    if (weight === PLAYER_WEIGHTS.high) highCounts[index]! += 1;
+    if (isRachaSeed(player)) seedCounts[index]! += 1;
   }
-  const others = shuffleItems(
-    players.filter((player) => !isRachaSeed(player)),
-    random,
-  );
-  let index = 0;
+  const available = () =>
+    sizes.map((_, index) => index).filter((index) => teams[index]!.length < sizes[index]!);
+  // Place goalkeepers before other seeds so the opening teams get them first.
+  const goalkeepers = byWeight(players.filter((player) => player.goalkeeper));
+  goalkeepers.forEach((player, index) => {
+    const candidates = available();
+    if (index < teams.length) assign(player, [index]);
+    else {
+      const fewestSeeds = Math.min(...candidates.map((index) => seedCounts[index]!));
+      assign(
+        player,
+        candidates.filter((index) => seedCounts[index] === fewestSeeds),
+      );
+    }
+  });
+  for (const player of byWeight(players.filter((player) => player.seed && !player.goalkeeper))) {
+    const candidates = available();
+    const fewestSeeds = Math.min(...candidates.map((index) => seedCounts[index]!));
+    assign(
+      player,
+      candidates.filter((index) => seedCounts[index] === fewestSeeds),
+    );
+  }
+  const others = byWeight(players.filter((player) => !isRachaSeed(player)));
   for (const player of others) {
-    while (teams[index]!.length === sizes[index]) index++;
-    teams[index]!.push(player.id);
+    assign(player, available());
   }
   return teams;
 }
@@ -114,7 +139,17 @@ export function parseRachaNames(raw: string, existing: RachaPlayer[]): string[] 
   const seen = new Set(existing.map((player) => playerKey(player.name)));
   return raw
     .split(/[,;\n\r]+/)
-    .map((name) => name.trim().replace(/\s+/g, ' '))
+    .map((name) =>
+      name
+        .trim()
+        // Remove leading list markers before normalizing and deduplicating names.
+        .replace(
+          /^(?:(?:\d+\s*[.)\-–—:º°ª]+|\(\s*\d+\s*\)|\[\s*\d+\s*\]|[-–—•●▪◦‣])\s*|[*+](?:\s+|$)|\d+\s+)+/u,
+          '',
+        )
+        .trim()
+        .replace(/\s+/g, ' '),
+    )
     .filter((name) => {
       const key = playerKey(name);
       if (!key || seen.has(key)) return false;
@@ -131,9 +166,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export function restoreRacha(raw: unknown): RachaState {
   const state = emptyRacha();
   if (!isRecord(raw)) return state;
-  for (const key of ['title', 'location', 'date'] as const) {
+  for (const key of ['title', 'location'] as const) {
     if (typeof raw[key] === 'string') state[key] = raw[key];
   }
+  // Migrate the old datetime-local value while preserving the selected wall-clock time.
+  const legacyDate =
+    typeof raw.date === 'string'
+      ? /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2})?$/.exec(raw.date)
+      : null;
+  const date = legacyDate?.[1] ?? raw.date;
+  if (isRachaDate(date)) state.date = date;
+  const start = raw.startTime ?? legacyDate?.[2];
+  if (isRachaTime(start)) state.startTime = start;
+  if (raw.endTime === '' || isRachaTime(raw.endTime)) state.endTime = raw.endTime;
+  else if (state.startTime) state.endTime = addRachaMinutes(state.startTime);
   if (typeof raw.fee === 'number' && Number.isFinite(raw.fee) && raw.fee >= 0) state.fee = raw.fee;
   if (isRecord(raw.config)) {
     state.config.mode = raw.config.mode === 'seeds' ? 'seeds' : 'size';
@@ -166,6 +212,7 @@ export function restoreRacha(raw: unknown): RachaState {
         goalkeeper: player.goalkeeper === true,
         seed: player.seed === true,
         paid: player.paid === true,
+        weight: player.weight === 'low' || player.weight === 'high' ? player.weight : 'medium',
       });
     }
   }

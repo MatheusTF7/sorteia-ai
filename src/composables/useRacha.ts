@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue';
 import type { RachaPlayer, RachaSport } from 'src/types/racha';
 import { playerKey } from 'src/utils/participants';
+import { addRachaMinutes, isRachaTime, rachaDuration } from 'src/utils/racha-schedule';
 import {
   drawRachaStartingTeam,
   drawRachaTeams,
@@ -58,7 +59,12 @@ export function useRacha() {
   watch(
     () =>
       JSON.stringify([
-        state.value.players.map(({ id, goalkeeper, seed }) => [id, goalkeeper, seed]),
+        state.value.players.map(({ id, goalkeeper, seed, weight }) => [
+          id,
+          goalkeeper,
+          seed,
+          weight,
+        ]),
         state.value.config.mode,
         state.value.config.mode === 'size' ? state.value.config.teamSize : null,
       ]),
@@ -98,6 +104,7 @@ export function useRacha() {
       goalkeeper: false,
       seed: false,
       paid: false,
+      weight: 'medium' as const,
     }));
     state.value.players.push(...added);
     return added.length;
@@ -118,6 +125,11 @@ export function useRacha() {
   }
   function removePlayer(id: string) {
     state.value.players = state.value.players.filter((player) => player.id !== id);
+  }
+  function setStartTime(value: string | null) {
+    const duration = rachaDuration(state.value.startTime, state.value.endTime) || 60;
+    state.value.startTime = isRachaTime(value) ? value : '';
+    state.value.endTime = addRachaMinutes(state.value.startTime, duration);
   }
   function generateTeams() {
     if (drawIssue.value) return;
@@ -155,6 +167,7 @@ export function useRacha() {
     addNames,
     renamePlayer,
     removePlayer,
+    setStartTime,
     generateTeams,
     pickStartingTeam,
     selectSport,

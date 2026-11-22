@@ -1,9 +1,12 @@
+export type RachaWeight = 'low' | 'medium' | 'high';
+
 export type RachaPlayer = {
   id: string;
   name: string;
   goalkeeper: boolean;
   seed: boolean;
   paid: boolean;
+  weight: RachaWeight;
 };
 
 export type RachaSport = 'fut7' | 'futsal' | 'football' | 'custom';
@@ -19,6 +22,8 @@ export type RachaState = {
   title: string;
   location: string;
   date: string;
+  startTime: string;
+  endTime: string;
   fee: number;
   players: RachaPlayer[];
   config: RachaConfig;

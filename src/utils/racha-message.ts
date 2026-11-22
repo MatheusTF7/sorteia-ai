@@ -1,4 +1,5 @@
 import type { RachaState } from '../types/racha';
+import { formatRachaSchedule } from './racha-schedule';
 
 type Translate = (key: string, values?: Record<string, string | number>) => string;
 
@@ -6,26 +7,12 @@ function singleLine(value: string) {
   return value.replace(/\s+/g, ' ').trim();
 }
 
-/** Keep the match's selected wall-clock time; exporting must not shift it between time zones. */
-function matchDate(value: string, locale: string) {
-  const parts = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2})?$/.exec(value);
-  if (!parts) return singleLine(value);
-  const [, year, month, day, hour, minute] = parts;
-  const date = new Date(
-    Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)),
-  );
-  return new Intl.DateTimeFormat(locale, {
-    dateStyle: 'short',
-    timeStyle: 'short',
-    timeZone: 'UTC',
-  }).format(date);
-}
-
 /** A roster update is independent of draws and of the page's search/filter state. */
 export function formatRachaMessage(state: RachaState, t: Translate, locale = 'pt-BR'): string {
   const lines = [`⚽ *${singleLine(state.title) || t('racha.nav')}*`];
   if (state.location.trim()) lines.push(`📍 ${singleLine(state.location)}`);
-  if (state.date) lines.push(`📅 ${matchDate(state.date, locale)}`);
+  const schedule = formatRachaSchedule(state, locale, t('racha.nextDay'));
+  if (schedule) lines.push(`📅 ${schedule}`);
   const fee = Number(state.fee);
   const feeCents = Number.isFinite(fee) && fee > 0 ? Math.round(fee * 100) : 0;
   const money = (cents: number) =>

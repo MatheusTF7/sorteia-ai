@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import ts from 'typescript';
+import { createRenderer } from 'vue';
 
 async function moduleUrl(relativePath, imports = {}) {
   const source = await readFile(new URL(relativePath, import.meta.url), 'utf8');
@@ -14,14 +15,17 @@ async function moduleUrl(relativePath, imports = {}) {
   return `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`;
 }
 
+const scheduleUrl = await moduleUrl('../src/utils/racha-schedule.ts');
 const utilityUrl = await moduleUrl('../src/utils/racha.ts', {
   './participants': await moduleUrl('../src/utils/participants.ts'),
   './random': await moduleUrl('../src/utils/random.ts'),
+  './racha-schedule': scheduleUrl,
 });
 const {
   drawRachaTeams,
   drawRachaStartingTeam,
   emptyRacha,
+  parseRachaNames,
   rachaTeamCount,
   restoreRacha,
   RACHA_SPORT_PRESETS,
@@ -40,10 +44,64 @@ const roster = (count, goalkeepers = 0, seeds = 0) =>
     goalkeeper: index < goalkeepers,
     seed: index < goalkeepers + seeds,
     paid: false,
+    weight: 'medium',
   }));
 const randoms = [() => 0, () => 0.5, () => 0.999999];
 const countRole = (teams, players, role) =>
   teams.map((team) => team.filter((id) => players.find((player) => player.id === id)[role]).length);
+
+test('parses numbered and bulleted WhatsApp lists, removing only leading list markers', () => {
+  for (const prefix of [
+    '1. ',
+    '1.',
+    '1- ',
+    '1 - ',
+    '1)',
+    '1: ',
+    '(1) ',
+    '[1] ',
+    '1º ',
+    '1° - ',
+    '1ª ',
+    '12 ',
+    '- ',
+    '-',
+    '– ',
+    '— ',
+    '• ',
+    '● ',
+    '▪ ',
+    '◦ ',
+    '‣ ',
+    '* ',
+    '+ ',
+    '- 1. ',
+    '1. - ',
+  ]) {
+    assert.deepEqual(parseRachaNames(`${prefix}  João   Pedro`, []), ['João Pedro'], prefix);
+  }
+  assert.deepEqual(parseRachaNames('1. Ana\r\n2.Bruno\n3- Carlos\n- Dora', []), [
+    'Ana',
+    'Bruno',
+    'Carlos',
+    'Dora',
+  ]);
+  assert.deepEqual(parseRachaNames('Ana-Maria; D’Ávila, 2Pac\nJoão 10\nJ. Carlos', []), [
+    'Ana-Maria',
+    'D’Ávila',
+    '2Pac',
+    'João 10',
+    'J. Carlos',
+  ]);
+});
+
+test('deduplicates cleaned names against the roster and ignores empty list items', () => {
+  const existing = [{ ...roster(1)[0], name: 'Ana' }];
+  assert.deepEqual(
+    parseRachaNames('1.Ana\n2. Bruno\n- bruno\n3- Carla\n• Carla\n4.\n-\n* \n(5)', existing),
+    ['Bruno', 'Carla'],
+  );
+});
 
 test('completes teams before allocating remaining players for every sport format', () => {
   for (const [count, size, sizes] of [
@@ -203,4 +261,180 @@ test('keeps kickoff restricted to the opening match and rejects invalid configur
   assert.deepEqual(drawRachaTeams(roster(1), config()), []);
   assert.deepEqual(drawRachaTeams(roster(7, 2), config()), []);
   assert.deepEqual(drawRachaTeams(roster(15, 1), config(7, 'seeds')), []);
+});
+
+test('spreads four high-weight players across three teams, including partial reserves', () => {
+  for (const count of [15, 21]) {
+    const players = roster(count);
+    players.slice(0, 4).forEach((player) => {
+      player.weight = 'high';
+    });
+    const original = structuredClone(players);
+    for (const random of randoms) {
+      const teams = drawRachaTeams(players, config(), random);
+      const highCounts = teams.map(
+        (team) =>
+          team.filter((id) => players.find((player) => player.id === id).weight === 'high').length,
+      );
+      assert.deepEqual(highCounts.sort(), [1, 1, 2]);
+      assert.deepEqual(
+        teams.map((team) => team.length),
+        count === 15 ? [7, 7, 1] : [7, 7, 7],
+      );
+    }
+    assert.deepEqual(players, original);
+  }
+});
+
+test('balances total weight and counts high-weight goalkeepers and seeds in that balance', () => {
+  const players = roster(21, 3, 3);
+  const weights = ['high', 'low', 'medium', 'high', 'medium', 'low'];
+  players.forEach((player, index) => {
+    player.weight = weights[index % weights.length];
+  });
+  const values = { high: 3, medium: 2, low: 1 };
+  for (const mode of ['size', 'seeds']) {
+    for (const random of randoms) {
+      const teams = drawRachaTeams(players, config(7, mode), random);
+      assert.deepEqual(teams.flat().sort(), players.map((player) => player.id).sort());
+      assert.ok(
+        countRole(teams, players, 'goalkeeper')
+          .slice(0, 3)
+          .every((count) => count === 1),
+      );
+      const scores = teams.map(
+        (team) =>
+          team.reduce(
+            (sum, id) => sum + values[players.find((player) => player.id === id).weight],
+            0,
+          ) / team.length,
+      );
+      assert.ok(Math.max(...scores) - Math.min(...scores) <= 1);
+      const saved = { ...emptyRacha(), config: config(7, mode), players, teams };
+      assert.deepEqual(restoreRacha(saved).teams, teams);
+    }
+  }
+});
+
+test('restores player weights and defaults old or invalid weights to medium', () => {
+  const players = roster(4);
+  players[0].weight = 'low';
+  players[1].weight = 'high';
+  delete players[2].weight;
+  players[3].weight = 'invalid';
+  assert.deepEqual(
+    restoreRacha({ players }).players.map((player) => player.weight),
+    ['low', 'high', 'medium', 'medium'],
+  );
+});
+
+const { addRachaMinutes, rachaDuration, formatRachaSchedule, isRachaDate, isRachaTime } =
+  await import(scheduleUrl);
+
+test('migrates saved date/time to separate fields, defaulting to a one-hour match', () => {
+  const restored = restoreRacha({ date: '2026-11-22T23:30', title: 'Night match' });
+  assert.equal(restored.date, '2026-11-22');
+  assert.equal(restored.startTime, '23:30');
+  assert.equal(restored.endTime, '00:30');
+  assert.equal(restored.title, 'Night match');
+  const custom = restoreRacha({ date: '2026-11-22', startTime: '18:30', endTime: '20:00' });
+  assert.equal(custom.startTime, '18:30');
+  assert.equal(custom.endTime, '20:00');
+  assert.equal(restoreRacha({ startTime: '18:30', endTime: '' }).endTime, '');
+  assert.equal(restoreRacha({ date: '2026-02-30', startTime: '25:00' }).date, '');
+  assert.equal(restoreRacha({ date: 'invalid', startTime: '25:00' }).startTime, '');
+  assert.equal(isRachaDate('2028-02-29'), true);
+  assert.equal(isRachaTime('23:59'), true);
+  assert.equal(isRachaTime('24:00'), false);
+  assert.equal(addRachaMinutes('23:30'), '00:30');
+  assert.equal(rachaDuration('23:30', '01:00'), 90);
+});
+
+const messageUrl = await moduleUrl('../src/utils/racha-message.ts', {
+  './racha-schedule': scheduleUrl,
+});
+const { formatRachaMessage } = await import(messageUrl);
+test('exports the date and time range without a timezone shift, including overnight matches', () => {
+  const state = { ...emptyRacha(), date: '2026-11-22', startTime: '23:30', endTime: '00:30' };
+  assert.equal(
+    formatRachaSchedule(state, 'pt-BR', 'Dia seguinte'),
+    '22/11/2026 · 23:30 – 00:30 (Dia seguinte)',
+  );
+  const message = formatRachaMessage(state, (key) =>
+    key === 'racha.nextDay' ? 'Dia seguinte' : key,
+  );
+  assert.ok(message.includes('📅 22/11/2026 · 23:30 – 00:30 (Dia seguinte)'));
+  assert.equal(
+    formatRachaSchedule({ ...state, date: '' }, 'en-US', 'Next day'),
+    '23:30 – 00:30 (Next day)',
+  );
+  assert.equal(formatRachaSchedule({ ...state, startTime: '', endTime: '' }), '22/11/2026');
+});
+
+const composableUrl = await moduleUrl('../src/composables/useRacha.ts', {
+  vue: import.meta.resolve('vue'),
+  'src/utils/participants': await moduleUrl('../src/utils/participants.ts'),
+  'src/utils/racha': utilityUrl,
+  'src/utils/racha-schedule': scheduleUrl,
+});
+const { useRacha } = await import(composableUrl);
+const renderer = createRenderer({
+  insert() {},
+  remove() {},
+  patchProp() {},
+  setText() {},
+  setElementText() {},
+  createElement: () => ({}),
+  createText: () => ({}),
+  createComment: () => ({}),
+  parentNode: () => null,
+  nextSibling: () => null,
+});
+
+test('persists weights and schedules; changing weight invalidates the draw, changing time preserves it', () => {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  const memory = new Map();
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: {
+      getItem: (key) => memory.get(key) ?? null,
+      setItem: (key, value) => memory.set(key, value),
+    },
+  });
+  let racha;
+  const app = renderer.createApp({
+    setup() {
+      racha = useRacha();
+      return () => null;
+    },
+  });
+  try {
+    app.mount({});
+    racha.addNames(Array.from({ length: 15 }, (_, i) => `Player ${i}`).join('\n'));
+    assert.ok(racha.state.value.players.every((player) => player.weight === 'medium'));
+    racha.generateTeams();
+    const teams = structuredClone(JSON.parse(JSON.stringify(racha.state.value.teams)));
+    racha.state.value.date = '2026-11-22';
+    racha.setStartTime('18:00');
+    assert.equal(racha.state.value.endTime, '19:00');
+    racha.state.value.endTime = '19:30';
+    racha.setStartTime('20:00');
+    assert.equal(racha.state.value.endTime, '21:30');
+    assert.deepEqual(racha.state.value.teams, teams);
+    racha.state.value.players[0].weight = 'high';
+    assert.deepEqual(racha.state.value.teams, []);
+    assert.equal(racha.state.value.drawChanged, true);
+    racha.generateTeams();
+    const saved = restoreRacha(JSON.parse(memory.get('sorteia-ai-racha-v1')));
+    assert.deepEqual(saved, JSON.parse(JSON.stringify(racha.state.value)));
+    racha.setStartTime('23:30');
+    assert.equal(racha.state.value.endTime, '01:00');
+    racha.setStartTime(null);
+    assert.equal(racha.state.value.startTime, '');
+    assert.equal(racha.state.value.endTime, '');
+  } finally {
+    app.unmount();
+    if (previous) Object.defineProperty(globalThis, 'localStorage', previous);
+    else delete globalThis.localStorage;
+  }
 });

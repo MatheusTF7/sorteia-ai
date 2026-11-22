@@ -18,6 +18,12 @@ Cada MDX ocupa uma linha, com botões **−** e **+** e entrada numérica direta
 
 **Sortear chaves** embaralha os jogadores e persiste a ordem sorteada. O desenho mostra todas as fases, com linhas de ligação e indicações como **Vencedor do jogo 1**. A numeração dos jogos é única dentro do campeonato.
 
+Antes do sorteio, as configurações e o botão de sortear aparecem primeiro. Depois de gerar as chaves, o chaveamento passa a ser o conteúdo principal, acima das configurações. Reabrir as inscrições restaura a ordem inicial.
+
+O **Jogo atual** é o primeiro duelo pronto para jogar na ordem da numeração; recebe destaque no painel e no cartão da chave. Ao registrar seu resultado, o destaque passa para o próximo duelo disponível. **Localizar na chave** centraliza o cartão na área de rolagem, que também acompanha a mudança do jogo atual. Essa indicação organiza a sequência; não significa que há uma transmissão ou partida em andamento no MLBB.
+
+**Tela cheia** amplia o painel do chaveamento para ocupar a janela do aplicativo, mantendo as ações de resultado e compartilhamento. Saia pelo botão **Sair da tela cheia** ou pela tecla **Esc**. A rolagem da página fica bloqueada enquanto o painel está ampliado e o foco do teclado permanece nele, retornando ao botão de abertura ao sair.
+
 Quando a quantidade não é potência de dois, os avanços sem adversário são distribuídos pela primeira fase. Todos os inscritos têm a mesma chance de ocupar essas vagas no sorteio. Ninguém recebe dois avanços automáticos e um adversário ainda indefinido não é tratado como vaga vazia. Um campeonato com N jogadores exige N − 1 duelos decididos, além dos avanços automáticos.
 
 Use **Registrar resultado** para informar jogos vencidos na série ou selecionar um vencedor por **W.O.**. O vencedor avança para o confronto correspondente; a final concluída destaca o campeão. Não há consulta automática ao jogo nem envio de resultados para o MLBB.

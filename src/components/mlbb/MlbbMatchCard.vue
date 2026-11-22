@@ -1,11 +1,19 @@
 <template>
   <article
     class="duel"
-    :class="{ 'duel--bye': match.status === 'bye', 'duel--complete': match.result }"
+    :class="{
+      'duel--bye': match.status === 'bye',
+      'duel--complete': match.result,
+      'duel--current': current,
+    }"
+    :aria-current="current ? 'step' : undefined"
   >
     <div class="duel-heading">
       <span class="text-weight-bold">{{ t('mlbb.game', { number }) }}</span>
       <span>MD{{ match.bestOf }}</span>
+    </div>
+    <div v-if="current" class="duel-current-label">
+      <q-icon name="sports_esports" size="18px" />{{ t('mlbb.currentMatch') }}
     </div>
     <div
       v-for="side in sides"
@@ -30,7 +38,8 @@
       }}</span>
       <q-btn
         v-if="match.status === 'ready' || match.status === 'completed'"
-        flat
+        :flat="!current"
+        :unelevated="current"
         dense
         color="primary"
         :label="t(match.result ? 'mlbb.editResult' : 'mlbb.recordResult')"
@@ -51,6 +60,7 @@ const props = defineProps<{
   number: number;
   sourceA: string;
   sourceB: string;
+  current?: boolean;
 }>();
 defineEmits<{ result: [match: MlbbMatch] }>();
 const { t } = useI18n();
@@ -90,6 +100,29 @@ const sides = computed(() =>
 }
 .duel--bye {
   opacity: 0.75;
+}
+.duel--current {
+  border: 2px solid var(--mlbb-accent);
+  box-shadow:
+    0 0 0 5px var(--mlbb-accent-soft),
+    0 12px 30px #312e8126;
+}
+.duel--current .duel-heading {
+  background: var(--mlbb-accent);
+  color: #fff;
+}
+.duel-current-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: var(--mlbb-accent-text);
+  background: var(--mlbb-accent-soft);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.duel--current .duel-name > span {
+  font-weight: 700;
 }
 .duel-heading {
   display: flex;

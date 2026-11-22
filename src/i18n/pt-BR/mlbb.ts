@@ -74,6 +74,12 @@ export default {
   reopenMessage:
     'As chaves e todos os resultados serão apagados. Os jogadores e as regras serão mantidos para um novo sorteio.',
   bracket: 'Chaves do campeonato',
+  currentMatch: 'Jogo atual',
+  currentMatchHint:
+    'Próximo duelo disponível na ordem dos jogos. O destaque avança ao registrar o resultado.',
+  locateMatch: 'Localizar na chave',
+  fullscreen: 'Tela cheia',
+  exitFullscreen: 'Sair da tela cheia',
   bracketHint:
     'Deslize para ver as próximas fases. Cada confronto indica de quais jogos virão os adversários.',
   emptyBracket: 'O caminho até a taça aparece aqui.',

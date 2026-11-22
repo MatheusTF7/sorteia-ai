@@ -72,6 +72,12 @@ export default {
   reopenMessage:
     'The bracket and all results will be cleared. Players and rules will be kept for a new draw.',
   bracket: 'Tournament bracket',
+  currentMatch: 'Current match',
+  currentMatchHint:
+    'Next available duel in game order. The highlight advances when a result is recorded.',
+  locateMatch: 'Find in bracket',
+  fullscreen: 'Full screen',
+  exitFullscreen: 'Exit full screen',
   bracketHint:
     'Scroll to see the next rounds. Each matchup shows which games will supply its opponents.',
   emptyBracket: 'The road to the trophy starts here.',

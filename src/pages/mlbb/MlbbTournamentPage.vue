@@ -114,274 +114,344 @@
         </div>
       </section>
 
-      <section class="setup-grid">
-        <q-card flat class="setup-card">
-          <q-card-section>
-            <div class="section-heading">
-              <h2><q-icon name="people_outline" />{{ t('mlbb.players') }}</h2>
-              <span>{{ t('mlbb.playerLimit') }}</span>
+      <div id="mlbb-before-bracket" />
+      <Teleport to="body" :disabled="!bracketFullscreen">
+        <section
+          id="mlbb-bracket"
+          ref="bracketPanel"
+          class="bracket-section"
+          :class="{ 'bracket-fullscreen': bracketFullscreen, 'mlbb-page': bracketFullscreen }"
+          :role="bracketFullscreen ? 'dialog' : undefined"
+          :aria-modal="bracketFullscreen ? true : undefined"
+          :aria-label="t('mlbb.bracket')"
+          :tabindex="bracketFullscreen ? -1 : undefined"
+          @keydown.esc.stop="closeBracketFullscreen"
+          @keydown.tab="trapBracketFocus"
+        >
+          <div class="bracket-title">
+            <div>
+              <h2><q-icon name="account_tree" />{{ t('mlbb.bracket') }}</h2>
+              <p v-if="locked">{{ t('mlbb.bracketHint') }}</p>
             </div>
-            <q-input
-              v-model="current.name"
-              outlined
-              :label="t('mlbb.name')"
-              :placeholder="t('mlbb.namePlaceholder')"
-              maxlength="80"
-              class="q-mb-lg"
-            />
-            <template v-if="!locked">
+            <div class="bracket-header-actions">
+              <q-btn
+                v-if="locked"
+                outline
+                color="primary"
+                :icon="bracketFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                :label="t(bracketFullscreen ? 'mlbb.exitFullscreen' : 'mlbb.fullscreen')"
+                @click="toggleBracketFullscreen"
+              />
+              <q-btn
+                v-if="current.players.length"
+                outline
+                color="primary"
+                icon="content_copy"
+                :label="t('mlbb.share')"
+                @click="shareOpen = true"
+              />
+            </div>
+          </div>
+          <div v-if="currentMatch" class="current-match-summary">
+            <div class="current-match-copy">
+              <span class="current-match-eyebrow"
+                ><q-icon name="sports_esports" size="20px" />{{ t('mlbb.currentMatch') }} &middot;
+                {{ t('mlbb.game', { number: matchNumber(currentMatch.id) }) }} &middot; MD{{
+                  currentMatch.bestOf
+                }}</span
+              >
+              <strong
+                >{{ playerName(currentMatch.playerAId) }} <span class="versus">&times;</span>
+                {{ playerName(currentMatch.playerBId) }}</strong
+              >
+              <p>{{ t('mlbb.currentMatchHint') }}</p>
+            </div>
+            <div class="current-match-actions">
+              <q-btn
+                color="primary"
+                unelevated
+                icon="edit"
+                :label="t('mlbb.recordResult')"
+                @click="openResult(currentMatch)"
+              />
+              <q-btn
+                color="primary"
+                flat
+                icon="my_location"
+                :label="t('mlbb.locateMatch')"
+                @click="locateCurrentMatch"
+              />
+            </div>
+          </div>
+          <div v-if="championId" class="champion-banner" role="status">
+            <q-icon name="emoji_events" size="48px" />
+            <div>
+              <span>{{ t('mlbb.champion') }}</span
+              ><strong>{{ playerName(championId) }}</strong>
+              <p>{{ t('mlbb.championHint') }}</p>
+            </div>
+          </div>
+          <div v-if="!locked" class="empty-state bracket-empty">
+            <div class="empty-bracket-art" aria-hidden="true">
+              <q-icon name="account_tree" size="54px" />
+            </div>
+            <strong>{{ t('mlbb.emptyBracket') }}</strong>
+            <p>{{ t('mlbb.emptyBracketHint') }}</p>
+          </div>
+          <div
+            v-else
+            ref="bracketViewport"
+            class="bracket-scroll"
+            role="region"
+            :aria-label="t('mlbb.bracketRegion')"
+            tabindex="0"
+          >
+            <div class="bracket-rounds">
+              <section v-for="(round, index) in rounds" :key="index" class="bracket-round">
+                <div class="round-heading">
+                  <h3>{{ roundLabel(index) }}</h3>
+                  <span>MD{{ round[0]?.bestOf }}</span>
+                </div>
+                <div class="round-matches">
+                  <div
+                    v-for="match in round"
+                    :key="match.id"
+                    class="match-position"
+                    :data-current-match="match.id === currentMatch?.id ? 'true' : undefined"
+                  >
+                    <span v-if="index > 0" class="connector-in" aria-hidden="true" />
+                    <span
+                      v-if="index < rounds.length - 1"
+                      class="connector-out"
+                      aria-hidden="true"
+                    />
+                    <span
+                      v-if="index < rounds.length - 1 && match.index % 2 === 0"
+                      class="connector-join"
+                      aria-hidden="true"
+                    />
+                    <MlbbMatchCard
+                      :match="match"
+                      :current="match.id === currentMatch?.id"
+                      :players="current.players"
+                      :number="matchNumber(match.id)"
+                      :source-a="sourceLabel(match.sourceA)"
+                      :source-b="sourceLabel(match.sourceB)"
+                      @result="openResult"
+                    />
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </Teleport>
+
+      <div id="mlbb-after-bracket" />
+      <Teleport defer :to="locked ? '#mlbb-after-bracket' : '#mlbb-before-bracket'">
+        <section class="setup-grid">
+          <q-card flat class="setup-card">
+            <q-card-section>
+              <div class="section-heading">
+                <h2><q-icon name="people_outline" />{{ t('mlbb.players') }}</h2>
+                <span>{{ t('mlbb.playerLimit') }}</span>
+              </div>
               <q-input
-                v-model="current.draftNames"
+                v-model="current.name"
+                outlined
+                :label="t('mlbb.name')"
+                :placeholder="t('mlbb.namePlaceholder')"
+                maxlength="80"
+                class="q-mb-lg"
+              />
+              <template v-if="!locked">
+                <q-input
+                  v-model="current.draftNames"
+                  outlined
+                  type="textarea"
+                  rows="3"
+                  :label="t('mlbb.playerNames')"
+                  :hint="t('mlbb.namesHint')"
+                  maxlength="10000"
+                />
+                <div class="player-actions">
+                  <q-btn
+                    color="primary"
+                    unelevated
+                    icon="person_add_alt"
+                    :label="t('mlbb.addPlayers')"
+                    :disable="!current.draftNames.trim()"
+                    @click="addDraft"
+                  />
+                  <q-btn
+                    flat
+                    color="primary"
+                    icon="bookmarks"
+                    :label="t('mlbb.importList')"
+                    @click="openListImport"
+                  />
+                </div>
+              </template>
+              <div v-if="!current.players.length" class="empty-state player-empty">
+                <q-icon name="person_add_alt" size="36px" /><strong>{{
+                  t('mlbb.emptyPlayers')
+                }}</strong>
+                <p>{{ t('mlbb.emptyPlayersHint') }}</p>
+              </div>
+              <ul v-else class="player-list">
+                <li v-for="(player, index) in current.players" :key="player.id">
+                  <span class="player-number">{{ String(index + 1).padStart(2, '0') }}</span>
+                  <div class="player-identity">
+                    <strong>{{ player.name }}</strong
+                    ><small v-if="player.gameId || player.serverId"
+                      >{{ player.gameId
+                      }}{{ player.serverId ? ` (${player.serverId})` : '' }}</small
+                    >
+                  </div>
+                  <template v-if="!locked">
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="edit"
+                      color="grey-6"
+                      :aria-label="t('mlbb.editPlayer') + ': ' + player.name"
+                      @click="editPlayer(player)"
+                    />
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="close"
+                      color="grey-6"
+                      :aria-label="t('mlbb.removePlayer', { name: player.name })"
+                      @click="removePlayer(player.id)"
+                    />
+                  </template>
+                </li>
+              </ul>
+            </q-card-section>
+          </q-card>
+
+          <q-card flat class="setup-card">
+            <q-card-section>
+              <div class="section-heading">
+                <h2><q-icon name="tune" />{{ t('mlbb.rules') }}</h2>
+              </div>
+              <div class="format-grid">
+                <div v-for="field in formatFields" :key="field.key" class="mdx-control">
+                  <q-btn
+                    outline
+                    color="primary"
+                    icon="remove"
+                    :disable="locked || current.rules[field.key] <= 1"
+                    :aria-label="t('mlbb.decreaseMdx', { format: t(field.label) })"
+                    @click="stepFormat(field.key, -1)"
+                  />
+                  <q-input
+                    v-model.number="current.rules[field.key]"
+                    outlined
+                    type="number"
+                    min="1"
+                    max="99"
+                    step="1"
+                    :disable="locked"
+                    :label="t(field.label)"
+                  />
+                  <q-btn
+                    outline
+                    color="primary"
+                    icon="add"
+                    :disable="locked || current.rules[field.key] >= 99"
+                    :aria-label="t('mlbb.increaseMdx', { format: t(field.label) })"
+                    @click="stepFormat(field.key, 1)"
+                  />
+                </div>
+              </div>
+              <p class="field-help">{{ t('mlbb.formatHint') }}</p>
+              <p v-if="hasEvenSeries" class="field-help even-help">
+                <q-icon name="info_outline" /> {{ t('mlbb.evenHint') }}
+              </p>
+              <q-input
+                v-model="current.rules.lane"
+                outlined
+                :disable="locked"
+                :label="t('mlbb.lane')"
+                maxlength="80"
+                class="q-mt-md"
+              />
+              <q-select
+                :model-value="presetValue('victory')"
+                outlined
+                emit-value
+                map-options
+                :disable="locked"
+                :options="presetOptions('victory')"
+                :label="t('mlbb.victoryModel')"
+                class="q-mt-lg"
+                @update:model-value="(value) => applyPreset('victory', value)"
+              />
+              <q-input
+                v-model="current.rules.victory"
+                outlined
+                :disable="locked"
+                :label="t('mlbb.victory')"
+                maxlength="200"
+                class="q-mt-md"
+              />
+              <q-select
+                :model-value="presetValue('notes')"
+                outlined
+                emit-value
+                map-options
+                :disable="locked"
+                :options="presetOptions('notes')"
+                :label="t('mlbb.rulesModel')"
+                class="q-mt-lg"
+                @update:model-value="(value) => applyPreset('notes', value)"
+              />
+              <q-input
+                v-model="current.rules.notes"
                 outlined
                 type="textarea"
-                rows="3"
-                :label="t('mlbb.playerNames')"
-                :hint="t('mlbb.namesHint')"
-                maxlength="10000"
+                rows="4"
+                :disable="locked"
+                :label="t('mlbb.rulesDescription')"
+                :placeholder="t('mlbb.rulesPlaceholder')"
+                maxlength="2000"
+                class="q-mt-md"
               />
-              <div class="player-actions">
-                <q-btn
-                  color="primary"
-                  unelevated
-                  icon="person_add_alt"
-                  :label="t('mlbb.addPlayers')"
-                  :disable="!current.draftNames.trim()"
-                  @click="addDraft"
-                />
-                <q-btn
-                  flat
-                  color="primary"
-                  icon="bookmarks"
-                  :label="t('mlbb.importList')"
-                  @click="openListImport"
-                />
-              </div>
-            </template>
-            <div v-if="!current.players.length" class="empty-state player-empty">
-              <q-icon name="person_add_alt" size="36px" /><strong>{{
-                t('mlbb.emptyPlayers')
-              }}</strong>
-              <p>{{ t('mlbb.emptyPlayersHint') }}</p>
-            </div>
-            <ul v-else class="player-list">
-              <li v-for="(player, index) in current.players" :key="player.id">
-                <span class="player-number">{{ String(index + 1).padStart(2, '0') }}</span>
-                <div class="player-identity">
-                  <strong>{{ player.name }}</strong
-                  ><small v-if="player.gameId || player.serverId"
-                    >{{ player.gameId }}{{ player.serverId ? ` (${player.serverId})` : '' }}</small
-                  >
-                </div>
-                <template v-if="!locked">
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    icon="edit"
-                    color="grey-6"
-                    :aria-label="t('mlbb.editPlayer') + ': ' + player.name"
-                    @click="editPlayer(player)"
-                  />
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    icon="close"
-                    color="grey-6"
-                    :aria-label="t('mlbb.removePlayer', { name: player.name })"
-                    @click="removePlayer(player.id)"
-                  />
-                </template>
-              </li>
-            </ul>
-          </q-card-section>
-        </q-card>
+              <p class="field-help q-mt-md">{{ t('mlbb.suggestedRules') }}</p>
+            </q-card-section>
+          </q-card>
+        </section>
 
-        <q-card flat class="setup-card">
-          <q-card-section>
-            <div class="section-heading">
-              <h2><q-icon name="tune" />{{ t('mlbb.rules') }}</h2>
-            </div>
-            <div class="format-grid">
-              <div v-for="field in formatFields" :key="field.key" class="mdx-control">
-                <q-btn
-                  outline
-                  color="primary"
-                  icon="remove"
-                  :disable="locked || current.rules[field.key] <= 1"
-                  :aria-label="t('mlbb.decreaseMdx', { format: t(field.label) })"
-                  @click="stepFormat(field.key, -1)"
-                />
-                <q-input
-                  v-model.number="current.rules[field.key]"
-                  outlined
-                  type="number"
-                  min="1"
-                  max="99"
-                  step="1"
-                  :disable="locked"
-                  :label="t(field.label)"
-                />
-                <q-btn
-                  outline
-                  color="primary"
-                  icon="add"
-                  :disable="locked || current.rules[field.key] >= 99"
-                  :aria-label="t('mlbb.increaseMdx', { format: t(field.label) })"
-                  @click="stepFormat(field.key, 1)"
-                />
-              </div>
-            </div>
-            <p class="field-help">{{ t('mlbb.formatHint') }}</p>
-            <p v-if="hasEvenSeries" class="field-help even-help">
-              <q-icon name="info_outline" /> {{ t('mlbb.evenHint') }}
-            </p>
-            <q-input
-              v-model="current.rules.lane"
-              outlined
-              :disable="locked"
-              :label="t('mlbb.lane')"
-              maxlength="80"
-              class="q-mt-md"
-            />
-            <q-select
-              :model-value="presetValue('victory')"
-              outlined
-              emit-value
-              map-options
-              :disable="locked"
-              :options="presetOptions('victory')"
-              :label="t('mlbb.victoryModel')"
-              class="q-mt-lg"
-              @update:model-value="(value) => applyPreset('victory', value)"
-            />
-            <q-input
-              v-model="current.rules.victory"
-              outlined
-              :disable="locked"
-              :label="t('mlbb.victory')"
-              maxlength="200"
-              class="q-mt-md"
-            />
-            <q-select
-              :model-value="presetValue('notes')"
-              outlined
-              emit-value
-              map-options
-              :disable="locked"
-              :options="presetOptions('notes')"
-              :label="t('mlbb.rulesModel')"
-              class="q-mt-lg"
-              @update:model-value="(value) => applyPreset('notes', value)"
-            />
-            <q-input
-              v-model="current.rules.notes"
-              outlined
-              type="textarea"
-              rows="4"
-              :disable="locked"
-              :label="t('mlbb.rulesDescription')"
-              :placeholder="t('mlbb.rulesPlaceholder')"
-              maxlength="2000"
-              class="q-mt-md"
-            />
-            <p class="field-help q-mt-md">{{ t('mlbb.suggestedRules') }}</p>
-          </q-card-section>
-        </q-card>
-      </section>
-
-      <div class="draw-bar">
-        <div>
-          <q-icon :name="locked ? 'lock_outline' : 'shuffle'" size="22px" />
-          <p>{{ t(locked ? 'mlbb.locked' : 'mlbb.drawHint') }}</p>
-        </div>
-        <q-btn
-          v-if="!locked"
-          color="primary"
-          unelevated
-          size="lg"
-          icon="account_tree"
-          :label="t('mlbb.draw')"
-          :disable="!canDraw"
-          @click="generateBracket"
-        />
-        <q-btn
-          v-else
-          outline
-          color="primary"
-          icon="lock_open"
-          :label="t('mlbb.reopen')"
-          @click="confirmReopen"
-        />
-      </div>
-      <p v-if="!locked && !canDraw" class="field-help">{{ t('mlbb.drawInvalid') }}</p>
-
-      <section id="mlbb-bracket" class="bracket-section">
-        <div class="bracket-title">
+        <div class="draw-bar">
           <div>
-            <h2>{{ t('mlbb.bracket') }}</h2>
-            <p v-if="locked">{{ t('mlbb.bracketHint') }}</p>
+            <q-icon :name="locked ? 'lock_outline' : 'shuffle'" size="22px" />
+            <p>{{ t(locked ? 'mlbb.locked' : 'mlbb.drawHint') }}</p>
           </div>
           <q-btn
-            v-if="current.players.length"
+            v-if="!locked"
+            color="primary"
+            unelevated
+            size="lg"
+            icon="account_tree"
+            :label="t('mlbb.draw')"
+            :disable="!canDraw"
+            @click="generateBracket"
+          />
+          <q-btn
+            v-else
             outline
             color="primary"
-            icon="content_copy"
-            :label="t('mlbb.share')"
-            @click="shareOpen = true"
+            icon="lock_open"
+            :label="t('mlbb.reopen')"
+            @click="confirmReopen"
           />
         </div>
-        <div v-if="championId" class="champion-banner" role="status">
-          <q-icon name="emoji_events" size="48px" />
-          <div>
-            <span>{{ t('mlbb.champion') }}</span
-            ><strong>{{ playerName(championId) }}</strong>
-            <p>{{ t('mlbb.championHint') }}</p>
-          </div>
-        </div>
-        <div v-if="!locked" class="empty-state bracket-empty">
-          <div class="empty-bracket-art" aria-hidden="true">
-            <q-icon name="account_tree" size="54px" />
-          </div>
-          <strong>{{ t('mlbb.emptyBracket') }}</strong>
-          <p>{{ t('mlbb.emptyBracketHint') }}</p>
-        </div>
-        <div
-          v-else
-          class="bracket-scroll"
-          role="region"
-          :aria-label="t('mlbb.bracketRegion')"
-          tabindex="0"
-        >
-          <div class="bracket-rounds">
-            <section v-for="(round, index) in rounds" :key="index" class="bracket-round">
-              <div class="round-heading">
-                <h3>{{ roundLabel(index) }}</h3>
-                <span>MD{{ round[0]?.bestOf }}</span>
-              </div>
-              <div class="round-matches">
-                <div v-for="match in round" :key="match.id" class="match-position">
-                  <span v-if="index > 0" class="connector-in" aria-hidden="true" />
-                  <span v-if="index < rounds.length - 1" class="connector-out" aria-hidden="true" />
-                  <span
-                    v-if="index < rounds.length - 1 && match.index % 2 === 0"
-                    class="connector-join"
-                    aria-hidden="true"
-                  />
-                  <MlbbMatchCard
-                    :match="match"
-                    :players="current.players"
-                    :number="matchNumber(match.id)"
-                    :source-a="sourceLabel(match.sourceA)"
-                    :source-b="sourceLabel(match.sourceB)"
-                    @result="openResult"
-                  />
-                </div>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
+        <p v-if="!locked && !canDraw" class="field-help">{{ t('mlbb.drawInvalid') }}</p>
+      </Teleport>
 
       <footer class="module-footer">
         <span
@@ -561,7 +631,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { copyToClipboard, exportFile, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import MlbbMatchCard from 'src/components/mlbb/MlbbMatchCard.vue';
@@ -600,6 +670,89 @@ const tournamentOptions = computed(() =>
     label: item.name || t('mlbb.unnamed'),
     value: item.id,
   })),
+);
+const currentMatch = computed(
+  () => rounds.value.flat().find((match) => match.status === 'ready') ?? null,
+);
+const bracketFullscreen = ref(false);
+const bracketPanel = ref<HTMLElement | null>(null);
+let fullscreenReturnFocus: HTMLElement | null = null;
+let previousBodyOverflow = '';
+async function toggleBracketFullscreen() {
+  if (bracketFullscreen.value) {
+    closeBracketFullscreen();
+    return;
+  }
+  fullscreenReturnFocus =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  previousBodyOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  bracketFullscreen.value = true;
+  await nextTick();
+  bracketPanel.value?.focus();
+  locateCurrentMatch();
+}
+function closeBracketFullscreen() {
+  if (!bracketFullscreen.value) return;
+  bracketFullscreen.value = false;
+  document.body.style.overflow = previousBodyOverflow;
+  void nextTick(() => {
+    fullscreenReturnFocus?.focus();
+    locateCurrentMatch();
+  });
+}
+function trapBracketFocus(event: KeyboardEvent) {
+  if (!bracketFullscreen.value) return;
+  const elements = Array.from(
+    bracketPanel.value?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [tabindex="0"], a[href]',
+    ) ?? [],
+  ).filter((element) => element.getClientRects().length > 0);
+  const first = elements[0];
+  const last = elements.at(-1);
+  if (
+    event.shiftKey &&
+    (document.activeElement === first || document.activeElement === bracketPanel.value)
+  ) {
+    event.preventDefault();
+    last?.focus();
+  } else if (
+    !event.shiftKey &&
+    (document.activeElement === last || document.activeElement === bracketPanel.value)
+  ) {
+    event.preventDefault();
+    first?.focus();
+  }
+}
+onBeforeUnmount(() => {
+  if (bracketFullscreen.value) document.body.style.overflow = previousBodyOverflow;
+});
+const bracketViewport = ref<HTMLElement | null>(null);
+function locateCurrentMatch() {
+  const viewport = bracketViewport.value;
+  const card = viewport?.querySelector<HTMLElement>('[data-current-match="true"] .duel');
+  if (!viewport || !card) return;
+  const bounds = viewport.getBoundingClientRect();
+  const target = card.getBoundingClientRect();
+  viewport.scrollTo({
+    left: Math.max(
+      0,
+      viewport.scrollLeft + target.left - bounds.left - (viewport.clientWidth - target.width) / 2,
+    ),
+    top: Math.max(
+      0,
+      viewport.scrollTop + target.top - bounds.top - (viewport.clientHeight - target.height) / 2,
+    ),
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+  });
+}
+watch(
+  () => [current.value.id, currentMatch.value?.id],
+  async () => {
+    await nextTick();
+    locateCurrentMatch();
+  },
+  { immediate: true },
 );
 const completedCount = computed(
   () => rounds.value.flat().filter((match) => match.status === 'completed').length,
@@ -1510,5 +1663,191 @@ body.body--dark .champion-banner {
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+}
+
+.mlbb-page {
+  --mlbb-accent: #4f46e5;
+  --mlbb-accent-text: #4338ca;
+  --mlbb-accent-soft: #eef2ff;
+  --mlbb-connector: #a5b4fc;
+}
+.bracket-section {
+  margin: 4px 0 32px;
+  padding: 28px;
+  border: 1px solid #a5b4fc;
+  border-top: 4px solid var(--mlbb-accent);
+  border-radius: 26px;
+  background: var(--mlbb-surface);
+  box-shadow: 0 12px 36px #312e8110;
+}
+.bracket-title h2 {
+  font-size: 1.5rem;
+}
+.bracket-title h2 > .q-icon {
+  color: var(--mlbb-accent-text);
+}
+.bracket-scroll {
+  background-color: var(--mlbb-soft);
+  background-image: radial-gradient(var(--mlbb-border) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid var(--mlbb-connector);
+  padding: 28px;
+  max-height: 75vh;
+  min-height: 360px;
+  scroll-padding: 28px;
+}
+.round-heading {
+  position: sticky;
+  top: -28px;
+  z-index: 2;
+  background: var(--mlbb-soft);
+  padding: 14px;
+  border: 1px solid var(--mlbb-border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.round-heading h3 {
+  color: var(--mlbb-accent-text);
+}
+.connector-in,
+.connector-out {
+  border-top-color: var(--mlbb-connector);
+}
+.connector-join {
+  border-right-color: var(--mlbb-connector);
+}
+.match-position {
+  min-height: 280px;
+}
+.current-match-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid var(--mlbb-connector);
+  background: var(--mlbb-accent-soft);
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+.current-match-copy {
+  min-width: 0;
+}
+.current-match-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mlbb-accent-text);
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-wrap: wrap;
+}
+.current-match-copy > strong {
+  display: block;
+  margin: 10px 0;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.versus {
+  color: var(--mlbb-muted);
+  padding: 0 8px;
+  font-weight: 400;
+}
+.current-match-copy p {
+  font-size: 0.875rem;
+  color: var(--mlbb-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.current-match-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+body.body--dark .mlbb-page {
+  --mlbb-accent-text: #c7d2fe;
+  --mlbb-accent-soft: #222449;
+  --mlbb-connector: #6366a3;
+}
+body.body--dark .bracket-section {
+  border-color: #6366a3;
+  border-top-color: #818cf8;
+}
+@media (max-width: 650px) {
+  .bracket-section {
+    padding: 20px 12px;
+    border-radius: 20px;
+  }
+  .bracket-title h2 {
+    font-size: 1.25rem;
+  }
+  .bracket-scroll {
+    padding: 20px;
+  }
+  .round-heading {
+    top: -20px;
+  }
+  .current-match-summary {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+    gap: 16px;
+  }
+  .current-match-copy > strong {
+    font-size: 1.25rem;
+  }
+}
+
+.bracket-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.bracket-section.bracket-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--mlbb-surface);
+}
+.bracket-fullscreen .bracket-scroll {
+  flex: 1;
+  min-height: 240px;
+  max-height: none;
+}
+.bracket-fullscreen .bracket-title {
+  flex-shrink: 0;
+}
+.bracket-fullscreen .current-match-summary {
+  flex-shrink: 0;
+}
+@media (max-width: 650px) {
+  .bracket-header-actions {
+    justify-content: flex-start;
+  }
+  .bracket-fullscreen .current-match-copy p {
+    display: none;
+  }
+  .bracket-fullscreen .current-match-summary {
+    padding: 12px;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .bracket-fullscreen .current-match-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 </style>

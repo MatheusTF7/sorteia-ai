@@ -1,8 +1,10 @@
 import racha from './racha';
+import mlbb from './mlbb';
 
 // Portuguese (Brazil) translations
 export default {
   racha,
+  mlbb,
   // Genérico
   failed: 'Ação falhou',
   success: 'A ação foi bem sucedida',

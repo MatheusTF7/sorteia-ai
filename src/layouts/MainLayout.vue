@@ -216,6 +216,12 @@ const linksList: EssentialLinkProps[] = [
     link: '/racha',
   },
   {
+    title: t('mlbb.nav'),
+    caption: t('mlbb.description'),
+    icon: 'sports_esports',
+    link: '/mlbb',
+  },
+  {
     title: t('nav.prizes'),
     caption: t('drawList.prizeDraw.desc'),
     icon: 'card_giftcard',

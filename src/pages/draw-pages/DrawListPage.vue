@@ -181,6 +181,14 @@ const sorteios: Sorteio[] = [
     route: '/racha',
   },
   {
+    id: 15,
+    nome: t('mlbb.nav'),
+    descricao: t('mlbb.description'),
+    icon: 'sports_esports',
+    rgb: '99, 102, 241',
+    route: '/mlbb',
+  },
+  {
     id: 6,
     nome: t('drawList.prizeDraw.title'),
     descricao: t('drawList.prizeDraw.desc'),

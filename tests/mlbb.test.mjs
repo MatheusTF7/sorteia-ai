@@ -27,9 +27,116 @@ const heroCatalog = JSON.parse(
 const heroRoles = JSON.parse(
   await readFile(new URL('../src/data/mlbb/hero-roles.json', import.meta.url), 'utf8'),
 ).roles;
-const playableHeroes = heroCatalog
-  .slice(6)
-  .map((hero) => ({ ...hero, classes: heroRoles[hero.id] ?? [] }));
+const heroStats = JSON.parse(
+  await readFile(new URL('../src/data/mlbb/hero-stats.json', import.meta.url), 'utf8'),
+);
+const statsById = new Map(heroStats.heroes.map((hero) => [hero.id, hero]));
+// Mirrors src/data/mlbb/catalog.ts, which cannot be imported here because of require.context.
+const playableHeroes = heroCatalog.slice(6).map((hero) => {
+  const entry = statsById.get(hero.id);
+  return {
+    id: hero.id,
+    name: hero.name,
+    localImage: entry?.localImage ?? `heroes-mini/${hero.id}.png`,
+    classes: heroRoles[hero.id] ?? [],
+    ...(entry && {
+      stats: {
+        winRate: entry.winRate,
+        pickRate: entry.pickRate,
+        banRate: entry.banRate,
+        position: entry.position,
+      },
+      counters: entry.counters.map((counter) => counter.heroId),
+    }),
+  };
+});
+const byId = (id) => playableHeroes.find((hero) => hero.id === id);
+const isCounterPair = (a, b) => a.counters.includes(b.id) || b.counters.includes(a.id);
+const allClasses = ['tank', 'fighter', 'assassin', 'mage', 'marksman', 'support'];
+
+test('season stats cover every playable hero and every counter points to a known hero', () => {
+  assert.equal(heroStats.heroes.length, playableHeroes.length);
+  for (const hero of playableHeroes) {
+    assert.ok(hero.stats, hero.id);
+    assert.ok(hero.localImage.startsWith('heroes-mini/'), hero.id);
+    assert.equal(hero.counters.length, 5, hero.id);
+    assert.ok(!hero.counters.includes(hero.id), hero.id);
+    for (const id of hero.counters) assert.ok(byId(id), `${hero.id} -> ${id}`);
+  }
+});
+
+test('uniform mode is the default and still allows counter pairs', () => {
+  const masha = byId('masha');
+  const counter = byId(masha.counters[0]);
+  const heroes = [
+    { ...masha, classes: ['fighter'] },
+    { ...counter, classes: ['fighter'] },
+  ];
+  const settings = { classes: ['fighter'], bannedIds: [], overrides: {} };
+  const pick = drawMlbbHeroes(heroes, settings);
+  assert.ok(pick);
+  assert.ok(validHeroPick(pick, heroes, settings));
+  assert.equal(drawMlbbHeroes(heroes, { ...settings, drawMode: 'avoid-counters' }), null);
+  assert.ok(!validHeroPick(pick, heroes, { ...settings, drawMode: 'avoid-counters' }));
+});
+
+test('avoid-counters mode never draws a pair where either hero counters the other', () => {
+  const settings = {
+    classes: allClasses,
+    bannedIds: [],
+    overrides: {},
+    drawMode: 'avoid-counters',
+  };
+  for (let index = 0; index < 300; index++) {
+    const pick = drawMlbbHeroes(playableHeroes, settings);
+    assert.ok(validHeroPick(pick, playableHeroes, settings));
+    assert.ok(!isCounterPair(byId(pick.heroAId), byId(pick.heroBId)));
+  }
+});
+
+test('balanced mode respects the win rate gap, avoids counters and drops classes without a pair', () => {
+  const settings = {
+    classes: allClasses,
+    bannedIds: [],
+    overrides: {},
+    drawMode: 'balanced',
+    maxWinRateGap: 1,
+  };
+  for (let index = 0; index < 300; index++) {
+    const pick = drawMlbbHeroes(playableHeroes, settings);
+    const [a, b] = [byId(pick.heroAId), byId(pick.heroBId)];
+    assert.ok(Math.abs(a.stats.winRate - b.stats.winRate) <= 1);
+    assert.ok(!isCounterPair(a, b));
+  }
+  const far = [
+    { id: 'low', classes: ['mage'], counters: [], stats: { winRate: 45 } },
+    { id: 'high', classes: ['mage'], counters: [], stats: { winRate: 55 } },
+    { id: 'unknown', classes: ['mage'] },
+  ];
+  const mage = { classes: ['mage'], bannedIds: [], overrides: {}, drawMode: 'balanced' };
+  assert.deepEqual(heroPools(far, mage), []);
+  assert.equal(drawMlbbHeroes(far, { ...mage, maxWinRateGap: 9.5 }), null);
+  assert.deepEqual(
+    drawMlbbHeroes(far, { ...mage, maxWinRateGap: 10 }, () => 0),
+    {
+      classId: 'mage',
+      heroAId: 'low',
+      heroBId: 'high',
+    },
+  );
+});
+
+test('restricted modes pick uniformly among allowed pairs and randomise the sides', () => {
+  const heroes = ['a', 'b', 'c'].map((id) => ({ id, classes: ['tank'], counters: [] }));
+  heroes[0].counters = ['b'];
+  const settings = { classes: ['tank'], bannedIds: [], overrides: {}, drawMode: 'avoid-counters' };
+  const seen = new Set();
+  for (let index = 0; index < 200; index++) {
+    const pick = drawMlbbHeroes(heroes, settings);
+    seen.add(pick.heroAId + pick.heroBId);
+  }
+  assert.deepEqual([...seen].sort(), ['ac', 'bc', 'ca', 'cb']);
+});
 
 test('hero draws use a selected class then two different eligible heroes, respecting every ban', () => {
   const settings = { classes: ['mage', 'fighter'], bannedIds: ['eudora', 'miya'], overrides: {} };
@@ -237,6 +344,25 @@ test('hero choices, bans, class overrides and exact pre-draw survive backup rest
   assert.deepEqual(restored.heroSettings, value.heroSettings);
   assert.deepEqual(restored.heroPicks, value.heroPicks);
   assert.ok(validHeroPick(restored.heroPicks['r1-m1'], playableHeroes, restored.heroSettings));
+});
+
+test('draw mode and win rate gap survive backups; invalid values fall back to the defaults', () => {
+  const value = tournament(4);
+  value.heroSettings = {
+    classes: ['mage'],
+    bannedIds: [],
+    overrides: {},
+    drawMode: 'balanced',
+    maxWinRateGap: 2.5,
+  };
+  assert.deepEqual(
+    restoreMlbbTournament(JSON.parse(JSON.stringify(value))).heroSettings,
+    value.heroSettings,
+  );
+  value.heroSettings = { ...value.heroSettings, drawMode: 'cheat', maxWinRateGap: 999 };
+  const restored = restoreMlbbTournament(JSON.parse(JSON.stringify(value))).heroSettings;
+  assert.equal(restored.drawMode, undefined);
+  assert.equal(restored.maxWinRateGap, 15);
 });
 
 test('all sizes from 2 to 64 produce a complete elimination tree, fair byes and exactly N-1 played duels', () => {

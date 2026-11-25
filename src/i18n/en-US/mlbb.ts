@@ -13,6 +13,30 @@ export default {
   chooseHero: 'Choose a hero',
   redrawHeroes: 'Redraw class and heroes',
   noHistoricalPick: 'No picks recorded for this match.',
+  drawMode: 'Draw mode',
+  drawModes: {
+    uniform: {
+      label: 'Random',
+      hint: 'Any pair from the class. Stats and counters are shown in the duel for information only.',
+    },
+    avoidCounters: {
+      label: 'Avoid counters',
+      hint: "Skips pairs where one hero is on the other's counter list.",
+    },
+    balanced: {
+      label: 'Balance by win rate',
+      hint: 'Avoids counters and only draws pairs with close win rates. Heroes without stats are left out.',
+    },
+  },
+  maxWinRateGap: 'Maximum win rate gap: {value} pp',
+  winRateGapValue: '{value} pp',
+  statsSource: 'Stats from the official site ({rank}, last {days} days), collected on {date}.',
+  statsSourceLink: 'View ranking',
+  allRanks: 'all ranks',
+  heroStatsTitle: 'Win rate {wr}, pick rate {pr}, ban rate {br}',
+  counterAlertTitle: 'Counter matchup',
+  counterBadge: 'Counter',
+  counterWarning: '{counter} counters {hero}',
   classes: {
     tank: 'Tank',
     fighter: 'Fighter',

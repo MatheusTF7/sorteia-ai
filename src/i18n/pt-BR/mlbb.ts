@@ -13,6 +13,30 @@ export default {
   chooseHero: 'Escolha o herói',
   redrawHeroes: 'Sortear classe e heróis novamente',
   noHistoricalPick: 'Sem picks registrados neste confronto.',
+  drawMode: 'Modo do sorteio',
+  drawModes: {
+    uniform: {
+      label: 'Aleatório',
+      hint: 'Qualquer par da classe. Estatísticas e counters aparecem no duelo apenas como informação.',
+    },
+    avoidCounters: {
+      label: 'Evitar counters',
+      hint: 'Descarta pares em que um herói está na lista de counters do outro.',
+    },
+    balanced: {
+      label: 'Equilibrar por win rate',
+      hint: 'Evita counters e sorteia apenas pares com win rates próximos. Heróis sem estatísticas ficam de fora.',
+    },
+  },
+  maxWinRateGap: 'Diferença máxima de win rate: {value} p.p.',
+  winRateGapValue: '{value} p.p.',
+  statsSource: 'Estatísticas do site oficial ({rank}, últimos {days} dias), coletadas em {date}.',
+  statsSourceLink: 'Ver ranking',
+  allRanks: 'todos os ranks',
+  heroStatsTitle: 'Win rate {wr}, pick rate {pr}, ban rate {br}',
+  counterAlertTitle: 'Confronto com counter',
+  counterBadge: 'Counter',
+  counterWarning: '{counter} é counter de {hero}',
   classes: {
     tank: 'Tanque',
     fighter: 'Lutador',

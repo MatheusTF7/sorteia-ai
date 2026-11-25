@@ -38,7 +38,19 @@ Os picks aparecem no cartão e no destaque do jogo atual. **Sortear classe e her
 
 Classes e bans podem ser ajustados depois de chavear. Um pick ainda não jogado que deixar de respeitar a configuração será substituído; picks concluídos ficam no histórico. Sem classes com dois heróis disponíveis, o aplicativo avisa e impede gerar uma nova chave. Não há limite de uso de um herói entre confrontos diferentes.
 
-O catálogo e os retratos vêm de `src/data/mlbb/heroes.json` e `localImage`; os arquivos são empacotados localmente pelo Webpack. Como o JSON não possui classes, `hero-roles.json` complementa 124 classificações consultadas na [API oficial](https://mapi.mobilelegends.com/hero/list), usando o endpoint `/hero/detail?id=…`, em 22/11/2026. Hirara, Marcel, Sora, Obsidia, Zetian, Kalea, Lukas, Suyou e Zhuxin não estão classificados nessa API. Em **Conferir ou ajustar classes dos heróis**, atribua classes a eles para incluí-los ou ajuste qualquer classificação para o campeonato. Não são presumidas classes para os heróis sem dados. Essas alterações também são salvas no backup.
+### Estatísticas e modo do sorteio
+
+Cada herói do duelo mostra **WR** (win rate), **PR** (pick rate) e **BR** (ban rate). Quando um dos heróis sorteados está na lista de counters do outro, o avatar do herói em vantagem ganha um contorno âmbar com o selo **Counter**, e um aviso **Confronto com counter** abaixo do par explica a relação, por exemplo, **Lesley é counter de Masha**. Se os dois forem counters um do outro, ambos recebem o selo e o aviso lista as duas relações. Os dados vêm de `src/data/mlbb/hero-stats.json`, coletados no [ranking oficial](https://www.mobilelegends.com/rank) em 22/11/2026, considerando todos os ranks nos **últimos 7 dias**. Não representam a temporada inteira e não são atualizados automaticamente; o aplicativo continua funcionando offline com esse retrato.
+
+Em **Modo do sorteio**, escolha antes de sortear:
+
+- **Aleatório** (padrão): o sorteio descrito acima. Estatísticas e counters aparecem apenas como informação.
+- **Evitar counters**: descarta pares em que um herói está entre os 5 counters do outro, em qualquer direção.
+- **Equilibrar por win rate**: além de evitar counters, só aceita pares cuja diferença de win rate não passe do limite escolhido (padrão de 3 pontos percentuais, de 0,5 a 15). Heróis sem estatísticas ficam de fora desse modo.
+
+Nos dois modos restritos, a classe é sorteada com chances iguais entre as classes que tenham ao menos um par permitido. Depois, um dos pares permitidos daquela classe é sorteado com chances iguais, e o lado de cada herói também é sorteado. Classes sem par permitido deixam de contar no total de classes disponíveis. Mudar o modo ou o limite substitui apenas os picks ainda não jogados que deixarem de respeitá-lo. O modo e o limite são salvos no campeonato e no backup; campeonatos anteriores continuam no modo aleatório.
+
+O catálogo vem de `src/data/mlbb/heroes.json`. Os avatares usam as miniaturas quadradas de `src/data/mlbb/heroes-mini` (128 × 128), indicadas pelo `localImage` de `hero-stats.json`, e são empacotados localmente pelo Webpack. Os retratos de `src/data/mlbb/heroes` continuam no repositório, mas não entram no pacote do aplicativo. Como o JSON não possui classes, `hero-roles.json` complementa 124 classificações consultadas na [API oficial](https://mapi.mobilelegends.com/hero/list), usando o endpoint `/hero/detail?id=…`, em 22/11/2026. Hirara, Marcel, Sora, Obsidia, Zetian, Kalea, Lukas, Suyou e Zhuxin não estão classificados nessa API. Em **Conferir ou ajustar classes dos heróis**, atribua classes a eles para incluí-los ou ajuste qualquer classificação para o campeonato. Não são presumidas classes para os heróis sem dados. Essas alterações também são salvas no backup.
 
 ## Configuração do terceiro lugar
 

@@ -353,6 +353,12 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
       bannedIds: strings(heroSettings.bannedIds),
       overrides,
     };
+    // Kept in sync with MLBB_DRAW_MODES and MLBB_WIN_RATE_GAP in mlbb-heroes.ts.
+    const mode = heroSettings.drawMode;
+    if (mode === 'avoid-counters' || mode === 'balanced') tournament.heroSettings.drawMode = mode;
+    const gap = heroSettings.maxWinRateGap;
+    if (typeof gap === 'number' && Number.isFinite(gap))
+      tournament.heroSettings.maxWinRateGap = Math.min(15, Math.max(0.5, Math.round(gap * 2) / 2));
   }
   if (data.heroPicks) {
     tournament.heroPicks = {};

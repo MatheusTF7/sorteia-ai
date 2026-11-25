@@ -163,8 +163,8 @@ const sides = computed(() =>
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 58px;
-  padding: 10px 14px;
+  min-height: 48px;
+  padding: 8px 12px;
 }
 .duel-player + .duel-player {
   border-top: 1px solid var(--mlbb-border);

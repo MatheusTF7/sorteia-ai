@@ -2073,6 +2073,12 @@ body.body--dark .champion-banner {
   flex-shrink: 0;
 }
 body.body--dark .mlbb-page {
+  --mlbb-counter: #fbbf24;
+  --mlbb-counter-on: #1c1306;
+  --mlbb-counter-glow: #fbbf2440;
+  --mlbb-counter-bg: #451a0340;
+  --mlbb-counter-border: #78350f;
+  --mlbb-counter-text: #fde68a;
   --mlbb-accent-text: #c7d2fe;
   --mlbb-accent-soft: #222449;
   --mlbb-connector: #6366a3;

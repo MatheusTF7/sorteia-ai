@@ -38,7 +38,7 @@ const playableHeroes = heroCatalog.slice(6).map((hero) => {
   return {
     id: hero.id,
     name: hero.name,
-    localImage: entry?.localImage ?? `heroes-mini/${hero.id}.png`,
+    localImage: entry?.localImage ?? `heroes-mini/${hero.id}.webp`,
     classes: heroRoles[hero.id] ?? [],
     ...(entry && {
       stats: {
@@ -178,8 +178,10 @@ test('hero classes can be configured per tournament and hybrid heroes enter each
 
 test('every playable catalog image exists locally and navigation filters cannot be drawn', async () => {
   assert.equal(playableHeroes.length, heroCatalog.length - 6);
-  for (const hero of playableHeroes)
+  for (const hero of playableHeroes) {
     await readFile(new URL('../src/data/mlbb/' + hero.localImage, import.meta.url));
+    await readFile(new URL(`../src/data/mlbb/heroes/${hero.id}.webp`, import.meta.url));
+  }
   assert.ok(
     playableHeroes.every(
       (hero) => !['all', 'gold-lane', 'jungle', 'roam', 'mid-lane', 'exp-lane'].includes(hero.id),

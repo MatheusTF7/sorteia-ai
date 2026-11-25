@@ -23,8 +23,8 @@ export const mlbbHeroes: MlbbHero[] = raw
     return {
       id: hero.id,
       name: hero.name,
-      // Square thumbnails fit the round avatars; the tall portraits in ./heroes stay in the repo.
-      localImage: entry?.localImage ?? `heroes-mini/${hero.id}.png`,
+      // Square thumbnails fit the round avatars; tall portraits in ./heroes serve the ban phase.
+      localImage: entry?.localImage ?? `heroes-mini/${hero.id}.webp`,
       classes: roles[hero.id] ?? [],
       ...(entry && {
         stats: {
@@ -53,7 +53,7 @@ export const mlbbStatsSource = {
   periodDays: statistics.periodDays,
 };
 // Explicit require.context keeps every thumbnail in Webpack's asset graph, including PWA builds.
-const thumbnails = require.context('./heroes-mini', false, /\.png$/) as {
+const thumbnails = require.context('./heroes-mini', false, /\.webp$/) as {
   (path: string): string | { default: string };
 };
 export function mlbbHeroImage(hero: MlbbHero): string {
@@ -64,9 +64,9 @@ export function mlbbHeroImage(hero: MlbbHero): string {
 const portraits = require.context(
   './heroes',
   false,
-  /^\.\/(?!(?:all|gold-lane|jungle|roam|mid-lane|exp-lane)\.png$)[a-z0-9-]+\.png$/,
+  /^\.\/(?!(?:all|gold-lane|jungle|roam|mid-lane|exp-lane)\.webp$)[a-z0-9-]+\.webp$/,
 ) as { (path: string): string | { default: string } };
 export function mlbbHeroPortrait(hero: MlbbHero): string {
-  const image = portraits(`./${hero.id}.png`);
+  const image = portraits(`./${hero.id}.webp`);
   return typeof image === 'string' ? image : image.default;
 }

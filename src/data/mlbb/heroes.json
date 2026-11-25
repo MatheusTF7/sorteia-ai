@@ -3,834 +3,834 @@
     "id": "all",
     "name": "All",
     "image": "https://akmweb.youngjoygame.com/web/gms/image/0e8ef38f82a0d76110465e3cd2933ed3.png",
-    "localImage": "heroes/all.png"
+    "localImage": "heroes/all.webp"
   },
   {
     "id": "gold-lane",
     "name": "Gold Lane",
     "image": "https://akmweb.youngjoygame.com/web/gms/image/c5200766c27e8caae6e3c8398bf92480.png",
-    "localImage": "heroes/gold-lane.png"
+    "localImage": "heroes/gold-lane.webp"
   },
   {
     "id": "jungle",
     "name": "Jungle",
     "image": "https://akmweb.youngjoygame.com/web/gms/image/aab66d2799da9c17f90958114bab3e0f.png",
-    "localImage": "heroes/jungle.png"
+    "localImage": "heroes/jungle.webp"
   },
   {
     "id": "roam",
     "name": "Roam",
     "image": "https://akmweb.youngjoygame.com/web/gms/image/d2b46441ef58d0ec33473bc8dd37ddc0.png",
-    "localImage": "heroes/roam.png"
+    "localImage": "heroes/roam.webp"
   },
   {
     "id": "mid-lane",
     "name": "Mid Lane",
     "image": "https://akmweb.youngjoygame.com/web/gms/image/f139553d7ff5393fcb22561d11cd297e.png",
-    "localImage": "heroes/mid-lane.png"
+    "localImage": "heroes/mid-lane.webp"
   },
   {
     "id": "exp-lane",
     "name": "EXP Lane",
     "image": "https://akmweb.youngjoygame.com/web/gms/image/b017826473ce4af5b5fa77fb8259e4b0.png",
-    "localImage": "heroes/exp-lane.png"
+    "localImage": "heroes/exp-lane.webp"
   },
   {
     "id": "hirara",
     "name": "Hirara",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ec67aa6f87226cceb794b3786d14c902.png",
-    "localImage": "heroes/hirara.png"
+    "localImage": "heroes/hirara.webp"
   },
   {
     "id": "marcel",
     "name": "Marcel",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_dd980a8816698f1503cdb76201d17dd0.png",
-    "localImage": "heroes/marcel.png"
+    "localImage": "heroes/marcel.webp"
   },
   {
     "id": "sora",
     "name": "Sora",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4749a1f7fe99cbedfc5ef23fc1287d6c.png",
-    "localImage": "heroes/sora.png"
+    "localImage": "heroes/sora.webp"
   },
   {
     "id": "obsidia",
     "name": "Obsidia",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_92bcc9ad2c4c8165a888d34f086a4d28.png",
-    "localImage": "heroes/obsidia.png"
+    "localImage": "heroes/obsidia.webp"
   },
   {
     "id": "zetian",
     "name": "Zetian",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_22dc8b16ea98a735027c3141b74ef841.png",
-    "localImage": "heroes/zetian.png"
+    "localImage": "heroes/zetian.webp"
   },
   {
     "id": "kalea",
     "name": "Kalea",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_9c5f2904026ba88b7aba8c9b2722f4ad.png",
-    "localImage": "heroes/kalea.png"
+    "localImage": "heroes/kalea.webp"
   },
   {
     "id": "lukas",
     "name": "Lukas",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_454c13b2de7b7d1a20fbf553c620510d.png",
-    "localImage": "heroes/lukas.png"
+    "localImage": "heroes/lukas.webp"
   },
   {
     "id": "suyou",
     "name": "Suyou",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_422ffc7849e8bb01629d2423054ed410.png",
-    "localImage": "heroes/suyou.png"
+    "localImage": "heroes/suyou.webp"
   },
   {
     "id": "zhuxin",
     "name": "Zhuxin",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_13cfeec4bec7a27a09677e519f1ef9d2.png",
-    "localImage": "heroes/zhuxin.png"
+    "localImage": "heroes/zhuxin.webp"
   },
   {
     "id": "chip",
     "name": "Chip",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_85e15c66733cab7d8d73f7f725f31f1e.png",
-    "localImage": "heroes/chip.png"
+    "localImage": "heroes/chip.webp"
   },
   {
     "id": "cici",
     "name": "Cici",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4f970eb4b44b8c9fff2c511d8e856ff4.png",
-    "localImage": "heroes/cici.png"
+    "localImage": "heroes/cici.webp"
   },
   {
     "id": "nolan",
     "name": "Nolan",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_0495066df0d828c149e7fe89aa63078b.png",
-    "localImage": "heroes/nolan.png"
+    "localImage": "heroes/nolan.webp"
   },
   {
     "id": "ixia",
     "name": "Ixia",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c5f758bd1141327d36f2c77928268ab7.png",
-    "localImage": "heroes/ixia.png"
+    "localImage": "heroes/ixia.webp"
   },
   {
     "id": "arlott",
     "name": "Arlott",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_01450fec4397f8780ce0d11ab652c73d.png",
-    "localImage": "heroes/arlott.png"
+    "localImage": "heroes/arlott.webp"
   },
   {
     "id": "novaria",
     "name": "Novaria",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_12c811236741ae8e3fbdaa2d884b30a2.png",
-    "localImage": "heroes/novaria.png"
+    "localImage": "heroes/novaria.webp"
   },
   {
     "id": "joy",
     "name": "Joy",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6b5570b0e557e36501b4228fcdfcf164.png",
-    "localImage": "heroes/joy.png"
+    "localImage": "heroes/joy.webp"
   },
   {
     "id": "fredrinn",
     "name": "Fredrinn",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_3f574825bd9192094f047a4abc6d5d05.png",
-    "localImage": "heroes/fredrinn.png"
+    "localImage": "heroes/fredrinn.webp"
   },
   {
     "id": "julian",
     "name": "Julian",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_44891c699fb1c00fc4a7fa59ea95b8b3.png",
-    "localImage": "heroes/julian.png"
+    "localImage": "heroes/julian.webp"
   },
   {
     "id": "xavier",
     "name": "Xavier",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_50a5b0dd98ed2378d9f618e5ef0d47b2.png",
-    "localImage": "heroes/xavier.png"
+    "localImage": "heroes/xavier.webp"
   },
   {
     "id": "melissa",
     "name": "Melissa",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_8044c8e2e966533e8978b20f4ecb5cd9.png",
-    "localImage": "heroes/melissa.png"
+    "localImage": "heroes/melissa.webp"
   },
   {
     "id": "yin",
     "name": "Yin",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_95836476311e2026077d87eb2373a281.png",
-    "localImage": "heroes/yin.png"
+    "localImage": "heroes/yin.webp"
   },
   {
     "id": "floryn",
     "name": "Floryn",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_5168f0a54304b2f20f976a1ffa96e1dc.png",
-    "localImage": "heroes/floryn.png"
+    "localImage": "heroes/floryn.webp"
   },
   {
     "id": "edith",
     "name": "Edith",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_352f65059bc1180ae0fc066003d628e0.png",
-    "localImage": "heroes/edith.png"
+    "localImage": "heroes/edith.webp"
   },
   {
     "id": "valentina",
     "name": "Valentina",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_7923ebf470d0e963e9978cb21eb25780.png",
-    "localImage": "heroes/valentina.png"
+    "localImage": "heroes/valentina.webp"
   },
   {
     "id": "aamon",
     "name": "Aamon",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c9e4d330229c88b1e78ef88ce9db4223.png",
-    "localImage": "heroes/aamon.png"
+    "localImage": "heroes/aamon.webp"
   },
   {
     "id": "aulus",
     "name": "Aulus",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4a632ceb1dfcb3aad58a6d02a46a1c9e.png",
-    "localImage": "heroes/aulus.png"
+    "localImage": "heroes/aulus.webp"
   },
   {
     "id": "natan",
     "name": "Natan",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6736ef8c230d82576c3710e9fc248e11.png",
-    "localImage": "heroes/natan.png"
+    "localImage": "heroes/natan.webp"
   },
   {
     "id": "phoveus",
     "name": "Phoveus",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6bfe8ca7e60623a5261eac20e2b39d34.png",
-    "localImage": "heroes/phoveus.png"
+    "localImage": "heroes/phoveus.webp"
   },
   {
     "id": "beatrix",
     "name": "Beatrix",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c1acd7cbd828f0c5d291e48a0f7c018d.png",
-    "localImage": "heroes/beatrix.png"
+    "localImage": "heroes/beatrix.webp"
   },
   {
     "id": "gloo",
     "name": "Gloo",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_8b401d50920f2359060a9c7a3c833df1.png",
-    "localImage": "heroes/gloo.png"
+    "localImage": "heroes/gloo.webp"
   },
   {
     "id": "paquito",
     "name": "Paquito",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_7d54ccba749ba18ec934631b49632d1f.png",
-    "localImage": "heroes/paquito.png"
+    "localImage": "heroes/paquito.webp"
   },
   {
     "id": "mathilda",
     "name": "Mathilda",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c3d601a8f6a69409359083ba599f0bb6.png",
-    "localImage": "heroes/mathilda.png"
+    "localImage": "heroes/mathilda.webp"
   },
   {
     "id": "yve",
     "name": "Yve",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_d8cc30b9d273a81bd838afc691852b6f.png",
-    "localImage": "heroes/yve.png"
+    "localImage": "heroes/yve.webp"
   },
   {
     "id": "brody",
     "name": "Brody",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_f9cb88efae5d35e6317828bcdb7154d6.png",
-    "localImage": "heroes/brody.png"
+    "localImage": "heroes/brody.webp"
   },
   {
     "id": "barats",
     "name": "Barats",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_2ff4a47ddc77ec9e4e5a522fd696d2c4.png",
-    "localImage": "heroes/barats.png"
+    "localImage": "heroes/barats.webp"
   },
   {
     "id": "khaleed",
     "name": "Khaleed",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_216ea76d9188164c58950885b3962ba1.png",
-    "localImage": "heroes/khaleed.png"
+    "localImage": "heroes/khaleed.webp"
   },
   {
     "id": "benedetta",
     "name": "Benedetta",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_eceefa7ba07f093d71a30852f0051b7a.png",
-    "localImage": "heroes/benedetta.png"
+    "localImage": "heroes/benedetta.webp"
   },
   {
     "id": "luo-yi",
     "name": "Luo Yi",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_d564187373b57b3aab116a985e2e27e2.png",
-    "localImage": "heroes/luo-yi.png"
+    "localImage": "heroes/luo-yi.webp"
   },
   {
     "id": "yu-zhong",
     "name": "Yu Zhong",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_7d5ad4d511f5257137028f19e9ee973f.png",
-    "localImage": "heroes/yu-zhong.png"
+    "localImage": "heroes/yu-zhong.webp"
   },
   {
     "id": "popol-and-kupa",
     "name": "Popol and Kupa",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_5f5c808673e8ed117a5c5325dcc32537.png",
-    "localImage": "heroes/popol-and-kupa.png"
+    "localImage": "heroes/popol-and-kupa.webp"
   },
   {
     "id": "atlas",
     "name": "Atlas",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_0dc01e8286bc92e5be3a3503dd47229c.png",
-    "localImage": "heroes/atlas.png"
+    "localImage": "heroes/atlas.webp"
   },
   {
     "id": "carmilla",
     "name": "Carmilla",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_358d6ad9cff97fc3bfef8a2bd4acbadd.png",
-    "localImage": "heroes/carmilla.png"
+    "localImage": "heroes/carmilla.webp"
   },
   {
     "id": "cecilion",
     "name": "Cecilion",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_af02ce891528cd3576858589d8d33d8d.png",
-    "localImage": "heroes/cecilion.png"
+    "localImage": "heroes/cecilion.webp"
   },
   {
     "id": "silvanna",
     "name": "Silvanna",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_fe98dd2e19bb6c29591763d1d11a3eb7.png",
-    "localImage": "heroes/silvanna.png"
+    "localImage": "heroes/silvanna.webp"
   },
   {
     "id": "wanwan",
     "name": "Wanwan",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c042bfb106853182a8c38ae5386ceb77.png",
-    "localImage": "heroes/wanwan.png"
+    "localImage": "heroes/wanwan.webp"
   },
   {
     "id": "masha",
     "name": "Masha",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_12c8811faed55965b22e2a7333971c1e.png",
-    "localImage": "heroes/masha.png"
+    "localImage": "heroes/masha.webp"
   },
   {
     "id": "baxia",
     "name": "Baxia",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ae43a252fda0fe996322ea8d27a6fe69.png",
-    "localImage": "heroes/baxia.png"
+    "localImage": "heroes/baxia.webp"
   },
   {
     "id": "lylia",
     "name": "Lylia",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_5814b1901de2d5713e04b47e36d305e0.png",
-    "localImage": "heroes/lylia.png"
+    "localImage": "heroes/lylia.webp"
   },
   {
     "id": "dyrroth",
     "name": "Dyrroth",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_bf8dcb20923cee2407563e0fe88aa557.png",
-    "localImage": "heroes/dyrroth.png"
+    "localImage": "heroes/dyrroth.webp"
   },
   {
     "id": "ling",
     "name": "Ling",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4405561c38db556d9cdc6a57b8642e66.png",
-    "localImage": "heroes/ling.png"
+    "localImage": "heroes/ling.webp"
   },
   {
     "id": "x-borg",
     "name": "X.Borg",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_cc433460d0b2053a3d3a18b46462bfb2.png",
-    "localImage": "heroes/x-borg.png"
+    "localImage": "heroes/x-borg.webp"
   },
   {
     "id": "terizla",
     "name": "Terizla",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_fcfbde52476bad8c8e67951240de854c.png",
-    "localImage": "heroes/terizla.png"
+    "localImage": "heroes/terizla.webp"
   },
   {
     "id": "esmeralda",
     "name": "Esmeralda",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_f684768281faab70dea48d06fb72979e.png",
-    "localImage": "heroes/esmeralda.png"
+    "localImage": "heroes/esmeralda.webp"
   },
   {
     "id": "guinevere",
     "name": "Guinevere",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_a34258a6365097da09d9513b620bc14a.png",
-    "localImage": "heroes/guinevere.png"
+    "localImage": "heroes/guinevere.webp"
   },
   {
     "id": "granger",
     "name": "Granger",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_9ed57f48f91012fd110935258cd1ab61.png",
-    "localImage": "heroes/granger.png"
+    "localImage": "heroes/granger.webp"
   },
   {
     "id": "khufra",
     "name": "Khufra",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_5e137ba2f4b8c5a6cd113926f8e8387b.png",
-    "localImage": "heroes/khufra.png"
+    "localImage": "heroes/khufra.webp"
   },
   {
     "id": "badang",
     "name": "Badang",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_1ada4c5f948a71a06e6e97a7c41194ff.png",
-    "localImage": "heroes/badang.png"
+    "localImage": "heroes/badang.webp"
   },
   {
     "id": "faramis",
     "name": "Faramis",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4bed236fc260d9924b030e576793a26b.png",
-    "localImage": "heroes/faramis.png"
+    "localImage": "heroes/faramis.webp"
   },
   {
     "id": "kadita",
     "name": "Kadita",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_323c7edad76a491ea805644aed3ab999.png",
-    "localImage": "heroes/kadita.png"
+    "localImage": "heroes/kadita.webp"
   },
   {
     "id": "minsitthar",
     "name": "Minsitthar",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_dbfdfa2d0a3cc95cbc197d0a14d5ecd1.png",
-    "localImage": "heroes/minsitthar.png"
+    "localImage": "heroes/minsitthar.webp"
   },
   {
     "id": "harith",
     "name": "Harith",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_0f81a3d82eb05c2c062fc6ea8b3d6578.png",
-    "localImage": "heroes/harith.png"
+    "localImage": "heroes/harith.webp"
   },
   {
     "id": "thamuz",
     "name": "Thamuz",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_3e7e133556af2f5d82f49fa8624b6bd5.png",
-    "localImage": "heroes/thamuz.png"
+    "localImage": "heroes/thamuz.webp"
   },
   {
     "id": "kimmy",
     "name": "Kimmy",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_3fa938873a71f33898f26b19db654b7d.png",
-    "localImage": "heroes/kimmy.png"
+    "localImage": "heroes/kimmy.webp"
   },
   {
     "id": "belerick",
     "name": "Belerick",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c9aa12fe3c58449075a5ac8b6d691a13.png",
-    "localImage": "heroes/belerick.png"
+    "localImage": "heroes/belerick.webp"
   },
   {
     "id": "hanzo",
     "name": "Hanzo",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_746725e15c7577be6bb92b2665adf447.png",
-    "localImage": "heroes/hanzo.png"
+    "localImage": "heroes/hanzo.webp"
   },
   {
     "id": "lunox",
     "name": "Lunox",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_69d35cd0c549a9bdbcf9fbfddf3122a5.png",
-    "localImage": "heroes/lunox.png"
+    "localImage": "heroes/lunox.webp"
   },
   {
     "id": "leomord",
     "name": "Leomord",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6c205605c520867a534e4e74588a7208.png",
-    "localImage": "heroes/leomord.png"
+    "localImage": "heroes/leomord.webp"
   },
   {
     "id": "vale",
     "name": "Vale",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_344849c04f420fda542682b73c3f31d1.png",
-    "localImage": "heroes/vale.png"
+    "localImage": "heroes/vale.webp"
   },
   {
     "id": "claude",
     "name": "Claude",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_808e898e89986b917e146a9b5dcbbb57.png",
-    "localImage": "heroes/claude.png"
+    "localImage": "heroes/claude.webp"
   },
   {
     "id": "aldous",
     "name": "Aldous",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c2f6866ffc797395ee35f97a74bbea20.png",
-    "localImage": "heroes/aldous.png"
+    "localImage": "heroes/aldous.webp"
   },
   {
     "id": "selena",
     "name": "Selena",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_547ce6e3351ef7a46c02b51d0c4e452c.png",
-    "localImage": "heroes/selena.png"
+    "localImage": "heroes/selena.webp"
   },
   {
     "id": "kaja",
     "name": "Kaja",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_bd2dce5f2da92dd0fa3a4bb8b45f685e.png",
-    "localImage": "heroes/kaja.png"
+    "localImage": "heroes/kaja.webp"
   },
   {
     "id": "chang-e",
     "name": "Chang'e",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4a2db83b0fb92b826f039955d1b8b5df.png",
-    "localImage": "heroes/chang-e.png"
+    "localImage": "heroes/chang-e.webp"
   },
   {
     "id": "hanabi",
     "name": "Hanabi",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_85d213390613bbc09220cf1d9f64c5c0.png",
-    "localImage": "heroes/hanabi.png"
+    "localImage": "heroes/hanabi.webp"
   },
   {
     "id": "uranus",
     "name": "Uranus",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_04a36899ac866eecb1d3a9c436cfb1d9.png",
-    "localImage": "heroes/uranus.png"
+    "localImage": "heroes/uranus.webp"
   },
   {
     "id": "martis",
     "name": "Martis",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_9691f86f84a553ea3982014738905f3f.png",
-    "localImage": "heroes/martis.png"
+    "localImage": "heroes/martis.webp"
   },
   {
     "id": "valir",
     "name": "Valir",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_cd4c780c0ed639e2889c1131e56638ec.png",
-    "localImage": "heroes/valir.png"
+    "localImage": "heroes/valir.webp"
   },
   {
     "id": "gusion",
     "name": "Gusion",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_82dbd20a7d0f274520895007898199e0.png",
-    "localImage": "heroes/gusion.png"
+    "localImage": "heroes/gusion.webp"
   },
   {
     "id": "angela",
     "name": "Angela",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_a815a3adad8df99481700c84abaf3c41.png",
-    "localImage": "heroes/angela.png"
+    "localImage": "heroes/angela.webp"
   },
   {
     "id": "jawhead",
     "name": "Jawhead",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4448132d3f9d89dc706883d148e50884.png",
-    "localImage": "heroes/jawhead.png"
+    "localImage": "heroes/jawhead.webp"
   },
   {
     "id": "lesley",
     "name": "Lesley",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_2bd608ac82a1af4783c5d0fff0c280dc.png",
-    "localImage": "heroes/lesley.png"
+    "localImage": "heroes/lesley.webp"
   },
   {
     "id": "pharsa",
     "name": "Pharsa",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_cccf53dbeacc789288ebc1fb63fcf7dd.png",
-    "localImage": "heroes/pharsa.png"
+    "localImage": "heroes/pharsa.webp"
   },
   {
     "id": "helcurt",
     "name": "Helcurt",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ffd27cd02c46f7075caedcd51de80d9a.png",
-    "localImage": "heroes/helcurt.png"
+    "localImage": "heroes/helcurt.webp"
   },
   {
     "id": "zhask",
     "name": "Zhask",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_7e69b480400b37dd75614f0c8d033c37.png",
-    "localImage": "heroes/zhask.png"
+    "localImage": "heroes/zhask.webp"
   },
   {
     "id": "hylos",
     "name": "Hylos",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_22d8716de16d99253671c2f9e59d9ef3.png",
-    "localImage": "heroes/hylos.png"
+    "localImage": "heroes/hylos.webp"
   },
   {
     "id": "diggie",
     "name": "Diggie",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_7a7a688cf1562a124f7183b2c2957608.png",
-    "localImage": "heroes/diggie.png"
+    "localImage": "heroes/diggie.webp"
   },
   {
     "id": "lancelot",
     "name": "Lancelot",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_aa4070a1eb5a53e1824bc9b2d9a47ed2.png",
-    "localImage": "heroes/lancelot.png"
+    "localImage": "heroes/lancelot.webp"
   },
   {
     "id": "odette",
     "name": "Odette",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6fd1d8e4d436d1de3102a7880cd61cbd.png",
-    "localImage": "heroes/odette.png"
+    "localImage": "heroes/odette.webp"
   },
   {
     "id": "argus",
     "name": "Argus",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ee4f9ddb2f82ef0dfc99bb72e0a8f557.png",
-    "localImage": "heroes/argus.png"
+    "localImage": "heroes/argus.webp"
   },
   {
     "id": "grock",
     "name": "Grock",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_517b20f98bf1859bc57f5cc1b477b0e8.png",
-    "localImage": "heroes/grock.png"
+    "localImage": "heroes/grock.webp"
   },
   {
     "id": "irithel",
     "name": "Irithel",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_c2ee5c50de98f4a5a53b09c308cc99d9.png",
-    "localImage": "heroes/irithel.png"
+    "localImage": "heroes/irithel.webp"
   },
   {
     "id": "harley",
     "name": "Harley",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_503566ddaa4727778929dee4b3a01807.png",
-    "localImage": "heroes/harley.png"
+    "localImage": "heroes/harley.webp"
   },
   {
     "id": "gatotkaca",
     "name": "Gatotkaca",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_e3ccd096c9c4649519d736073acca91a.png",
-    "localImage": "heroes/gatotkaca.png"
+    "localImage": "heroes/gatotkaca.webp"
   },
   {
     "id": "karrie",
     "name": "Karrie",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4a4cb5e4c5df81e1fea1b75ab3b774b7.png",
-    "localImage": "heroes/karrie.png"
+    "localImage": "heroes/karrie.webp"
   },
   {
     "id": "roger",
     "name": "Roger",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_168335bcb95f73c6d653ec4971420923.png",
-    "localImage": "heroes/roger.png"
+    "localImage": "heroes/roger.webp"
   },
   {
     "id": "vexana",
     "name": "Vexana",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_39c9058219c59535e9ed07645c8d9dd3.png",
-    "localImage": "heroes/vexana.png"
+    "localImage": "heroes/vexana.webp"
   },
   {
     "id": "lapu-lapu",
     "name": "Lapu-Lapu",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_b72b473b98494269cedbba84d4888409.png",
-    "localImage": "heroes/lapu-lapu.png"
+    "localImage": "heroes/lapu-lapu.webp"
   },
   {
     "id": "aurora",
     "name": "Aurora",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_1f3f900f917956e81d7764b9e5ffeb3d.png",
-    "localImage": "heroes/aurora.png"
+    "localImage": "heroes/aurora.webp"
   },
   {
     "id": "hilda",
     "name": "Hilda",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ee3a714054edf41ae09dd0c33faf07de.png",
-    "localImage": "heroes/hilda.png"
+    "localImage": "heroes/hilda.webp"
   },
   {
     "id": "estes",
     "name": "Estes",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_a3619b68f415405f0a1ad77be31eb64d.png",
-    "localImage": "heroes/estes.png"
+    "localImage": "heroes/estes.webp"
   },
   {
     "id": "cyclops",
     "name": "Cyclops",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_12abb75070625bf78e46edf2268afa72.png",
-    "localImage": "heroes/cyclops.png"
+    "localImage": "heroes/cyclops.webp"
   },
   {
     "id": "johnson",
     "name": "Johnson",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_9939e5cc09011a287a989b7d4b3aec4d.png",
-    "localImage": "heroes/johnson.png"
+    "localImage": "heroes/johnson.webp"
   },
   {
     "id": "moskov",
     "name": "Moskov",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_9cf1a5936ac506d5e1b911be097acfb7.png",
-    "localImage": "heroes/moskov.png"
+    "localImage": "heroes/moskov.webp"
   },
   {
     "id": "yi-sun-shin",
     "name": "Yi Sun-shin",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_3fe7fdb5f2aedef505f3728c28572e2e.png",
-    "localImage": "heroes/yi-sun-shin.png"
+    "localImage": "heroes/yi-sun-shin.webp"
   },
   {
     "id": "ruby",
     "name": "Ruby",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_5b9d38f9f2e7ca03f9f489de19656bc9.png",
-    "localImage": "heroes/ruby.png"
+    "localImage": "heroes/ruby.webp"
   },
   {
     "id": "alpha",
     "name": "Alpha",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_d3993266ec8b303b02c845f2c75d5e6d.png",
-    "localImage": "heroes/alpha.png"
+    "localImage": "heroes/alpha.webp"
   },
   {
     "id": "sun",
     "name": "Sun",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_eb0864090b1d5307dfeba628de0d294a.png",
-    "localImage": "heroes/sun.png"
+    "localImage": "heroes/sun.webp"
   },
   {
     "id": "chou",
     "name": "Chou",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_850c4b51e3dbab3fd12a718917eaaf44.png",
-    "localImage": "heroes/chou.png"
+    "localImage": "heroes/chou.webp"
   },
   {
     "id": "kagura",
     "name": "Kagura",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_634196d9234babcc3072155d4fefaf0c.png",
-    "localImage": "heroes/kagura.png"
+    "localImage": "heroes/kagura.webp"
   },
   {
     "id": "natalia",
     "name": "Natalia",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ee09a1367736f8a46641f07f5d1d6618.png",
-    "localImage": "heroes/natalia.png"
+    "localImage": "heroes/natalia.webp"
   },
   {
     "id": "gord",
     "name": "Gord",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6ba16b4ca438152a629e7706cbd7453d.png",
-    "localImage": "heroes/gord.png"
+    "localImage": "heroes/gord.webp"
   },
   {
     "id": "freya",
     "name": "Freya",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_b95ffc5769380f10a409d864d4162433.png",
-    "localImage": "heroes/freya.png"
+    "localImage": "heroes/freya.webp"
   },
   {
     "id": "hayabusa",
     "name": "Hayabusa",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_63cb1f44bf906b71767a000e38d8ab14.png",
-    "localImage": "heroes/hayabusa.png"
+    "localImage": "heroes/hayabusa.webp"
   },
   {
     "id": "lolita",
     "name": "Lolita",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_55de18c865efe8e360b3b9ae463d76a2.png",
-    "localImage": "heroes/lolita.png"
+    "localImage": "heroes/lolita.webp"
   },
   {
     "id": "minotaur",
     "name": "Minotaur",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_3b7cb3a2be4264d3927f3b5a5050117a.png",
-    "localImage": "heroes/minotaur.png"
+    "localImage": "heroes/minotaur.webp"
   },
   {
     "id": "layla",
     "name": "Layla",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6efe9abc2047f59d45fa1c88fb1261b7.png",
-    "localImage": "heroes/layla.png"
+    "localImage": "heroes/layla.webp"
   },
   {
     "id": "fanny",
     "name": "Fanny",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_8ea3a95fa3c726ed0338c0fdd21ad991.png",
-    "localImage": "heroes/fanny.png"
+    "localImage": "heroes/fanny.webp"
   },
   {
     "id": "zilong",
     "name": "Zilong",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6ed2ac1fc08f2b5118b579b188289ca1.png",
-    "localImage": "heroes/zilong.png"
+    "localImage": "heroes/zilong.webp"
   },
   {
     "id": "eudora",
     "name": "Eudora",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_1384ce93e5bdb142ea4e5e6b9f941ff1.png",
-    "localImage": "heroes/eudora.png"
+    "localImage": "heroes/eudora.webp"
   },
   {
     "id": "rafaela",
     "name": "Rafaela",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_f22e22659e8b1acfb665aec8eaffabd7.png",
-    "localImage": "heroes/rafaela.png"
+    "localImage": "heroes/rafaela.webp"
   },
   {
     "id": "clint",
     "name": "Clint",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_9a8a8fa3b5eed761a86d8f98740a4325.png",
-    "localImage": "heroes/clint.png"
+    "localImage": "heroes/clint.webp"
   },
   {
     "id": "bruno",
     "name": "Bruno",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_3259934dcb13b5a4ba25b25a3eb86f54.png",
-    "localImage": "heroes/bruno.png"
+    "localImage": "heroes/bruno.webp"
   },
   {
     "id": "bane",
     "name": "Bane",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_846a816f7905f17c81cb35e7f3ff1c3e.png",
-    "localImage": "heroes/bane.png"
+    "localImage": "heroes/bane.webp"
   },
   {
     "id": "franco",
     "name": "Franco",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_d21e5731e8bf993a9b3271767a3b3b97.png",
-    "localImage": "heroes/franco.png"
+    "localImage": "heroes/franco.webp"
   },
   {
     "id": "akai",
     "name": "Akai",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_809a19d0ffb6cd1b33d0f6d5715f8952.png",
-    "localImage": "heroes/akai.png"
+    "localImage": "heroes/akai.webp"
   },
   {
     "id": "karina",
     "name": "Karina",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4685e0fb17e2fabaf9cb23f8db8fa262.png",
-    "localImage": "heroes/karina.png"
+    "localImage": "heroes/karina.webp"
   },
   {
     "id": "alucard",
     "name": "Alucard",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_df695a059c0f0a63fe922786098089cd.png",
-    "localImage": "heroes/alucard.png"
+    "localImage": "heroes/alucard.webp"
   },
   {
     "id": "tigreal",
     "name": "Tigreal",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_4e0005dbfb1376beaccc54ef7aa39375.png",
-    "localImage": "heroes/tigreal.png"
+    "localImage": "heroes/tigreal.webp"
   },
   {
     "id": "nana",
     "name": "Nana",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ce58cae711d0907a722de0e65fbb85b7.png",
-    "localImage": "heroes/nana.png"
+    "localImage": "heroes/nana.webp"
   },
   {
     "id": "alice",
     "name": "Alice",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_ec3d5c825e893947a235ea9ea59fff77.png",
-    "localImage": "heroes/alice.png"
+    "localImage": "heroes/alice.webp"
   },
   {
     "id": "saber",
     "name": "Saber",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_b5980d535886303ad116fba3463c76ce.png",
-    "localImage": "heroes/saber.png"
+    "localImage": "heroes/saber.webp"
   },
   {
     "id": "balmond",
     "name": "Balmond",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_6c018674ea709972b4837ec90518e79e.png",
-    "localImage": "heroes/balmond.png"
+    "localImage": "heroes/balmond.webp"
   },
   {
     "id": "miya",
     "name": "Miya",
     "image": "https://akmweb.youngjoygame.com/web/svnres/img/test/homepage_2_2_16_1235_1/100_32c0d9d3a727a9052754296af6251435.png",
-    "localImage": "heroes/miya.png"
+    "localImage": "heroes/miya.webp"
   }
 ]

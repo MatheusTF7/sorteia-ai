@@ -61,6 +61,12 @@ Nos modos **Evitar counters** e **Equilibrar por win rate**, a classe é sortead
 
 O catálogo vem de `src/data/mlbb/heroes.json`. Os avatares usam as miniaturas quadradas de `src/data/mlbb/heroes-mini` (128 × 128), indicadas pelo `localImage` de `hero-stats.json`, e são empacotados localmente pelo Webpack. Os retratos completos de `src/data/mlbb/heroes` são usados apenas na fase de bans; as imagens de filtros de rota (All, Gold Lane etc.) não entram no pacote. Como o JSON não possui classes, `hero-roles.json` complementa 124 classificações consultadas na [API oficial](https://mapi.mobilelegends.com/hero/list), usando o endpoint `/hero/detail?id=…`, em 22/11/2026. Hirara, Marcel, Sora, Obsidia, Zetian, Kalea, Lukas, Suyou e Zhuxin não estão classificados nessa API. Em **Conferir ou ajustar classes dos heróis**, atribua classes a eles para incluí-los ou ajuste qualquer classificação para o campeonato. Não são presumidas classes para os heróis sem dados. Essas alterações também são salvas no backup.
 
+### Imagens em WebP
+
+Os retratos e as miniaturas locais usam WebP com qualidade 85, mantendo as dimensões e a transparência dos PNGs originais. As URLs de origem nos JSONs continuam apontando para os arquivos oficiais; somente os caminhos `localImage` usam `.webp`.
+
+Para converter novos PNGs colocados em `heroes` e `heroes-mini`, instale Pillow (`python -m pip install Pillow`) e execute `python scripts/convert-mlbb-images.py --remove-originals`. O script valida dimensões e transparência antes de remover os originais e informa a redução de tamanho. Sem `--remove-originals`, mantém os PNGs. Ao adicionar heróis, use `.webp` nos caminhos `localImage` dos JSONs.
+
 ## Configuração do terceiro lugar
 
 Com pelo menos quatro jogadores, escolha **Como definir o 3º lugar** nas configurações. A escolha pode ser alterada após o sorteio sem refazer a chave principal:

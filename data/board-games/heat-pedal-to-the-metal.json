@@ -1,0 +1,412 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "heat-pedal-to-the-metal",
+  "slug": "heat-pedal-to-the-metal",
+  "locale": "pt-BR",
+  "name": "Heat: Pedal to the Metal",
+  "publisher": "Days of Wonder / Galápagos",
+  "players": {
+    "min": 1,
+    "max": 6
+  },
+  "durationMinutes": 60,
+  "edition": "jogo-base com módulos incluídos na caixa original, sem expansões",
+  "contentDisclaimer": "Paráfrases para player aid; em caso de dúvida, o manual oficial e os componentes físicos prevalecem. Traduções e detalhes de módulos devem ser revisados com edição física.",
+  "sources": [
+    {
+      "label": "Página oficial Days of Wonder",
+      "url": "https://www.daysofwonder.com/game/heat/"
+    },
+    {
+      "label": "Regras básicas em português (Galápagos, cópia pública)",
+      "url": "https://comparajogos-forum.s3.dualstack.sa-east-1.amazonaws.com/uploads/original/3X/9/2/92d5aed4ea0cee667c302124d5787b0e76807b1c.pdf"
+    },
+    {
+      "label": "Regras avançadas em português (Galápagos, cópia pública)",
+      "url": "https://comparajogos-forum.s3.dualstack.sa-east-1.amazonaws.com/uploads/original/3X/6/d/6d671b5fc4defd4ed778e0dd324c61d0eab59008.pdf"
+    }
+  ],
+  "modules": [
+    {
+      "id": "base",
+      "name": "Corrida básica",
+      "defaultEnabled": true
+    },
+    {
+      "id": "garage",
+      "name": "Garagem",
+      "defaultEnabled": false
+    },
+    {
+      "id": "legends",
+      "name": "Lendas",
+      "defaultEnabled": false
+    },
+    {
+      "id": "weather-road",
+      "name": "Clima e Condições da Pista",
+      "defaultEnabled": false
+    },
+    {
+      "id": "championship",
+      "name": "Campeonato",
+      "defaultEnabled": false
+    }
+  ],
+  "playerAid": {
+    "turnSteps": [
+      {
+        "step": 1,
+        "ruleId": "gear",
+        "mandatory": true
+      },
+      {
+        "step": 2,
+        "ruleId": "play-cards",
+        "mandatory": true
+      },
+      {
+        "step": 3,
+        "ruleId": "reveal-move",
+        "mandatory": true
+      },
+      {
+        "step": 4,
+        "ruleId": "adrenaline",
+        "mandatory": false
+      },
+      {
+        "step": 5,
+        "ruleId": "react",
+        "mandatory": false
+      },
+      {
+        "step": 6,
+        "ruleId": "slipstream",
+        "mandatory": false
+      },
+      {
+        "step": 7,
+        "ruleId": "corners",
+        "mandatory": false
+      },
+      {
+        "step": 8,
+        "ruleId": "discard",
+        "mandatory": false
+      },
+      {
+        "step": 9,
+        "ruleId": "draw",
+        "mandatory": true
+      }
+    ],
+    "rules": [
+      {
+        "id": "setup",
+        "title": "Preparação básica",
+        "summary": "Cada pessoa pega carro, marcador de marcha, tabuleiro e 12 cartas básicas da sua cor. Adicione 3 cartas de melhoria iniciais e 3 de Estresse ao baralho; coloque as cartas de Heat indicadas na pista no Motor; inicie em 1ª marcha e compre 7 cartas.",
+        "tags": "preparação setup baralho estresse motor melhorias",
+        "module": "base",
+        "details": [
+          "Confira a quantidade de Heat e Estresse indicada no tabuleiro da pista.",
+          "Sorteie as posições de largada e preencha-as na ordem numerada."
+        ]
+      },
+      {
+        "id": "turn-order",
+        "title": "Ordem das ações",
+        "summary": "Todos ajustam as marchas e escolhem cartas simultaneamente. Depois, do carro mais à frente ao mais atrás, resolva as ações restantes.",
+        "tags": "turno ordem ações simultâneo",
+        "module": "base"
+      },
+      {
+        "id": "gear",
+        "title": "1. Ajustar marcha",
+        "summary": "Mantenha a marcha ou altere em 1 nível gratuitamente. É possível mudar 2 níveis pagando 1 Heat.",
+        "tags": "marcha trocar heat",
+        "module": "base",
+        "step": 1
+      },
+      {
+        "id": "play-cards",
+        "title": "2. Jogar cartas",
+        "summary": "Jogue viradas para baixo exatamente tantas cartas quanto sua marcha (1–4); cartas de Heat não podem ser escolhidas normalmente.",
+        "tags": "jogar cartas marcha heat",
+        "module": "base",
+        "step": 2
+      },
+      {
+        "id": "reveal-move",
+        "title": "3. Revelar e mover",
+        "summary": "Revele as cartas, calcule a velocidade e mova exatamente essa quantidade de casas. Carros podem ser ultrapassados; posições lotadas bloqueiam o final do movimento.",
+        "tags": "movimento velocidade ultrapassar bloqueio",
+        "module": "base",
+        "step": 3
+      },
+      {
+        "id": "adrenaline",
+        "title": "4. Adrenalina",
+        "summary": "O último carro (ou os dois últimos quando 5 ou mais carros começaram a corrida) recebe +1 velocidade opcional e/ou +1 resfriamento neste turno.",
+        "tags": "adrenalina último bônus",
+        "module": "base",
+        "step": 4
+      },
+      {
+        "id": "react",
+        "title": "5. Reagir",
+        "summary": "Resolva símbolos disponíveis na ordem desejada: resfriamento, impulso e habilidades de cartas. Impulso: até uma vez por turno, pague 1 Heat e revele cartas até encontrar carta básica de velocidade 1–4.",
+        "tags": "reagir resfriamento impulso boost",
+        "module": "base",
+        "details": [
+          "Em 1ª marcha: Resfriamento 3; em 2ª: Resfriamento 1.",
+          "Resfriar devolve cartas Heat da mão ao Motor.",
+          "Impulso aumenta a velocidade para a verificação de curvas."
+        ],
+        "step": 5
+      },
+      {
+        "id": "slipstream",
+        "title": "6. Vácuo",
+        "summary": "Se terminar o movimento na mesma casa ou atrás de outro carro em posição elegível, você pode avançar 2 casas. No máximo uma vez por turno; não aumenta a velocidade para as curvas.",
+        "tags": "vácuo slipstream ultrapassar",
+        "module": "base",
+        "step": 6
+      },
+      {
+        "id": "corners",
+        "title": "7. Conferir curvas",
+        "summary": "Para cada linha de curva cruzada, se a velocidade total for superior ao limite, pague em Heat a diferença. Confira separadamente as curvas atravessadas no mesmo turno.",
+        "tags": "curva limite velocidade heat rodar",
+        "module": "base",
+        "step": 7
+      },
+      {
+        "id": "spinout",
+        "title": "Rodada / derrapagem",
+        "summary": "Se não houver Heat suficiente para pagar a curva, gaste o Heat disponível e retorne à primeira casa livre antes da curva causadora; receba 1 Estresse (marcha 1–2) ou 2 (marcha 3–4), e volte à 1ª marcha.",
+        "tags": "rodar derrapar spin out estresse",
+        "module": "base"
+      },
+      {
+        "id": "discard",
+        "title": "8. Descartar",
+        "summary": "Você pode descartar cartas indesejadas da mão, exceto cartas de Heat e Estresse.",
+        "tags": "descarte cartas estresse heat",
+        "module": "base",
+        "step": 8
+      },
+      {
+        "id": "draw",
+        "title": "9. Repor mão",
+        "summary": "Descarte as cartas jogadas e compre até ter 7 cartas na mão. Quando o baralho acabar, embaralhe a pilha de descarte para criar um novo.",
+        "tags": "comprar mão sete baralho descarte",
+        "module": "base",
+        "step": 9
+      },
+      {
+        "id": "heat",
+        "title": "Cartas Heat",
+        "summary": "Pagar Heat move cartas do Motor para o descarte. Quando elas chegam à mão, não podem ser jogadas ou descartadas normalmente: use resfriamento para devolvê-las ao Motor.",
+        "tags": "heat motor superaquecimento resfriamento",
+        "module": "base"
+      },
+      {
+        "id": "stress",
+        "title": "Cartas de Estresse e símbolo +",
+        "summary": "Ao resolver um símbolo +, revele cartas do topo do baralho até sair uma carta básica 1–4; descarte as demais reveladas e some a carta básica à velocidade.",
+        "tags": "estresse stress símbolo mais aleatório",
+        "module": "base"
+      },
+      {
+        "id": "cluttered-hand",
+        "title": "Mão travada",
+        "summary": "Se faltarem cartas jogáveis para a marcha por excesso de Heat, complete a seleção com Heat; o carro não se move, volta à 1ª marcha e vai direto à reposição.",
+        "tags": "mão travada heat",
+        "module": "base"
+      },
+      {
+        "id": "finish",
+        "title": "Chegada e desempate",
+        "summary": "Após completar as voltas da pista, vence quem termina mais à frente. Se a chegada ocorrer na mesma rodada, compare distância, e depois o lado mais próximo da linha de corrida. Vácuo não atravessa a chegada.",
+        "tags": "fim vitória chegada desempate voltas",
+        "module": "base"
+      },
+      {
+        "id": "garage",
+        "title": "Garagem",
+        "summary": "Substitui melhorias iniciais por cartas escolhidas no draft de Garagem. Siga a sequência e o mercado de cartas definidos no manual avançado.",
+        "tags": "garagem upgrades draft",
+        "module": "garage"
+      },
+      {
+        "id": "legends",
+        "title": "Lendas",
+        "summary": "Carros automatizados usam baralho e tabuleiro específicos; podem completar o grid em partidas solo ou multijogador.",
+        "tags": "lendas bots automa",
+        "module": "legends"
+      },
+      {
+        "id": "weather",
+        "title": "Clima",
+        "summary": "Sorteie um marcador de Clima antes da corrida e aplique as mudanças de preparação indicadas. O efeito de setor só ocorre onde houver marcador de Condição de Pista correspondente.",
+        "tags": "clima chuva neblina frio sol",
+        "module": "weather-road"
+      },
+      {
+        "id": "road",
+        "title": "Condições da pista",
+        "summary": "Sorteie um marcador de Condição de Pista por setor/curva conforme o manual; posicione o efeito na curva ou setor indicado no marcador físico.",
+        "tags": "pista condições setor curva",
+        "module": "weather-road"
+      },
+      {
+        "id": "championship",
+        "title": "Campeonato",
+        "summary": "Temporada de corridas com cartas de Evento, pontuação, melhorias progressivas, possíveis cartas de Patrocínio e preparações específicas de cada prova.",
+        "tags": "campeonato temporada evento patrocínio pontuação",
+        "module": "championship"
+      }
+    ]
+  },
+  "quickReference": [
+    {
+      "id": "gear-1",
+      "gear": 1,
+      "cards": 1,
+      "cooldown": 3
+    },
+    {
+      "id": "gear-2",
+      "gear": 2,
+      "cards": 2,
+      "cooldown": 1
+    },
+    {
+      "id": "gear-3",
+      "gear": 3,
+      "cards": 3,
+      "cooldown": 0
+    },
+    {
+      "id": "gear-4",
+      "gear": 4,
+      "cards": 4,
+      "cooldown": 0
+    }
+  ],
+  "circuits": [
+    {
+      "id": "usa",
+      "name": "Estados Unidos",
+      "laps": 2,
+      "corners": 4,
+      "heat": 6,
+      "stress": 3
+    },
+    {
+      "id": "great-britain",
+      "name": "Grã-Bretanha",
+      "laps": 2,
+      "corners": 5,
+      "heat": 6,
+      "stress": 3
+    },
+    {
+      "id": "france",
+      "name": "França",
+      "laps": 2,
+      "corners": 5,
+      "heat": 6,
+      "stress": 3
+    },
+    {
+      "id": "italy",
+      "name": "Itália",
+      "laps": 3,
+      "corners": 3,
+      "heat": 6,
+      "stress": 3
+    }
+  ],
+  "weatherReference": {
+    "physicalTokensRequired": true,
+    "notes": "Não sortear resultados independentes por categoria: cada marcador físico combina um efeito de preparação com um possível efeito de setor. Ler o marcador sorteado."
+  },
+  "randomizers": [
+    {
+      "id": "starting-grid",
+      "title": "Grid de largada",
+      "type": "shuffle",
+      "module": "base",
+      "enabled": true,
+      "input": {
+        "playersMin": 1,
+        "playersMax": 6,
+        "uniquePlayers": true
+      },
+      "result": "Permutação dos jogadores/carros nos espaços numerados de largada. Se usar Lendas, incluir seus carros como participantes."
+    },
+    {
+      "id": "track",
+      "title": "Sortear circuito",
+      "type": "pick-one",
+      "module": "base",
+      "enabled": true,
+      "optionsSource": "circuits",
+      "result": "Circuito e suas voltas. Sorteio opcional da plataforma, não exigido pelo regulamento."
+    },
+    {
+      "id": "car-colors",
+      "title": "Sortear cores dos carros",
+      "type": "assign-unique",
+      "module": "base",
+      "enabled": true,
+      "options": [
+        "black",
+        "blue",
+        "green",
+        "red",
+        "silver",
+        "yellow"
+      ],
+      "input": {
+        "playersMin": 1,
+        "playersMax": 6
+      }
+    },
+    {
+      "id": "weather-token",
+      "title": "Sorteio de clima",
+      "type": "physical-token",
+      "module": "weather-road",
+      "enabled": false,
+      "result": "Selecionar entre os 6 marcadores reais sem reposição na preparação; ler efeitos impressos.",
+      "implementationNote": "Habilitar sorteio digital somente após catalogar e validar os 6 marcadores da edição do usuário."
+    },
+    {
+      "id": "road-condition-tokens",
+      "title": "Sorteio das condições da pista",
+      "type": "physical-token-draw",
+      "module": "weather-road",
+      "enabled": false,
+      "result": "Sortear marcadores físicos sem reposição para os setores previstos no circuito.",
+      "implementationNote": "Evitar gerar combinações inexistentes; catalogar frente/verso e multiplicidades antes de implementar o sorteio digital."
+    },
+    {
+      "id": "championship-events",
+      "title": "Eventos de campeonato",
+      "type": "rule-guided",
+      "module": "championship",
+      "enabled": false,
+      "implementationNote": "Eventos e sequência da temporada devem seguir a carta de Campeonato; não embaralhar sem validar as regras."
+    }
+  ],
+  "implementationNotes": [
+    "Usar os ruleId do playerAid.turnSteps para renderizar o checklist, sem duplicar textos.",
+    "Busca sem acentos em title, summary, details e tags.",
+    "Sem geração de resultados para Clima/Condições até mapear os tokens físicos.",
+    "Não confundir o baralho básico de cada piloto com melhorias de Garagem.",
+    "Os pontos e regras de campeonato não foram transcritos integralmente neste primeiro dataset."
+  ]
+}

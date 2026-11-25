@@ -1,0 +1,28 @@
+{
+    "id": "quem-paga",
+    "name": "Quem Paga?",
+    "description": "Uma forma perigosamente democrática de escolher quem paga.",
+    "icon": "payments",
+    "items": [
+        {
+            "label": "Pessoa 1",
+            "weight": 1,
+            "color": "#EF4444"
+        },
+        {
+            "label": "Pessoa 2",
+            "weight": 1,
+            "color": "#3B82F6"
+        },
+        {
+            "label": "Pessoa 3",
+            "weight": 1,
+            "color": "#22C55E"
+        },
+        {
+            "label": "Pessoa 4",
+            "weight": 1,
+            "color": "#F59E0B"
+        }
+    ]
+}

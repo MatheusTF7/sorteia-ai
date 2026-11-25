@@ -1,0 +1,33 @@
+{
+    "id": "proxima-tarefa",
+    "name": "Próxima Tarefa",
+    "description": "Escolha aleatoriamente a próxima tarefa para atacar.",
+    "icon": "task_alt",
+    "items": [
+        {
+            "label": "Responder mensagens",
+            "weight": 2,
+            "color": "#6366F1"
+        },
+        {
+            "label": "Organizar arquivos",
+            "weight": 1,
+            "color": "#06B6D4"
+        },
+        {
+            "label": "Resolver tarefa mais difícil",
+            "weight": 3,
+            "color": "#DC2626"
+        },
+        {
+            "label": "Revisar pendências",
+            "weight": 2,
+            "color": "#D97706"
+        },
+        {
+            "label": "Planejar amanhã",
+            "weight": 1,
+            "color": "#7C3AED"
+        }
+    ]
+}

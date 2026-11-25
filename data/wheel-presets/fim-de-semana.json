@@ -1,0 +1,38 @@
+{
+    "id": "fim-de-semana",
+    "name": "Fim de Semana",
+    "description": "Ideias para decidir o que fazer no tempo livre.",
+    "icon": "weekend",
+    "items": [
+        {
+            "label": "Ir à praia",
+            "weight": 3,
+            "color": "#0EA5E9"
+        },
+        {
+            "label": "Cinema",
+            "weight": 2,
+            "color": "#8B5CF6"
+        },
+        {
+            "label": "Restaurante novo",
+            "weight": 2,
+            "color": "#F97316"
+        },
+        {
+            "label": "Ficar em casa",
+            "weight": 3,
+            "color": "#22C55E"
+        },
+        {
+            "label": "Passeio ao ar livre",
+            "weight": 2,
+            "color": "#14B8A6"
+        },
+        {
+            "label": "Encontrar amigos",
+            "weight": 2,
+            "color": "#EC4899"
+        }
+    ]
+}

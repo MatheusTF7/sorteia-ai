@@ -1,0 +1,38 @@
+{
+    "id": "comida-delivery",
+    "name": "O Que Vamos Comer?",
+    "description": "Decida o pedido sem passar meia hora escolhendo.",
+    "icon": "restaurant",
+    "items": [
+        {
+            "label": "Pizza",
+            "weight": 3,
+            "color": "#EF4444"
+        },
+        {
+            "label": "Hambúrguer",
+            "weight": 3,
+            "color": "#F59E0B"
+        },
+        {
+            "label": "Japonês",
+            "weight": 2,
+            "color": "#EC4899"
+        },
+        {
+            "label": "Mexicano",
+            "weight": 1,
+            "color": "#22C55E"
+        },
+        {
+            "label": "Árabe",
+            "weight": 1,
+            "color": "#8B5CF6"
+        },
+        {
+            "label": "Saudável",
+            "weight": 2,
+            "color": "#10B981"
+        }
+    ]
+}

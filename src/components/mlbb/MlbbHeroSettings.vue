@@ -49,6 +49,17 @@
           </div></template
         >
       </q-option-group>
+      <q-btn
+        flat
+        dense
+        no-caps
+        color="primary"
+        icon="view_list"
+        class="q-mt-xs"
+        :label="t('mlbb.viewPresets', { count: mlbbDuelPresets.length })"
+        @click="presetsOpen = true"
+      />
+      <MlbbPresetsDialog v-model="presetsOpen" :settings="settings" />
       <div v-if="drawMode === 'balanced'" class="win-rate-gap">
         <label :for="gapId">{{ t('mlbb.maxWinRateGap', { value: formatGap(winRateGap) }) }}</label>
         <q-slider
@@ -116,6 +127,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import MlbbPresetsDialog from './MlbbPresetsDialog.vue';
 import { mlbbDuelPresets, mlbbHeroes, mlbbHeroImage, mlbbStatsSource } from 'src/data/mlbb/catalog';
 import {
   MLBB_CLASSES,
@@ -158,6 +170,7 @@ const winRateGap = computed<number>({
   },
 });
 const gapId = 'mlbb-win-rate-gap';
+const presetsOpen = ref(false);
 function formatGap(value: number) {
   return new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 }).format(value);
 }

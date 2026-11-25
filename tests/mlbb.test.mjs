@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { effectScope } from 'vue';
 import ts from 'typescript';
+import { collectHeroRoles } from '../scripts/update-mlbb-roles.mjs';
 
 async function moduleUrl(relativePath, imports = {}) {
   const source = await readFile(new URL(relativePath, import.meta.url), 'utf8');
@@ -55,9 +56,52 @@ const byId = (id) => playableHeroes.find((hero) => hero.id === id);
 const isCounterPair = (a, b) => a.counters.includes(b.id) || b.counters.includes(a.id);
 const allClasses = ['tank', 'fighter', 'assassin', 'mage', 'marksman', 'support'];
 
+test('role collection keeps secondary classes, skips empty slots and preserves manual roles', () => {
+  const catalog = [
+    { id: 'all', name: 'All' },
+    { id: 'alucard', name: 'Alucard' },
+    { id: 'x-borg', name: 'X.Borg' },
+    { id: 'hirara', name: 'Hirara' },
+    { id: 'marcel', name: 'Marcel' },
+  ];
+  const source = [
+    { name: 'Alucard', sortlabel: ['Fighter', 'Assassin'] },
+    { name: 'X.Borg', sortlabel: ['Fighter', ''] },
+    { name: 'Marcel', sortlabel: ['Tank', 'Support'] },
+  ];
+  assert.deepEqual(
+    collectHeroRoles(catalog, source, { hirara: ['assassin'], marcel: ['support'] }, [
+      'hirara',
+      'marcel',
+    ]),
+    {
+      alucard: ['fighter', 'assassin'],
+      'x-borg': ['fighter'],
+      hirara: ['assassin'],
+      marcel: ['support'],
+    },
+  );
+});
+
+test('role collection rejects incomplete sources and unknown classes', () => {
+  const catalog = [{ id: 'alucard', name: 'Alucard' }];
+  assert.throws(
+    () => collectHeroRoles(catalog, [{ name: 'Miya', sortlabel: ['Marksman', ''] }], {}),
+    /Missing roles: alucard/,
+  );
+  assert.throws(
+    () => collectHeroRoles(catalog, [{ name: 'Alucard', sortlabel: ['Fighter', 'Jungle'] }], {}),
+    /Unknown role: alucard/,
+  );
+});
+
 test('season stats cover every playable hero and every counter points to a known hero', () => {
   assert.equal(heroStats.heroes.length, playableHeroes.length);
   for (const hero of playableHeroes) {
+    assert.ok(
+      hero.classes.length && hero.classes.every((role) => allClasses.includes(role)),
+      hero.id,
+    );
     assert.ok(hero.stats, hero.id);
     assert.ok(hero.localImage.startsWith('heroes-mini/'), hero.id);
     assert.equal(hero.counters.length, 5, hero.id);

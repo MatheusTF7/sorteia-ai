@@ -60,3 +60,13 @@ export function mlbbHeroImage(hero: MlbbHero): string {
   const image = thumbnails(`./${hero.localImage.split('/').at(-1)!}`);
   return typeof image === 'string' ? image : image.default;
 }
+// Full 240 × 390 portraits for the ban phase; the lane filter images in the same folder are skipped.
+const portraits = require.context(
+  './heroes',
+  false,
+  /^\.\/(?!(?:all|gold-lane|jungle|roam|mid-lane|exp-lane)\.png$)[a-z0-9-]+\.png$/,
+) as { (path: string): string | { default: string } };
+export function mlbbHeroPortrait(hero: MlbbHero): string {
+  const image = portraits(`./${hero.id}.png`);
+  return typeof image === 'string' ? image : image.default;
+}

@@ -39,6 +39,21 @@
               " /></q-item-section></q-item
       ></template>
     </q-select>
+    <q-btn
+      outline
+      no-caps
+      color="negative"
+      icon="block"
+      class="q-mt-sm"
+      :label="t('mlbb.openBanPhase')"
+      @click="bansOpen = true"
+    />
+    <MlbbBanDialog
+      v-model="bansOpen"
+      v-model:banned="settings.bannedIds"
+      :classes="settings.classes"
+      :overrides="settings.overrides"
+    />
     <div class="draw-mode q-mt-md">
       <div class="draw-mode-title">{{ t('mlbb.drawMode') }}</div>
       <q-option-group v-model="drawMode" :options="drawModeOptions" type="radio">
@@ -139,6 +154,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import MlbbPresetsDialog from './MlbbPresetsDialog.vue';
+import MlbbBanDialog from './MlbbBanDialog.vue';
 import { mlbbDuelPresets, mlbbHeroes, mlbbHeroImage, mlbbStatsSource } from 'src/data/mlbb/catalog';
 import {
   MLBB_CLASSES,
@@ -184,6 +200,7 @@ const winRateGap = computed<number>({
 });
 const gapId = 'mlbb-win-rate-gap';
 const presetsOpen = ref(false);
+const bansOpen = ref(false);
 function formatGap(value: number) {
   return new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 }).format(value);
 }

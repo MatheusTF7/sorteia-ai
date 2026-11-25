@@ -1308,7 +1308,7 @@ const shareText = computed(() => {
       const pick = tournament.heroPicks?.[match.id];
       if (pick)
         lines.push(
-          `${preset(pick.presetId) ?? t('mlbb.classes.' + pick.classId)}: ${mlbbHeroes.find((hero) => hero.id === pick.heroAId)?.name ?? pick.heroAId} x ${mlbbHeroes.find((hero) => hero.id === pick.heroBId)?.name ?? pick.heroBId}`,
+          `${preset(pick.presetId) ?? t('mlbb.classes.' + pick.classId) + (pick.classBId ? ' x ' + t('mlbb.classes.' + pick.classBId) : '')}: ${mlbbHeroes.find((hero) => hero.id === pick.heroAId)?.name ?? pick.heroAId} x ${mlbbHeroes.find((hero) => hero.id === pick.heroBId)?.name ?? pick.heroBId}`,
         );
       result?.games?.forEach((game, index) =>
         lines.push(

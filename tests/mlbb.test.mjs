@@ -16,11 +16,12 @@ async function moduleUrl(relativePath, imports = {}) {
 }
 
 const participantsUrl = await moduleUrl('../src/utils/participants.ts');
-const { canDrawHeroes, drawMlbbHeroes, eligiblePresets, heroPools, validHeroPick } = await import(
-  await moduleUrl('../src/utils/mlbb-heroes.ts', {
-    './random': await moduleUrl('../src/utils/random.ts'),
-  })
-);
+const { canDrawHeroes, drawMlbbHeroes, eligiblePresets, freeHeroPool, heroPools, validHeroPick } =
+  await import(
+    await moduleUrl('../src/utils/mlbb-heroes.ts', {
+      './random': await moduleUrl('../src/utils/random.ts'),
+    })
+  );
 const heroCatalog = JSON.parse(
   await readFile(new URL('../src/data/mlbb/heroes.json', import.meta.url), 'utf8'),
 );
@@ -741,4 +742,62 @@ test('themed mode and matchup IDs survive backups', () => {
   assert.equal(restored.heroSettings.drawMode, 'presets');
   assert.deepEqual(restored.heroPicks['r1-m1'], value.heroPicks['r1-m1']);
   assert.equal(restored.heroPicks['r1-m2'].presetId, undefined);
+});
+
+const freeSettings = { classes: allClasses, bannedIds: [], overrides: {}, drawMode: 'free' };
+const firstAllowed = (hero, settings) =>
+  allClasses.find(
+    (id) =>
+      settings.classes.includes(id) && (settings.overrides[hero.id] ?? hero.classes).includes(id),
+  );
+
+test('free mode draws any two allowed heroes, across classes, and records each side class', () => {
+  const settings = { ...freeSettings, classes: ['mage', 'tank'], bannedIds: ['eudora'] };
+  let crossClass = false;
+  for (let index = 0; index < 300; index++) {
+    const pick = drawMlbbHeroes(playableHeroes, settings);
+    const [a, b] = [byId(pick.heroAId), byId(pick.heroBId)];
+    assert.notEqual(a.id, b.id);
+    assert.ok(!settings.bannedIds.includes(a.id) && !settings.bannedIds.includes(b.id));
+    assert.equal(pick.classId, firstAllowed(a, settings));
+    assert.equal(pick.classBId, firstAllowed(b, settings));
+    assert.ok(validHeroPick(pick, playableHeroes, settings));
+    if (pick.classId !== pick.classBId) crossClass = true;
+  }
+  assert.ok(crossClass);
+});
+
+test('free mode counts each hybrid once, needs two heroes and keeps picks tied to the mode', () => {
+  const heroes = [
+    { id: 'a', classes: ['mage', 'fighter'] },
+    { id: 'b', classes: ['tank'] },
+    { id: 'c', classes: ['support'] },
+  ];
+  const settings = { ...freeSettings, classes: ['mage', 'fighter', 'tank'] };
+  assert.deepEqual(
+    freeHeroPool(heroes, settings).map((hero) => hero.id),
+    ['a', 'b'],
+  );
+  const pick = drawMlbbHeroes(heroes, settings, () => 0);
+  assert.deepEqual([pick.heroAId, pick.heroBId].sort(), ['a', 'b']);
+  assert.equal(pick[pick.heroAId === 'a' ? 'classId' : 'classBId'], 'fighter');
+  assert.ok(!canDrawHeroes(heroes, { ...settings, bannedIds: ['a'] }));
+  assert.equal(drawMlbbHeroes(heroes, { ...settings, bannedIds: ['a'] }), null);
+  // Free picks are not valid in class-first modes, and vice versa.
+  assert.ok(!validHeroPick(pick, heroes, { ...settings, drawMode: undefined }));
+  const uniform = drawMlbbHeroes(playableHeroes, { ...freeSettings, drawMode: undefined });
+  assert.ok(!validHeroPick(uniform, playableHeroes, freeSettings));
+});
+
+test('free mode and side classes survive backups', () => {
+  const value = tournament(4);
+  value.heroSettings = { ...freeSettings, classes: ['mage', 'tank'] };
+  value.heroPicks = {
+    'r1-m1': { classId: 'mage', classBId: 'tank', heroAId: 'valir', heroBId: 'tigreal' },
+    'r1-m2': { classId: 'mage', classBId: 'wizard', heroAId: 'pharsa', heroBId: 'yve' },
+  };
+  const restored = restoreMlbbTournament(JSON.parse(JSON.stringify(value)));
+  assert.equal(restored.heroSettings.drawMode, 'free');
+  assert.deepEqual(restored.heroPicks['r1-m1'], value.heroPicks['r1-m1']);
+  assert.equal(restored.heroPicks['r1-m2'].classBId, undefined);
 });

@@ -20,6 +20,10 @@ export default {
       label: 'Aleatório',
       hint: 'Qualquer par da classe. Estatísticas e counters aparecem no duelo apenas como informação.',
     },
+    free: {
+      label: 'Livre entre classes',
+      hint: 'Dois heróis quaisquer das classes permitidas, que podem ser de classes diferentes. Cada herói tem a mesma chance, então classes com mais heróis aparecem mais.',
+    },
     avoidCounters: {
       label: 'Evitar counters',
       hint: 'Descarta pares em que um herói está na lista de counters do outro.',
@@ -40,7 +44,9 @@ export default {
   allRanks: 'todos os ranks',
   heroStatsTitle: 'Win rate {wr}, pick rate {pr}, ban rate {br}',
   curatedMatchup: 'Confronto temático',
+  availableFreeHeroes: '{count} heróis disponíveis para o sorteio livre.',
   availablePresets: '{count} de {total} confrontos temáticos disponíveis.',
+  noFreePool: 'Restam menos de dois heróis com classe permitida após os bans.',
   noPresetPool: 'Nenhum confronto temático disponível com os bans e classes atuais.',
   viewPresets: 'Ver os {count} confrontos temáticos',
   presetsDialogTitle: 'Confrontos temáticos',

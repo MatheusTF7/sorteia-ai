@@ -355,7 +355,7 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
     };
     // Kept in sync with MLBB_DRAW_MODES and MLBB_WIN_RATE_GAP in mlbb-heroes.ts.
     const mode = heroSettings.drawMode;
-    if (mode === 'avoid-counters' || mode === 'balanced' || mode === 'presets')
+    if (mode === 'free' || mode === 'avoid-counters' || mode === 'balanced' || mode === 'presets')
       tournament.heroSettings.drawMode = mode;
     const gap = heroSettings.maxWinRateGap;
     if (typeof gap === 'number' && Number.isFinite(gap))
@@ -375,6 +375,7 @@ export function restoreMlbbTournament(value: unknown): MlbbTournament | null {
           classId: String(pick.classId),
           heroAId: pick.heroAId.slice(0, 100),
           heroBId: pick.heroBId.slice(0, 100),
+          ...(classIds.has(String(pick.classBId)) && { classBId: String(pick.classBId) }),
           ...(typeof pick.presetId === 'string' &&
             /^[a-z0-9-]{1,100}$/.test(pick.presetId) && { presetId: pick.presetId }),
         };

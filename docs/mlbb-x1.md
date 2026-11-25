@@ -45,6 +45,7 @@ Cada herói do duelo mostra **WR** (win rate), **PR** (pick rate) e **BR** (ban 
 Em **Modo do sorteio**, escolha antes de sortear:
 
 - **Aleatório** (padrão): o sorteio descrito acima. Estatísticas e counters aparecem apenas como informação.
+- **Livre entre classes**: sorteia dois heróis distintos entre todos os que não estão banidos e têm ao menos uma classe permitida, sem sortear a classe antes. Os dois podem ser de classes diferentes, como **Mago × Tanque**, e o cartão mostra a classe de cada lado. Cada herói tem a mesma chance e um herói híbrido conta uma vez só, então classes com mais heróis, como Lutador, aparecem com mais frequência. A classe exibida para um híbrido é a primeira permitida na ordem Tanque, Lutador, Assassino, Mago, Atirador, Suporte.
 - **Evitar counters**: descarta pares em que um herói está entre os 5 counters do outro, em qualquer direção.
 - **Equilibrar por win rate**: além de evitar counters, só aceita pares cuja diferença de win rate não passe do limite escolhido (padrão de 3 pontos percentuais, de 0,5 a 15). Heróis sem estatísticas ficam de fora desse modo.
 

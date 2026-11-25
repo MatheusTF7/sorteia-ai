@@ -8,7 +8,10 @@
         <strong>{{ presetText(preset.title, locale) }}</strong>
         <small>{{ presetText(preset.description, locale) }}</small>
       </div>
-      <div v-else class="hero-class">{{ t('mlbb.classes.' + pick.classId) }}</div>
+      <div v-else class="hero-class">
+        {{ t('mlbb.classes.' + pick.classId)
+        }}<template v-if="pick.classBId"> × {{ t('mlbb.classes.' + pick.classBId) }}</template>
+      </div>
       <div class="hero-pair">
         <div
           v-for="(hero, index) in heroes"

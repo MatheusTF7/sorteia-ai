@@ -20,6 +20,10 @@ export default {
       label: 'Random',
       hint: 'Any pair from the class. Stats and counters are shown in the duel for information only.',
     },
+    free: {
+      label: 'Free across classes',
+      hint: 'Any two heroes from the allowed classes, possibly from different classes. Every hero has the same chance, so classes with more heroes show up more often.',
+    },
     avoidCounters: {
       label: 'Avoid counters',
       hint: "Skips pairs where one hero is on the other's counter list.",
@@ -40,7 +44,9 @@ export default {
   allRanks: 'all ranks',
   heroStatsTitle: 'Win rate {wr}, pick rate {pr}, ban rate {br}',
   curatedMatchup: 'Themed matchup',
+  availableFreeHeroes: '{count} heroes available for the free draw.',
   availablePresets: '{count} of {total} themed matchups available.',
+  noFreePool: 'Fewer than two heroes with an allowed class remain after bans.',
   noPresetPool: 'No themed matchup is available with the current bans and classes.',
   viewPresets: 'View all {count} themed matchups',
   presetsDialogTitle: 'Themed matchups',

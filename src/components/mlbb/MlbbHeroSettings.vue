@@ -44,7 +44,7 @@
       no-caps
       color="negative"
       icon="block"
-      class="q-mt-sm"
+      class="q-mt-sm full-width"
       :label="t('mlbb.openBanPhase')"
       @click="bansOpen = true"
     />
@@ -269,5 +269,8 @@ p {
 .stats-source {
   display: block;
   margin-top: 8px;
+}
+.stats-source a {
+  color: var(--mlbb-accent-text);
 }
 </style>

@@ -151,7 +151,7 @@ const rows = computed(() => {
   flex-direction: column;
   max-height: 90vh;
 }
-:global(body.body--dark) .presets-dialog {
+body.body--dark .presets-dialog {
   --presets-muted: #a3b1c6;
   --presets-border: #2a3650;
   --presets-soft: #131e33;

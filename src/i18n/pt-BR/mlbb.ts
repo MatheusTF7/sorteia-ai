@@ -76,6 +76,7 @@ export default {
   banSortWinRate: 'Win rate',
   banSortBanRate: 'Ban rate',
   banSortPickRate: 'Pick rate',
+  banFilters: 'Ordenação e filtros',
   banOnlyBanned: 'Somente banidos',
   banOnlyAllowed: 'Somente classes permitidas',
   banEmpty: 'Nenhum herói encontrado com esses filtros.',

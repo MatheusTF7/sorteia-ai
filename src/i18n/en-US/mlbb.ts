@@ -12,6 +12,7 @@ export default {
     '{count} hero(es) have no class. Assign classes to include them in draws. Changes apply to this tournament.',
   chooseHero: 'Choose a hero',
   redrawHeroes: 'Redraw class and heroes',
+  redrawPreset: 'Draw another themed matchup',
   noHistoricalPick: 'No picks recorded for this match.',
   drawMode: 'Draw mode',
   drawModes: {
@@ -27,6 +28,10 @@ export default {
       label: 'Balance by win rate',
       hint: 'Avoids counters and only draws pairs with close win rates. Heroes without stats are left out.',
     },
+    presets: {
+      label: 'Themed matchups',
+      hint: 'Draws one of the curated duels, such as rival siblings, fire and ice or combo masters. Bans and allowed classes still apply, and a matchup repeats only after all of them were used.',
+    },
   },
   maxWinRateGap: 'Maximum win rate gap: {value} pp',
   winRateGapValue: '{value} pp',
@@ -34,6 +39,9 @@ export default {
   statsSourceLink: 'View ranking',
   allRanks: 'all ranks',
   heroStatsTitle: 'Win rate {wr}, pick rate {pr}, ban rate {br}',
+  curatedMatchup: 'Themed matchup',
+  availablePresets: '{count} of {total} themed matchups available.',
+  noPresetPool: 'No themed matchup is available with the current bans and classes.',
   counterAlertTitle: 'Counter matchup',
   counterBadge: 'Counter',
   counterWarning: '{counter} counters {hero}',

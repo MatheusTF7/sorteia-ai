@@ -16,7 +16,7 @@ async function moduleUrl(relativePath, imports = {}) {
 }
 
 const participantsUrl = await moduleUrl('../src/utils/participants.ts');
-const { drawMlbbHeroes, heroPools, validHeroPick } = await import(
+const { canDrawHeroes, drawMlbbHeroes, eligiblePresets, heroPools, validHeroPick } = await import(
   await moduleUrl('../src/utils/mlbb-heroes.ts', {
     './random': await moduleUrl('../src/utils/random.ts'),
   })
@@ -668,3 +668,77 @@ test('malformed saved JSON starts a usable draft with a recovery warning', () =>
     },
     new Map([[MLBB_STORAGE_KEY, '{bad JSON']]),
   ));
+
+const duelPresets = JSON.parse(
+  await readFile(new URL('../src/data/mlbb/duel-presets.json', import.meta.url), 'utf8'),
+).presets;
+const presetSettings = { classes: allClasses, bannedIds: [], overrides: {}, drawMode: 'presets' };
+
+test('curated matchups reference distinct, classified heroes and have text in both languages', () => {
+  const ids = new Set();
+  for (const preset of duelPresets) {
+    assert.ok(/^[a-z0-9-]+$/.test(preset.id) && !ids.has(preset.id), preset.id);
+    ids.add(preset.id);
+    assert.equal(preset.heroes.length, 2, preset.id);
+    const [a, b] = preset.heroes.map(byId);
+    assert.ok(a && b && a.id !== b.id, preset.id);
+    assert.ok(a.classes.length && b.classes.length, preset.id);
+    for (const field of [preset.title, preset.description])
+      for (const locale of ['pt-BR', 'en-US']) assert.ok(field[locale]?.trim(), preset.id + locale);
+  }
+  assert.equal(eligiblePresets(playableHeroes, presetSettings, duelPresets).length, ids.size);
+});
+
+test('themed mode draws only curated matchups, respects bans and classes and avoids repeats', () => {
+  const context = { presets: duelPresets, usedPresetIds: [] };
+  for (let index = 0; index < duelPresets.length; index++) {
+    const pick = drawMlbbHeroes(playableHeroes, presetSettings, Math.random, context);
+    const preset = duelPresets.find((preset) => preset.id === pick.presetId);
+    assert.deepEqual([pick.heroAId, pick.heroBId].sort(), [...preset.heroes].sort());
+    assert.ok(validHeroPick(pick, playableHeroes, presetSettings, duelPresets));
+    assert.ok(!context.usedPresetIds.includes(pick.presetId));
+    context.usedPresetIds.push(pick.presetId);
+  }
+  // Once every matchup was used, repeats are allowed instead of failing.
+  assert.ok(drawMlbbHeroes(playableHeroes, presetSettings, Math.random, context));
+
+  const banned = { ...presetSettings, bannedIds: ['gusion'] };
+  const left = eligiblePresets(playableHeroes, banned, duelPresets).map(({ preset }) => preset.id);
+  assert.ok(!left.includes('paxley-brothers') && !left.includes('combo-masters'));
+  const tanks = { ...presetSettings, classes: ['tank'] };
+  for (const { preset } of eligiblePresets(playableHeroes, tanks, duelPresets))
+    assert.ok(
+      preset.heroes.every((id) => byId(id).classes.includes('tank')),
+      preset.id,
+    );
+  assert.ok(!canDrawHeroes(playableHeroes, { ...presetSettings, classes: [] }, duelPresets));
+  assert.equal(
+    drawMlbbHeroes(playableHeroes, { ...presetSettings, classes: [] }, Math.random, context),
+    null,
+  );
+});
+
+test('picks belong to the mode that drew them, so switching modes replaces upcoming picks', () => {
+  const themed = drawMlbbHeroes(playableHeroes, presetSettings, Math.random, {
+    presets: duelPresets,
+  });
+  const uniform = { ...presetSettings, drawMode: undefined };
+  assert.ok(!validHeroPick(themed, playableHeroes, uniform, duelPresets));
+  const plain = drawMlbbHeroes(playableHeroes, uniform);
+  assert.ok(!validHeroPick(plain, playableHeroes, presetSettings, duelPresets));
+  const tampered = { ...themed, heroBId: themed.heroAId === 'miya' ? 'layla' : 'miya' };
+  assert.ok(!validHeroPick(tampered, playableHeroes, presetSettings, duelPresets));
+});
+
+test('themed mode and matchup IDs survive backups', () => {
+  const value = tournament(4);
+  value.heroSettings = { ...presetSettings, classes: ['mage'] };
+  value.heroPicks = {
+    'r1-m1': { classId: 'mage', heroAId: 'valir', heroBId: 'aurora', presetId: 'fire-and-ice' },
+    'r1-m2': { classId: 'mage', heroAId: 'pharsa', heroBId: 'yve', presetId: 'Bad ID!' },
+  };
+  const restored = restoreMlbbTournament(JSON.parse(JSON.stringify(value)));
+  assert.equal(restored.heroSettings.drawMode, 'presets');
+  assert.deepEqual(restored.heroPicks['r1-m1'], value.heroPicks['r1-m1']);
+  assert.equal(restored.heroPicks['r1-m2'].presetId, undefined);
+});

@@ -12,6 +12,7 @@ export default {
     '{count} herói(s) sem classe cadastrada. Defina as classes para incluí-los no sorteio. As alterações ficam neste campeonato.',
   chooseHero: 'Escolha o herói',
   redrawHeroes: 'Sortear classe e heróis novamente',
+  redrawPreset: 'Sortear outro confronto temático',
   noHistoricalPick: 'Sem picks registrados neste confronto.',
   drawMode: 'Modo do sorteio',
   drawModes: {
@@ -27,6 +28,10 @@ export default {
       label: 'Equilibrar por win rate',
       hint: 'Evita counters e sorteia apenas pares com win rates próximos. Heróis sem estatísticas ficam de fora.',
     },
+    presets: {
+      label: 'Confrontos temáticos',
+      hint: 'Sorteia um dos duelos curados, como irmãos rivais, fogo e gelo ou mestres do combo. Bans e classes permitidas continuam valendo, e cada confronto se repete só quando todos já foram usados.',
+    },
   },
   maxWinRateGap: 'Diferença máxima de win rate: {value} p.p.',
   winRateGapValue: '{value} p.p.',
@@ -34,6 +39,9 @@ export default {
   statsSourceLink: 'Ver ranking',
   allRanks: 'todos os ranks',
   heroStatsTitle: 'Win rate {wr}, pick rate {pr}, ban rate {br}',
+  curatedMatchup: 'Confronto temático',
+  availablePresets: '{count} de {total} confrontos temáticos disponíveis.',
+  noPresetPool: 'Nenhum confronto temático disponível com os bans e classes atuais.',
   counterAlertTitle: 'Confronto com counter',
   counterBadge: 'Counter',
   counterWarning: '{counter} é counter de {hero}',

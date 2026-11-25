@@ -1,7 +1,14 @@
 <template>
   <div class="hero-duel">
     <template v-if="pick">
-      <div class="hero-class">{{ t('mlbb.classes.' + pick.classId) }}</div>
+      <div v-if="preset" class="hero-preset">
+        <span class="preset-eyebrow"
+          ><q-icon name="auto_awesome" size="14px" />{{ t('mlbb.curatedMatchup') }}</span
+        >
+        <strong>{{ presetText(preset.title, locale) }}</strong>
+        <small>{{ presetText(preset.description, locale) }}</small>
+      </div>
+      <div v-else class="hero-class">{{ t('mlbb.classes.' + pick.classId) }}</div>
       <div class="hero-pair">
         <div
           v-for="(hero, index) in heroes"
@@ -47,7 +54,7 @@
       dense
       color="primary"
       icon="shuffle"
-      :label="t('mlbb.redrawHeroes')"
+      :label="t(preset ? 'mlbb.redrawPreset' : 'mlbb.redrawHeroes')"
       @click="$emit('redraw')"
     />
   </div>
@@ -55,7 +62,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { mlbbHeroes, mlbbHeroImage } from 'src/data/mlbb/catalog';
+import { mlbbDuelPresets, mlbbHeroes, mlbbHeroImage, presetText } from 'src/data/mlbb/catalog';
 import { counterRelations } from 'src/utils/mlbb-heroes';
 import type { MlbbHeroPick } from 'src/utils/mlbb-heroes';
 const props = defineProps<{
@@ -68,6 +75,11 @@ defineEmits<{ redraw: [] }>();
 const { t, locale } = useI18n();
 const heroes = computed(() =>
   [props.pick?.heroAId, props.pick?.heroBId].map((id) => mlbbHeroes.find((hero) => hero.id === id)),
+);
+const preset = computed(() =>
+  props.pick?.presetId
+    ? mlbbDuelPresets.find((preset) => preset.id === props.pick?.presetId)
+    : undefined,
 );
 const relations = computed(() => {
   const [a, b] = heroes.value;
@@ -102,6 +114,32 @@ function percent(value: number) {
   font-weight: 700;
   color: var(--mlbb-accent-text);
   margin-bottom: 12px;
+}
+.hero-preset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+.preset-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mlbb-accent-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero-preset strong {
+  font-size: 0.9375rem;
+}
+.hero-preset small {
+  color: var(--mlbb-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  max-width: 32ch;
 }
 .hero-pair {
   display: grid;

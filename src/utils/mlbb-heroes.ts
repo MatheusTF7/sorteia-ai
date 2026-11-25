@@ -1,7 +1,7 @@
 import { shuffleItems } from './random';
 
 export const MLBB_CLASSES = ['tank', 'fighter', 'assassin', 'mage', 'marksman', 'support'] as const;
-export const MLBB_DRAW_MODES = ['uniform', 'avoid-counters', 'balanced'] as const;
+export const MLBB_DRAW_MODES = ['uniform', 'avoid-counters', 'balanced', 'presets'] as const;
 export type MlbbHeroDrawMode = (typeof MLBB_DRAW_MODES)[number];
 /** Default and limits, in percentage points, for the win rate gap in balanced draws. */
 export const MLBB_WIN_RATE_GAP = { default: 3, min: 0.5, max: 15 } as const;
@@ -25,6 +25,19 @@ export interface MlbbHeroPick {
   classId: string;
   heroAId: string;
   heroBId: string;
+  /** Set only for picks drawn from a curated matchup. */
+  presetId?: string;
+}
+export interface MlbbDuelPreset {
+  id: string;
+  heroes: [string, string];
+  title: Record<string, string>;
+  description: Record<string, string>;
+}
+export interface MlbbDrawContext {
+  presets?: MlbbDuelPreset[];
+  /** Matchups already in use; they are drawn again only when every eligible one is taken. */
+  usedPresetIds?: string[];
 }
 export interface MlbbHeroSettings {
   classes: string[];
@@ -45,7 +58,7 @@ export function counterRelations(a: MlbbHero, b: MlbbHero) {
 export function compatibleHeroes(a: MlbbHero, b: MlbbHero, settings: MlbbHeroSettings) {
   const mode = settings.drawMode ?? 'uniform';
   if (a.id === b.id) return false;
-  if (mode === 'uniform') return true;
+  if (mode === 'uniform' || mode === 'presets') return true;
   const relations = counterRelations(a, b);
   if (relations.aCountersB || relations.bCountersA) return false;
   if (mode === 'avoid-counters') return true;
@@ -64,6 +77,41 @@ function compatiblePairs(heroes: MlbbHero[], settings: MlbbHeroSettings) {
 function hasCompatiblePair(heroes: MlbbHero[], settings: MlbbHeroSettings) {
   return heroes.some((a, i) => heroes.slice(i + 1).some((b) => compatibleHeroes(a, b, settings)));
 }
+function effectiveClasses(hero: MlbbHero, settings: MlbbHeroSettings) {
+  return settings.overrides[hero.id] ?? hero.classes;
+}
+/**
+ * Curated matchups whose heroes are both unbanned and each have at least one allowed class.
+ * The pick's class is the first allowed class of the first hero, kept for older readers of picks.
+ */
+export function eligiblePresets(
+  heroes: MlbbHero[],
+  settings: MlbbHeroSettings,
+  presets: MlbbDuelPreset[],
+) {
+  const byId = new Map(heroes.map((hero) => [hero.id, hero]));
+  return presets.flatMap((preset) => {
+    const [a, b] = preset.heroes.map((id) => byId.get(id));
+    if (!a || !b || a.id === b.id) return [];
+    if ([a, b].some((hero) => settings.bannedIds.includes(hero.id))) return [];
+    const classOf = (hero: MlbbHero) =>
+      MLBB_CLASSES.find(
+        (id) => settings.classes.includes(id) && effectiveClasses(hero, settings).includes(id),
+      );
+    const classId = classOf(a);
+    return classId && classOf(b) ? [{ preset, classId }] : [];
+  });
+}
+/** Whether the current settings can produce at least one pick. */
+export function canDrawHeroes(
+  heroes: MlbbHero[],
+  settings: MlbbHeroSettings,
+  presets: MlbbDuelPreset[] = [],
+) {
+  return settings.drawMode === 'presets'
+    ? eligiblePresets(heroes, settings, presets).length > 0
+    : heroPools(heroes, settings).length > 0;
+}
 export function heroPools(heroes: MlbbHero[], settings: MlbbHeroSettings) {
   return MLBB_CLASSES.filter((id) => settings.classes.includes(id))
     .map((classId) => ({
@@ -71,7 +119,7 @@ export function heroPools(heroes: MlbbHero[], settings: MlbbHeroSettings) {
       heroes: heroes.filter(
         (hero) =>
           !settings.bannedIds.includes(hero.id) &&
-          (settings.overrides[hero.id] ?? hero.classes).includes(classId),
+          effectiveClasses(hero, settings).includes(classId),
       ),
     }))
     .filter((pool) => pool.heroes.length >= 2 && hasCompatiblePair(pool.heroes, settings));
@@ -84,7 +132,18 @@ export function drawMlbbHeroes(
   heroes: MlbbHero[],
   settings: MlbbHeroSettings,
   random = Math.random,
+  context: MlbbDrawContext = {},
 ): MlbbHeroPick | null {
+  if (settings.drawMode === 'presets') {
+    const eligible = eligiblePresets(heroes, settings, context.presets ?? []);
+    const unused = eligible.filter(({ preset }) => !context.usedPresetIds?.includes(preset.id));
+    const options = unused.length ? unused : eligible;
+    if (!options.length) return null;
+    const { preset, classId } = options[Math.floor(random() * options.length)]!;
+    const [heroAId, heroBId] =
+      random() < 0.5 ? preset.heroes : [preset.heroes[1], preset.heroes[0]];
+    return { classId, heroAId, heroBId, presetId: preset.id };
+  }
   const pools = heroPools(heroes, settings);
   if (!pools.length) return null;
   const pool = pools[Math.floor(random() * pools.length)]!;
@@ -97,7 +156,24 @@ export function drawMlbbHeroes(
   const [heroA, heroB] = random() < 0.5 ? [a, b] : [b, a];
   return { classId: pool.classId, heroAId: heroA.id, heroBId: heroB.id };
 }
-export function validHeroPick(pick: MlbbHeroPick, heroes: MlbbHero[], settings: MlbbHeroSettings) {
+export function validHeroPick(
+  pick: MlbbHeroPick,
+  heroes: MlbbHero[],
+  settings: MlbbHeroSettings,
+  presets: MlbbDuelPreset[] = [],
+) {
+  // A pick belongs to the mode that drew it: switching modes redraws upcoming matches.
+  if (settings.drawMode === 'presets') {
+    const entry = eligiblePresets(heroes, settings, presets).find(
+      ({ preset }) => preset.id === pick.presetId,
+    );
+    return (
+      !!entry &&
+      entry.classId === pick.classId &&
+      [pick.heroAId, pick.heroBId].sort().join() === [...entry.preset.heroes].sort().join()
+    );
+  }
+  if (pick.presetId) return false;
   const pool = heroPools(heroes, settings).find((pool) => pool.classId === pick.classId);
   const heroA = pool?.heroes.find((hero) => hero.id === pick.heroAId);
   const heroB = pool?.heroes.find((hero) => hero.id === pick.heroBId);

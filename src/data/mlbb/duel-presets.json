@@ -1,0 +1,293 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "paxley-brothers",
+      "heroes": ["gusion", "aamon"],
+      "title": { "pt-BR": "Irmãos Paxley", "en-US": "Paxley brothers" },
+      "description": {
+        "pt-BR": "Briga de família: as lâminas de Gusion contra os fragmentos invisíveis de Aamon.",
+        "en-US": "A family feud: Gusion's daggers against Aamon's invisible shards."
+      }
+    },
+    {
+      "id": "vance-siblings",
+      "heroes": ["lesley", "harley"],
+      "title": { "pt-BR": "Irmãos Vance", "en-US": "Vance siblings" },
+      "description": {
+        "pt-BR": "A atiradora de elite contra o mágico da família. Quem chega primeiro no alcance?",
+        "en-US": "The family sniper against the family magician. Who finds range first?"
+      }
+    },
+    {
+      "id": "iga-rivals",
+      "heroes": ["hayabusa", "hanzo"],
+      "title": { "pt-BR": "Rivais de Iga", "en-US": "Iga rivals" },
+      "description": {
+        "pt-BR": "O ninja das sombras contra o ninja que trocou o clã pelo poder demoníaco.",
+        "en-US": "The shadow ninja against the one who traded his clan for demonic power."
+      }
+    },
+    {
+      "id": "vampire-couple",
+      "heroes": ["cecilion", "carmilla"],
+      "title": { "pt-BR": "Casal vampiro", "en-US": "Vampire couple" },
+      "description": {
+        "pt-BR": "Eles costumam lutar juntos. Hoje, só um sai da rota com vida.",
+        "en-US": "They usually fight side by side. Today only one leaves the lane alive."
+      }
+    },
+    {
+      "id": "abyss-forces",
+      "heroes": ["dyrroth", "thamuz"],
+      "title": { "pt-BR": "Forças do Abismo", "en-US": "Abyss forces" },
+      "description": {
+        "pt-BR": "Dois lutadores do Abismo em troca de golpes curta e sem perdão.",
+        "en-US": "Two Abyss fighters in short, unforgiving trades."
+      }
+    },
+    {
+      "id": "starter-classics",
+      "heroes": ["miya", "layla"],
+      "title": { "pt-BR": "Clássicos do início", "en-US": "Starter classics" },
+      "description": {
+        "pt-BR": "As atiradoras que todo jogador conheceu cedo. Posicionamento decide.",
+        "en-US": "The marksmen every player met early on. Positioning decides it."
+      }
+    },
+    {
+      "id": "fire-and-ice",
+      "heroes": ["valir", "aurora"],
+      "title": { "pt-BR": "Fogo e gelo", "en-US": "Fire and ice" },
+      "description": {
+        "pt-BR": "Empurrões e queimadura contra congelamento. Quem controla primeiro vence a troca.",
+        "en-US": "Knockbacks and burn against freezing. Whoever lands control first wins the trade."
+      }
+    },
+    {
+      "id": "wind-and-flame",
+      "heroes": ["vale", "valir"],
+      "title": { "pt-BR": "Vento e chama", "en-US": "Wind and flame" },
+      "description": {
+        "pt-BR": "Dois magos elementais de controle e alcance médio.",
+        "en-US": "Two elemental mages built on control and mid-range pokes."
+      }
+    },
+    {
+      "id": "aerial-mobility",
+      "heroes": ["fanny", "ling"],
+      "title": { "pt-BR": "Duelo aéreo", "en-US": "Aerial duel" },
+      "description": {
+        "pt-BR": "Cabos contra paredes. Errar um movimento custa a vida.",
+        "en-US": "Cables against walls. One missed movement costs your life."
+      }
+    },
+    {
+      "id": "combo-masters",
+      "heroes": ["lancelot", "gusion"],
+      "title": { "pt-BR": "Mestres do combo", "en-US": "Combo masters" },
+      "description": {
+        "pt-BR": "Dois assassinos de alta dificuldade. Execução limpa vale mais que build.",
+        "en-US": "Two high-skill assassins. Clean execution matters more than items."
+      }
+    },
+    {
+      "id": "stealth-hunt",
+      "heroes": ["natalia", "helcurt"],
+      "title": { "pt-BR": "Caçada nas sombras", "en-US": "Shadow hunt" },
+      "description": {
+        "pt-BR": "Invisibilidade contra escuridão. Quem enxerga primeiro, ataca primeiro.",
+        "en-US": "Invisibility against darkness. Whoever sees first strikes first."
+      }
+    },
+    {
+      "id": "martial-arts",
+      "heroes": ["chou", "paquito"],
+      "title": { "pt-BR": "Artes marciais", "en-US": "Martial arts" },
+      "description": {
+        "pt-BR": "Chutes contra socos em um duelo de combos curtos e decisivos.",
+        "en-US": "Kicks against punches in a duel of short, decisive combos."
+      }
+    },
+    {
+      "id": "every-dash-costs",
+      "heroes": ["phoveus", "lancelot"],
+      "title": { "pt-BR": "Cada dash tem preço", "en-US": "Every dash has a price" },
+      "description": {
+        "pt-BR": "Phoveus pune deslocamentos. Lancelot vive deles.",
+        "en-US": "Phoveus punishes dashes. Lancelot lives on them."
+      }
+    },
+    {
+      "id": "anti-heal",
+      "heroes": ["baxia", "uranus"],
+      "title": { "pt-BR": "Anticura x regeneração", "en-US": "Anti-heal vs regeneration" },
+      "description": {
+        "pt-BR": "Baxia corta a cura. Uranus depende dela para ficar de pé.",
+        "en-US": "Baxia cuts healing. Uranus needs it to stay standing."
+      }
+    },
+    {
+      "id": "hp-walls",
+      "heroes": ["hylos", "uranus"],
+      "title": { "pt-BR": "Muralhas de vida", "en-US": "Walls of HP" },
+      "description": {
+        "pt-BR": "Dois tanques resistentes. Prepare-se para um X1 longo.",
+        "en-US": "Two sturdy tanks. Expect a long duel."
+      }
+    },
+    {
+      "id": "engage-masters",
+      "heroes": ["tigreal", "atlas"],
+      "title": { "pt-BR": "Mestres do engage", "en-US": "Engage masters" },
+      "description": {
+        "pt-BR": "Puxões e atordoamentos em área. Quem inicia melhor dita o ritmo.",
+        "en-US": "Area pulls and stuns. The better initiator sets the pace."
+      }
+    },
+    {
+      "id": "hooks-and-grabs",
+      "heroes": ["franco", "kaja"],
+      "title": { "pt-BR": "Ganchos e capturas", "en-US": "Hooks and grabs" },
+      "description": {
+        "pt-BR": "O gancho de Franco contra a captura de Kaja. Errou, ficou exposto.",
+        "en-US": "Franco's hook against Kaja's grab. Miss it and you are exposed."
+      }
+    },
+    {
+      "id": "tank-brawl",
+      "heroes": ["gatotkaca", "minotaur"],
+      "title": { "pt-BR": "Briga de tanques", "en-US": "Tank brawl" },
+      "description": {
+        "pt-BR": "Dois tanques com ultimates de controle em área. Força bruta pura.",
+        "en-US": "Two tanks with area-control ultimates. Pure brute force."
+      }
+    },
+    {
+      "id": "true-damage-vs-shields",
+      "heroes": ["karrie", "esmeralda"],
+      "title": { "pt-BR": "Dano verdadeiro x escudos", "en-US": "True damage vs shields" },
+      "description": {
+        "pt-BR": "Karrie derrete alvos resistentes. Esmeralda transforma escudos em sobrevivência.",
+        "en-US": "Karrie melts durable targets. Esmeralda turns shields into survival."
+      }
+    },
+    {
+      "id": "snipers",
+      "heroes": ["beatrix", "lesley"],
+      "title": { "pt-BR": "Duelo de snipers", "en-US": "Sniper duel" },
+      "description": {
+        "pt-BR": "Alcance máximo e pouca margem para erro.",
+        "en-US": "Maximum range and little room for mistakes."
+      }
+    },
+    {
+      "id": "burst-marksmen",
+      "heroes": ["granger", "brody"],
+      "title": { "pt-BR": "Rajadas", "en-US": "Burst shots" },
+      "description": {
+        "pt-BR": "Atiradores de dano explosivo. Cada sequência pode acabar a luta.",
+        "en-US": "Burst-damage marksmen. Every sequence can end the fight."
+      }
+    },
+    {
+      "id": "beast-partners",
+      "heroes": ["irithel", "popol-and-kupa"],
+      "title": { "pt-BR": "Parceiros feras", "en-US": "Beast partners" },
+      "description": {
+        "pt-BR": "Irithel monta seu felino; Popol luta ao lado de Kupa. Dois contra dois, em um X1.",
+        "en-US": "Irithel rides her big cat; Popol fights beside Kupa. Two against two, in a duel."
+      }
+    },
+    {
+      "id": "fire-and-lava",
+      "heroes": ["x-borg", "thamuz"],
+      "title": { "pt-BR": "Fogo e lava", "en-US": "Fire and lava" },
+      "description": {
+        "pt-BR": "Dano contínuo de perto. Ficar parado é derrota.",
+        "en-US": "Sustained close-range damage. Standing still means defeat."
+      }
+    },
+    {
+      "id": "lifesteal",
+      "heroes": ["ruby", "alucard"],
+      "title": { "pt-BR": "Roubo de vida", "en-US": "Lifesteal" },
+      "description": {
+        "pt-BR": "Os dois se curam batendo. Quem parar de atacar primeiro perde.",
+        "en-US": "Both heal by hitting. Whoever stops attacking first loses."
+      }
+    },
+    {
+      "id": "veterans",
+      "heroes": ["balmond", "saber"],
+      "title": { "pt-BR": "Veteranos", "en-US": "Veterans" },
+      "description": {
+        "pt-BR": "Dois heróis antigos e diretos. Sem truques, só fundamento.",
+        "en-US": "Two old-school, straightforward heroes. No tricks, just fundamentals."
+      }
+    },
+    {
+      "id": "artillery",
+      "heroes": ["pharsa", "yve"],
+      "title": { "pt-BR": "Artilharia", "en-US": "Artillery" },
+      "description": {
+        "pt-BR": "Magas de longo alcance. Quem domina a distância domina o X1.",
+        "en-US": "Long-range mages. Control the distance, control the duel."
+      }
+    },
+    {
+      "id": "instant-burst",
+      "heroes": ["eudora", "aurora"],
+      "title": { "pt-BR": "Explosão instantânea", "en-US": "Instant burst" },
+      "description": {
+        "pt-BR": "Atordoamento ou congelamento seguido de dano total. Um acerto basta.",
+        "en-US": "A stun or freeze followed by full burst. One hit is enough."
+      }
+    },
+    {
+      "id": "healer-showdown",
+      "heroes": ["estes", "rafaela"],
+      "title": { "pt-BR": "Quem cura mais", "en-US": "Healer showdown" },
+      "description": {
+        "pt-BR": "Duelo inusitado entre suportes de cura. Paciência é o item principal.",
+        "en-US": "An unusual duel between healers. Patience is the core item."
+      }
+    },
+    {
+      "id": "dash-dance",
+      "heroes": ["joy", "arlott"],
+      "title": { "pt-BR": "Dança das investidas", "en-US": "Dash dance" },
+      "description": {
+        "pt-BR": "Dois heróis que vivem de avanços encadeados. Ritmo é tudo.",
+        "en-US": "Two heroes built on chained dashes. Rhythm is everything."
+      }
+    },
+    {
+      "id": "demon-hunter",
+      "heroes": ["alucard", "alice"],
+      "title": { "pt-BR": "Caçador e rainha", "en-US": "Hunter and queen" },
+      "description": {
+        "pt-BR": "O caçador de demônios contra a rainha do sangue. Sustain contra sustain.",
+        "en-US": "The demon hunter against the queen of blood. Sustain against sustain."
+      }
+    },
+    {
+      "id": "sustained-mages",
+      "heroes": ["lylia", "valentina"],
+      "title": { "pt-BR": "Magas ágeis", "en-US": "Nimble mages" },
+      "description": {
+        "pt-BR": "Mobilidade e pressão constante em vez de um único combo.",
+        "en-US": "Mobility and constant pressure instead of a single combo."
+      }
+    },
+    {
+      "id": "swordsmen",
+      "heroes": ["zilong", "freya"],
+      "title": { "pt-BR": "Lança e espada", "en-US": "Spear and sword" },
+      "description": {
+        "pt-BR": "Lutadores de duelo direto. Quem trava o outro primeiro leva a kill.",
+        "en-US": "Straightforward duelists. Whoever locks the other down first gets the kill."
+      }
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 import raw from './heroes.json';
 import classification from './hero-roles.json';
 import statistics from './hero-stats.json';
-import type { MlbbHero } from 'src/utils/mlbb-heroes';
+import duels from './duel-presets.json';
+import type { MlbbDuelPreset, MlbbHero } from 'src/utils/mlbb-heroes';
 
 declare const require: {
   context(
@@ -36,6 +37,15 @@ export const mlbbHeroes: MlbbHero[] = raw
       }),
     };
   });
+// JSON arrays are typed as string[]; the matchup test guarantees exactly two heroes each.
+export const mlbbDuelPresets: MlbbDuelPreset[] = duels.presets.map((preset) => ({
+  ...preset,
+  heroes: [preset.heroes[0]!, preset.heroes[1]!],
+}));
+/** Localised text of a curated matchup, falling back to Portuguese. */
+export function presetText(text: Record<string, string>, locale: string) {
+  return text[locale] ?? text['pt-BR'] ?? '';
+}
 export const mlbbStatsSource = {
   url: statistics.source,
   collectedAt: statistics.collectedAt,

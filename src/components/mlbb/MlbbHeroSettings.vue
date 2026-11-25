@@ -74,7 +74,12 @@
         }}</a></small
       >
     </div>
-    <p v-if="!pools.length" class="text-negative" role="alert">{{ t('mlbb.noHeroPool') }}</p>
+    <p v-if="!available" class="text-negative" role="alert">
+      {{ t(drawMode === 'presets' ? 'mlbb.noPresetPool' : 'mlbb.noHeroPool') }}
+    </p>
+    <p v-else-if="drawMode === 'presets'">
+      {{ t('mlbb.availablePresets', { count: presets.length, total: mlbbDuelPresets.length }) }}
+    </p>
     <p v-else>{{ t('mlbb.availableClasses', { count: pools.length }) }}</p>
     <q-expansion-item icon="manage_search" :label="t('mlbb.editHeroClasses')">
       <p class="q-mt-sm">{{ t('mlbb.unclassifiedHint', { count: unclassified }) }}</p>
@@ -111,8 +116,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { mlbbHeroes, mlbbHeroImage, mlbbStatsSource } from 'src/data/mlbb/catalog';
-import { MLBB_CLASSES, MLBB_DRAW_MODES, MLBB_WIN_RATE_GAP, heroPools } from 'src/utils/mlbb-heroes';
+import { mlbbDuelPresets, mlbbHeroes, mlbbHeroImage, mlbbStatsSource } from 'src/data/mlbb/catalog';
+import {
+  MLBB_CLASSES,
+  MLBB_DRAW_MODES,
+  MLBB_WIN_RATE_GAP,
+  eligiblePresets,
+  heroPools,
+} from 'src/utils/mlbb-heroes';
 import type { MlbbHeroDrawMode, MlbbHeroSettings } from 'src/utils/mlbb-heroes';
 const settings = defineModel<MlbbHeroSettings>({ required: true });
 const { t, locale } = useI18n();
@@ -123,6 +134,7 @@ const drawModeKeys: Record<MlbbHeroDrawMode, string> = {
   uniform: 'uniform',
   'avoid-counters': 'avoidCounters',
   balanced: 'balanced',
+  presets: 'presets',
 };
 const drawModeOptions = computed(() =>
   MLBB_DRAW_MODES.map((value) => ({
@@ -162,6 +174,10 @@ function filterHeroes(value: string, update: (callback: () => void) => void) {
   });
 }
 const pools = computed(() => heroPools(mlbbHeroes, settings.value));
+const presets = computed(() => eligiblePresets(mlbbHeroes, settings.value, mlbbDuelPresets));
+const available = computed(() =>
+  drawMode.value === 'presets' ? presets.value.length > 0 : pools.value.length > 0,
+);
 const unclassified = computed(
   () =>
     mlbbHeroes.filter((hero) => !(settings.value.overrides[hero.id] ?? hero.classes).length).length,

@@ -778,8 +778,8 @@ import { useI18n } from 'vue-i18n';
 import MlbbMatchCard from 'src/components/mlbb/MlbbMatchCard.vue';
 import MlbbHeroSettings from 'src/components/mlbb/MlbbHeroSettings.vue';
 import MlbbHeroDuel from 'src/components/mlbb/MlbbHeroDuel.vue';
-import { mlbbHeroes } from 'src/data/mlbb/catalog';
-import { MLBB_CLASSES, drawMlbbHeroes, heroPools, validHeroPick } from 'src/utils/mlbb-heroes';
+import { mlbbDuelPresets, mlbbHeroes, presetText } from 'src/data/mlbb/catalog';
+import { MLBB_CLASSES, canDrawHeroes, drawMlbbHeroes, validHeroPick } from 'src/utils/mlbb-heroes';
 import type { MlbbHeroSettings as HeroSettings } from 'src/utils/mlbb-heroes';
 import { useMlbb } from 'src/composables/useMlbb';
 import type { MlbbGameScore, MlbbMatch, MlbbPlayer } from 'src/types/mlbb';
@@ -838,11 +838,28 @@ const heroSettings = computed<HeroSettings>({
     current.value.heroSettings = value;
   },
 });
-const availableHeroPools = computed(() => heroPools(mlbbHeroes, heroSettings.value));
+const heroDrawAvailable = computed(() =>
+  canDrawHeroes(mlbbHeroes, heroSettings.value, mlbbDuelPresets),
+);
+/** Curated matchups used by other matches, so a tournament repeats them only when needed. */
+function usedPresetIds(picks: Record<string, { presetId?: string }>, exceptId?: string) {
+  return Object.entries(picks).flatMap(([id, pick]) =>
+    id !== exceptId && pick.presetId ? [pick.presetId] : [],
+  );
+}
+function preset(id: string | undefined) {
+  const entry = id ? mlbbDuelPresets.find((preset) => preset.id === id) : undefined;
+  return entry && presetText(entry.title, locale.value);
+}
 function redrawHeroes(id: string) {
   const match = allMatches.value.find((match) => match.id === id);
   if (!match || match.result || match.status === 'bye') return;
-  const pick = drawMlbbHeroes(mlbbHeroes, heroSettings.value);
+  const picks = current.value.heroPicks ?? {};
+  // The current matchup is also excluded, so a redraw shows a different one when possible.
+  const pick = drawMlbbHeroes(mlbbHeroes, heroSettings.value, Math.random, {
+    presets: mlbbDuelPresets,
+    usedPresetIds: usedPresetIds(picks),
+  });
   if (!pick) {
     notify('mlbb.noHeroPool', 'warning');
     return;
@@ -864,8 +881,11 @@ watch(
     for (const match of allMatches.value) {
       if (match.result || match.status === 'bye') continue;
       const existing = picks[match.id];
-      if (!existing || !validHeroPick(existing, mlbbHeroes, heroSettings.value)) {
-        const pick = drawMlbbHeroes(mlbbHeroes, heroSettings.value);
+      if (!existing || !validHeroPick(existing, mlbbHeroes, heroSettings.value, mlbbDuelPresets)) {
+        const pick = drawMlbbHeroes(mlbbHeroes, heroSettings.value, Math.random, {
+          presets: mlbbDuelPresets,
+          usedPresetIds: usedPresetIds(picks, match.id),
+        });
         if (pick) picks[match.id] = pick;
         else delete picks[match.id];
       }
@@ -1042,7 +1062,7 @@ const formats = computed(() => [
 const hasEvenSeries = computed(() => formats.value.some((value) => value > 0 && value % 2 === 0));
 const canDraw = computed(
   () =>
-    availableHeroPools.value.length > 0 &&
+    heroDrawAvailable.value &&
     current.value.players.length >= 2 &&
     current.value.players.length <= 64 &&
     formats.value.every((value) => Number.isInteger(value) && value >= 1 && value <= 99),
@@ -1288,7 +1308,7 @@ const shareText = computed(() => {
       const pick = tournament.heroPicks?.[match.id];
       if (pick)
         lines.push(
-          `${t('mlbb.classes.' + pick.classId)}: ${mlbbHeroes.find((hero) => hero.id === pick.heroAId)?.name ?? pick.heroAId} x ${mlbbHeroes.find((hero) => hero.id === pick.heroBId)?.name ?? pick.heroBId}`,
+          `${preset(pick.presetId) ?? t('mlbb.classes.' + pick.classId)}: ${mlbbHeroes.find((hero) => hero.id === pick.heroAId)?.name ?? pick.heroAId} x ${mlbbHeroes.find((hero) => hero.id === pick.heroBId)?.name ?? pick.heroBId}`,
         );
       result?.games?.forEach((game, index) =>
         lines.push(
